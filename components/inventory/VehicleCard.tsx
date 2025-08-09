@@ -161,6 +161,7 @@ export const VehicleCard = ({ hit }: any) => {
                 ))} */}
 
               <button
+                aria-label={`heart icon`}
                 // onClick={(e) => {
                 //   e.stopPropagation();
                 //   toggleFavorite(data.id);

@@ -46,8 +46,9 @@ export default function FiltersSidebar() {
       <div className="mb-3 flex items-center justify-between rounded-lg bg-neutral-50 px-3 py-3">
         <span className="text-lg">Show Special</span>
         <button
+          aria-label={`special toggle`}
           onClick={() => setShowSpecial((v) => !v)}
-          className={`relative h-8 w-16 rounded-full border transition ${
+          className={`relative h-4 w-8 rounded-full border transition ${
             showSpecial
               ? "bg-black border-black"
               : "bg-white border-neutral-300"
