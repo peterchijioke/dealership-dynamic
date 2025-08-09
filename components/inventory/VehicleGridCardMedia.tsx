@@ -28,7 +28,7 @@ function VehicleGridCardMedia(props: Props) {
           height={900}
           alt={alt}
           fetchPriority="high"
-          src={photo || ""}
+          src={encryptedUrl || ""}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
         />
       )}
