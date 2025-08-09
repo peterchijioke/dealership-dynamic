@@ -20,20 +20,7 @@ export default function InventoryPage({ vehicleType }: Props) {
       indexName={srpIndex}
       searchClient={searchClient}
     >
-      <div className="h-screen flex flex-col ">
-        {/* Header */}
-        <div className="mb-4 flex items-center justify-between gap-3 lg:mb-6 flex-shrink-0">
-          <h1 className="text-xl font-bold capitalize lg:text-2xl">
-            {vehicleType} Vehicles
-          </h1>
-          <button
-            onClick={() => setFiltersOpen(true)}
-            className="inline-flex items-center rounded-lg border px-3 py-2 text-sm font-semibold hover:bg-neutral-50 lg:hidden"
-          >
-            Filters
-          </button>
-        </div>
-
+      <div className="h-screen flex flex-col pt-24 ">
         {/* Two-pane layout - takes remaining height */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Left: sidebar with its own scroll */}
