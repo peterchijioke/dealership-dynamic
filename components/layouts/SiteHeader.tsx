@@ -1,6 +1,5 @@
 import TopHeader from "./TopHeader";
 
-// Server component
 export default function SiteHeader({ items }: { items: any }) {
   return (
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
