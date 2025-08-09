@@ -12,7 +12,7 @@ type Props = {
 };
 
 function VehicleGridCardMedia(props: Props) {
-  const { alt, photo, video, videoCc } = props;
+  const { alt, photo, video, videoCc, shouldPreloadImage } = props;
 
   const encryptedUrl = useEncryptedImageUrl(photo);
 
@@ -26,12 +26,20 @@ function VehicleGridCardMedia(props: Props) {
         alt={alt}
         width={400}
         height={300}
-        fetchPriority="high"
-        loading="lazy"
-        priority={false}
+        // Use shouldPreloadImage prop to determine loading strategy
+        fetchPriority={shouldPreloadImage ? "high" : "low"}
+        loading={shouldPreloadImage ? "eager" : "lazy"}
+        priority={shouldPreloadImage}
         src={encryptedUrl || photo}
-        quality={75}
+        quality={shouldPreloadImage ? 85 : 75} // Higher quality for priority images
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+        // Add placeholder for better UX
+        placeholder="blur"
+        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+        // Handle loading errors gracefully
+        onError={(e) => {
+          console.warn("Image failed to load:", encryptedUrl || photo);
+        }}
       />
     </div>
   );
