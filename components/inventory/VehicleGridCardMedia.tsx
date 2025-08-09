@@ -23,8 +23,9 @@ function VehicleGridCardMedia(props: Props) {
   return (
     <div className="relative aspect-[3/2] overflow-hidden">
       <Image
-        fill
         alt={alt}
+        width={400}
+        height={300}
         fetchPriority="high"
         loading="lazy"
         priority={false}
