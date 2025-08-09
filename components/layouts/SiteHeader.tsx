@@ -1,6 +1,3 @@
-// components/layout/SiteHeader.tsx
-import { NavItem } from "@/lib/nav";
-import Link from "next/link";
 import TopHeader from "./TopHeader";
 
 // Server component
@@ -11,18 +8,7 @@ export default function SiteHeader({ items }: { items: any }) {
 
       <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
         <div className="font-semibold">MySite</div>
-        <nav className="flex gap-5 text-sm">
-          {/* {items?.map((it) => (
-            <Link
-              key={it.href}
-              href={it.href}
-              prefetch
-              className="hover:opacity-80"
-            >
-              {it.label}
-            </Link>
-          ))} */}
-        </nav>
+        <nav className="flex gap-5 text-sm">{/* nav items here */}</nav>
       </div>
     </header>
   );
