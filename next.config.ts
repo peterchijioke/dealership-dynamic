@@ -8,13 +8,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
     {
       protocol: 'http',
-      hostname: 'vehicle-photos-published.vauto.com',
+      hostname: '*',
       port: '',
       pathname: '/**',
     },
     {
       protocol: 'https',
-      hostname: 'vehicle-photos-published.vauto.com',
+      hostname: '*',
       port: '',
       pathname: '/**',
     },
