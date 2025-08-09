@@ -3,4 +3,5 @@ export const searchClient = algoliasearch(process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
 export const vdpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP
 export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON
 export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST ??""
+export const baseUrl=process.env.NEXT_PUBLIC_API_BASE_URL!
 export const getWebsiteInformationPath=()=>`/${getDynamicPath()}/get-website-information`

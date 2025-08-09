@@ -1,11 +1,12 @@
-
 'use server'
-import { getWebsiteInformationPath } from "@/configs/config";
+import { baseUrl, getDynamicPath, getWebsiteInformationPath } from "@/configs/config";
+
 export type NavItem = { label: string; href: string };
 
 export async function getPrimaryNav(): Promise<NavItem[]> {
-  const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL!+getWebsiteInformationPath(), {
-    next: { revalidate: 600 },
+  const res = await fetch(baseUrl + getWebsiteInformationPath(), {
+    next: { revalidate: 600 }, // 10 minutes
+    cache: 'force-cache'
   });
 
   if (!res.ok) {
@@ -15,6 +16,20 @@ export async function getPrimaryNav(): Promise<NavItem[]> {
       { label: "Contact", href: "/contact" },
     ];
   }
-
-  return (await res.json()) as any;
+  
+  return (await res.json()) as NavItem[];
 }
+
+export const getThemeImage = async (path: string): Promise<any> => {
+  const response = await fetch(baseUrl + `/${getDynamicPath()}${path}`, {
+    headers: { 'accept': 'application/json' },
+    next: { revalidate: 3600 }, 
+    cache: 'force-cache'
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+  
+  return (await response.json()) as any;
+};

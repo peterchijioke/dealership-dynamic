@@ -264,7 +264,8 @@ export const VehicleCard = ({ hit }: any) => {
                   <Image
                     src={data.carfax_icon_url!}
                     alt="Certified"
-                    fill
+                    width={100}
+                    height={50}
                     className="object-contain"
                   />
                 </button>
