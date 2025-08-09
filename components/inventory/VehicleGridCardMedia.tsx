@@ -25,6 +25,8 @@ function VehicleGridCardMedia(props: Props) {
       <Image
         fill
         alt={alt}
+        width={400}
+        height={300}
         fetchPriority="high"
         loading="lazy"
         priority={false}
