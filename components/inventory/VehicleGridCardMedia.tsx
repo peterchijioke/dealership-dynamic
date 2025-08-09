@@ -25,12 +25,10 @@ function VehicleGridCardMedia(props: Props) {
       <Image
         fill
         alt={alt}
-        width={400}
-        height={300}
         fetchPriority="high"
         loading="lazy"
         priority={false}
-        src={encryptedUrl || ""}
+        src={encryptedUrl || photo}
         quality={75}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
       />
