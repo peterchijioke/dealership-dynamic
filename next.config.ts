@@ -26,6 +26,27 @@ const nextConfig: NextConfig = {
     },
   ],
   },
+
+
+
+
+   compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? {
+          exclude: ['error', 'warn'] // Keep error and warn logs
+        }
+      : false,
+  },
+  
+  // Disable logging in production
+  logging: {
+    
+    fetches: {
+      fullUrl: process.env.NODE_ENV !== 'production',
+    },
+  },
+  
+  
 };
 
 export default nextConfig;
