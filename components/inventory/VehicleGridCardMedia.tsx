@@ -26,11 +26,11 @@ function VehicleGridCardMedia(props: Props) {
         alt={alt}
         width={400}
         height={300}
-        fetchPriority={shouldPreloadImage ? "high" : "low"}
-        loading={shouldPreloadImage ? "eager" : "lazy"}
-        priority={shouldPreloadImage}
+        fetchPriority={"high"}
+        loading={"lazy"}
+        priority
         src={encryptedUrl || photo}
-        quality={shouldPreloadImage ? 85 : 75}
+        quality={75}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
         placeholder="blur"
         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
