@@ -68,7 +68,7 @@ export function VehicleFilterConditionDisplay() {
   });
 
   return (
-    <div className="flex w-full flex-wrap gap-2 px-4 sm:px-6 lg:px-8 pb-5">
+    <div className="flex w-full h-14  flex-wrap gap-2 px-3 sm:px-6 lg:px-4 pb-5 pt-4">
       {/* Individual refinement chips */}
       {allRefinements.map((ref: any, index: number) => (
         <div

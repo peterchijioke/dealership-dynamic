@@ -69,7 +69,7 @@ export const VehicleCard = ({ hit }: any) => {
     <div className="relative flex h-full w-full flex-col rounded-xl bg-card text-card-foreground shadow transition duration-500">
       {tag && (
         <button
-          className="absolute cursor-help py-2 rounded-t-2xl left-0 text-xs right-0 top-0 z-50 flex justify-center"
+          className="absolute cursor-help py-2 rounded-t-2xl left-0 text-xs right-0 top-0 z-10 flex justify-center"
           style={{
             background: tag.tag_background || "#22c522",
             color: tag.tag_color || "#fff",
@@ -81,7 +81,7 @@ export const VehicleCard = ({ hit }: any) => {
       )}
 
       {data?.is_special && (
-        <div className="absolute top-6 -left-2 z-50 bg-rose-700 text-white text-xs font-bold px-3 py-1 rounded uppercase">
+        <div className="absolute top-6 -left-2 z-10 bg-rose-700 text-white text-xs font-bold px-3 py-1 rounded uppercase">
           Special
         </div>
       )}

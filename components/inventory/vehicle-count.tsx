@@ -5,7 +5,9 @@ export function VehicleCount() {
 
   return (
     <div className="text-black">
-      <span className="font-semibold">Showing {nbHits} Vehicles</span>
+      <span className="font-semibold text-xs md:text-sm">
+        Showing {nbHits} Vehicles
+      </span>
     </div>
   );
 }
