@@ -11,7 +11,6 @@ trailingSlash:true,
      dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
      minimumCacheTTL: process.env.NODE_ENV === 'development' ? 60 : 31536000,
-    
     remotePatterns: [
     {
       protocol: 'http',
