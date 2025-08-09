@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import FiltersSidebar from "./FiltersSidebar";
 import VehicleGrid from "./VehicleGrid";
 import type { Vehicle } from "@/types/vehicle";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { searchClient, srpIndex } from "@/configs/config";
+import DynamicRefinements from "./DynamicRefinements";
 
 type Props = { vehicleType: "new" | "used" };
 
@@ -38,8 +38,8 @@ export default function InventoryPage({ vehicleType }: Props) {
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Left: sidebar with its own scroll */}
           <aside className="hidden lg:block lg:w-[300px] lg:flex-shrink-0">
-            <div className="h-full overflow-y-auto">
-              <FiltersSidebar />
+            <div className="h-full overflow-y-auto px-2">
+              <DynamicRefinements />
             </div>
           </aside>
 
@@ -69,7 +69,7 @@ export default function InventoryPage({ vehicleType }: Props) {
                   Close
                 </button>
               </div>
-              <FiltersSidebar />
+              <DynamicRefinements />
             </div>
           </>
         )}

@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Heart, ChevronUp, CopyIcon, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-
 import Image from "next/image";
 import { toast } from "sonner";
 import VehicleCTAs from "./VehicleCtas";
@@ -67,7 +66,7 @@ export const VehicleCard = ({ hit }: any) => {
   );
 
   return (
-    <div className="relative flex h-full w-full flex-col rounded-xl bg-card text-card-foreground shadow transition duration-500 ">
+    <div className="relative flex h-full w-full flex-col rounded-xl bg-card text-card-foreground shadow transition duration-500">
       {tag && (
         <button
           className="absolute cursor-help py-2 rounded-t-2xl left-0 text-xs right-0 top-0 z-50 flex justify-center"
@@ -139,47 +138,9 @@ export const VehicleCard = ({ hit }: any) => {
                 {showVinCopyIcon && <CopyIcon size={15} />}
               </span>
             </div>
-
             <div className="flex items-center gap-1">
-              {/* {[
-                  { color: data.ext_color, label: data.ext_color_raw },
-                  { color: data.int_color, label: data.int_color_raw },
-                ].map((c, idx) => (
-                  <Tooltip key={idx}>
-                    <TooltipTrigger asChild>
-                      <span
-                        style={{
-                          backgroundColor: String(c?.color ?? "").toLowerCase(),
-                        }}
-                        className="w-4 h-4 rounded-full shadow border-2 border-white"
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{c?.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ))} */}
-
-              <button
-                aria-label={`heart icon`}
-                // onClick={(e) => {
-                //   e.stopPropagation();
-                //   toggleFavorite(data.id);
-                // }}
-                className="ml-2 p-2"
-                // aria-label={
-                //   favSet.has(data.id)
-                //     ? "Remove from favorites"
-                //     : "Add to favorites"
-                // }
-              >
-                <Heart
-                  className={classNames(
-                    "w-5 h-5",
-
-                    "text-gray-400"
-                  )}
-                />
+              <button aria-label={`heart icon`} className="ml-2 p-2">
+                <Heart className="w-5 h-5 text-gray-400" />
               </button>
             </div>
           </div>
