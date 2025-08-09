@@ -44,7 +44,7 @@ export default function InventoryPage({ vehicleType }: Props) {
           </aside>
 
           {/* Right: main content area with its own scroll and proper padding */}
-          <main className="flex-1 overflow-y-auto px-2 ">
+          <main className="flex-1 overflow-y-auto ">
             <VehicleGrid />
             <div className="h-6" />
           </main>

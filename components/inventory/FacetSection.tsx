@@ -100,7 +100,7 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
         <label className="mb-1 text-xs text-neutral-500 font-medium">Min</label>
         <input
           type="number"
-          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-base focus:border-black focus:ring-black transition"
+          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-sm focus:border-black focus:ring-black transition"
           placeholder={formatRangeValue(range.min)}
           value={localState.min}
           onChange={(e) => handleChange("min", e.target.value)}
@@ -110,7 +110,7 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
         <label className="mb-1 text-xs text-neutral-500 font-medium">Max</label>
         <input
           type="number"
-          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-base focus:border-black focus:ring-black transition"
+          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-sm focus:border-black focus:ring-black transition"
           placeholder={formatRangeValue(range.max)}
           value={localState.max}
           onChange={(e) => handleChange("max", e.target.value)}
@@ -157,7 +157,7 @@ export default function FacetSection({
     if (!toggle?.value) return null;
     return (
       <div className="mb-3 flex items-center justify-between rounded-lg bg-neutral-50 px-4 py-3">
-        <span className="text-base font-semibold text-neutral-900">
+        <span className="text-sm font-semibold text-neutral-900">
           {label ?? attribute}
         </span>
         <Toggle
@@ -173,11 +173,19 @@ export default function FacetSection({
   if (type === "range") {
     return (
       <details className="border-b border-neutral-200 py-4" open>
-        <summary className="flex cursor-pointer list-none items-center justify-between select-none text-lg font-semibold text-neutral-900">
-          <span className="text-lg">{label ?? attribute}</span>
-          <span className="text-neutral-500 text-xl">▾</span>
+        <summary className="flex cursor-pointer list-none items-center justify-between select-none text-sm font-semibold text-neutral-900">
+          <span className="text-sm">{label ?? attribute}</span>
+          <span className="text-neutral-500 text-lg details-marker">▾</span>
         </summary>
         <CustomRangeInput attribute={attribute} />
+        <style jsx>{`
+          .details-marker {
+            transition: transform 0.2s ease;
+          }
+          details[open] .details-marker {
+            transform: rotate(180deg);
+          }
+        `}</style>
       </details>
     );
   }
@@ -196,28 +204,28 @@ export default function FacetSection({
 
   return (
     <details
-      className="border-b border-neutral-200 py-4"
+      className="border-b border-neutral-200 py-3"
       open={attribute === "condition"}
     >
-      <summary className="flex cursor-pointer list-none items-center justify-between select-none text-lg font-semibold text-neutral-900">
+      <summary className="flex cursor-pointer list-none items-center justify-between select-none text-sm font-semibold text-neutral-900">
         <span className="flex items-center gap-3">
-          <span className="text-lg">{label ?? attribute}</span>
+          <span className="text-sm">{label ?? attribute}</span>
         </span>
         <span className="flex items-center gap-3">
           {refinedCount > 0 && (
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-black text-xs font-bold text-white">
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-black text-xs font-bold text-white">
               {refinedCount}
             </span>
           )}
-          <span className="text-neutral-500 text-xl">▾</span>
+          <span className="text-neutral-500 text-lg details-marker">▾</span>
         </span>
       </summary>
 
-      <div className="mt-4 space-y-3 text-base">
+      <div className="mt-4 space-y-1 text-sm">
         {isSearchable && items.length > 5 && (
           <div className="mb-2">
             <input
-              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-base focus:border-black focus:ring-black transition"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-black focus:ring-black transition"
               placeholder={`Search ${label?.toLowerCase() || attribute}...`}
               value={searchInput}
               onChange={(e) => {
@@ -233,7 +241,7 @@ export default function FacetSection({
         {filteredItems.slice(0, 10).map((item) => (
           <label
             key={item.value}
-            className="flex items-center justify-between cursor-pointer rounded-md px-2 py-2 transition hover:bg-neutral-100 text-base font-medium"
+            className="flex items-center justify-between cursor-pointer rounded-md px-2 py-1 transition hover:bg-neutral-100 text-sm font-medium"
           >
             <div className="flex items-center gap-2">
               <input
@@ -244,13 +252,13 @@ export default function FacetSection({
               />
               <span>{item.label}</span>
             </div>
-            <span className="text-sm text-neutral-500">({item.count})</span>
+            <span className="text-xs text-neutral-500">({item.count})</span>
           </label>
         ))}
 
         {filteredItems.length > 10 && (
           <button
-            className="text-sm font-semibold text-neutral-600 hover:text-black transition"
+            className="text-xs font-semibold text-neutral-600 hover:text-black transition"
             onClick={() => {
               console.log("Show more clicked for", attribute);
             }}
@@ -259,6 +267,14 @@ export default function FacetSection({
           </button>
         )}
       </div>
+      <style jsx>{`
+        .details-marker {
+          transition: transform 0.2s ease;
+        }
+        details[open] .details-marker {
+          transform: rotate(180deg);
+        }
+      `}</style>
     </details>
   );
 }
