@@ -6,13 +6,19 @@ const nextConfig: NextConfig = {
 
    images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-        port: '',
-        pathname: '/**',
-      },
-    ],
+    {
+      protocol: 'http',
+      hostname: 'vehicle-photos-published.vauto.com',
+      port: '',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'vehicle-photos-published.vauto.com',
+      port: '',
+      pathname: '/**',
+    },
+  ],
   },
 };
 
