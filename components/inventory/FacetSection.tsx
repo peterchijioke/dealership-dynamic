@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useMemo, FC } from "react";
 import {
   useRefinementList,
@@ -8,7 +7,6 @@ import {
   useRange,
 } from "react-instantsearch";
 
-// Attributes that are not searchable
 const nonSearchableAttributes = new Set(["price", "mileage", "year", "doors"]);
 
 interface FacetSectionProps {
@@ -17,20 +15,13 @@ interface FacetSectionProps {
   type: "list" | "toggle" | "range";
 }
 
-// ---------------- Toggle ----------------
+// ----- Modern Black/Gray Toggle Switch -----
 type ToggleProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   ariaLabel?: string;
-  activeColor?: string;
 };
-
-export const Toggle: FC<ToggleProps> = ({
-  checked,
-  onChange,
-  ariaLabel,
-  activeColor = "bg-green-500",
-}) => (
+export const Toggle: FC<ToggleProps> = ({ checked, onChange, ariaLabel }) => (
   <button
     type="button"
     role="switch"
@@ -43,15 +34,14 @@ export const Toggle: FC<ToggleProps> = ({
         onChange(!checked);
       }
     }}
-    className={`relative inline-flex h-7 w-14 items-center rounded-full 
-      transition-colors duration-300 ease-out
-      focus:outline-none focus:ring-2 focus:ring-offset-2 
-      ${checked ? activeColor : "bg-gray-300"}`}
+    className={`relative inline-flex h-6 w-12 items-center rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+      checked ? "bg-black" : "bg-gray-300"
+    }`}
   >
     <span
-      className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md 
-        transition-transform duration-300 ease-out
-        ${checked ? "translate-x-7" : "translate-x-1"}`}
+      className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-300 ${
+        checked ? "translate-x-6" : "translate-x-1"
+      }`}
     />
   </button>
 );
@@ -63,10 +53,9 @@ function formatRangeValue(value: number | undefined) {
     : "";
 }
 
-// --------------- Custom Range Input (No button) -----------------
+// ----------- Custom Range Input ----------
 const CustomRangeInput = ({ attribute }: { attribute: string }) => {
   const { range, start, refine } = useRange({ attribute });
-
   const [localState, setLocalState] = useState({
     min: formatRangeValue(start?.[0]),
     max: formatRangeValue(start?.[1]),
@@ -74,7 +63,6 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
 
   const handleChange = (field: "min" | "max", val: string) => {
     setLocalState((prev) => ({ ...prev, [field]: val }));
-
     const min =
       field === "min"
         ? val
@@ -83,7 +71,6 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
         : localState.min
         ? parseFloat(localState.min)
         : undefined;
-
     const max =
       field === "max"
         ? val
@@ -92,7 +79,6 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
         : localState.max
         ? parseFloat(localState.max)
         : undefined;
-
     refine([min, max]);
   };
 
@@ -108,22 +94,22 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
   }
 
   return (
-    <div className="mt-3 flex gap-3">
+    <div className="mt-4 flex gap-3">
       <div className="flex flex-col flex-1">
-        <label className="mb-1 text-xs text-neutral-500">Min</label>
+        <label className="mb-1 text-xs text-neutral-500 font-medium">Min</label>
         <input
           type="number"
-          className="w-full rounded-md border px-2 py-2 text-base"
+          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-base focus:border-black focus:ring-black transition"
           placeholder={formatRangeValue(range.min)}
           value={localState.min}
           onChange={(e) => handleChange("min", e.target.value)}
         />
       </div>
       <div className="flex flex-col flex-1">
-        <label className="mb-1 text-xs text-neutral-500">Max</label>
+        <label className="mb-1 text-xs text-neutral-500 font-medium">Max</label>
         <input
           type="number"
-          className="w-full rounded-md border px-2 py-2 text-base"
+          className="w-full rounded-md border border-neutral-300 px-2 py-2 text-base focus:border-black focus:ring-black transition"
           placeholder={formatRangeValue(range.max)}
           value={localState.max}
           onChange={(e) => handleChange("max", e.target.value)}
@@ -133,7 +119,7 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
   );
 };
 
-// ---------------- FacetSection ----------------
+// ----------- FacetSection -----------
 export default function FacetSection({
   attribute,
   label,
@@ -161,32 +147,35 @@ export default function FacetSection({
     [makeItems]
   );
 
-  // Conditional rendering logic
+  // Hide model/trim if no make is selected
   if (!isMakeSelected && (attribute === "model" || attribute === "trim")) {
     return null;
   }
 
+  // Toggle type
   if (type === "toggle") {
-    if (!toggle?.value) {
-      return null;
-    }
+    if (!toggle?.value) return null;
     return (
-      <div className="mb-3 flex items-center justify-between rounded-lg bg-neutral-50 px-3 py-3">
-        <span className="text-lg font-medium">{label ?? attribute}</span>
+      <div className="mb-3 flex items-center justify-between rounded-lg bg-neutral-50 px-4 py-3">
+        <span className="text-base font-semibold text-neutral-900">
+          {label ?? attribute}
+        </span>
         <Toggle
           checked={toggle.value.isRefined}
           onChange={() => toggle.refine(toggle.value)}
+          ariaLabel={label ?? attribute}
         />
       </div>
     );
   }
 
+  // Range type
   if (type === "range") {
     return (
-      <details className="border-b border-neutral-200 py-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold">
-          <span className="text-[18px]">{label ?? attribute}</span>
-          <span className="text-neutral-500">▾</span>
+      <details className="border-b border-neutral-200 py-4" open>
+        <summary className="flex cursor-pointer list-none items-center justify-between select-none text-lg font-semibold text-neutral-900">
+          <span className="text-lg">{label ?? attribute}</span>
+          <span className="text-neutral-500 text-xl">▾</span>
         </summary>
         <CustomRangeInput attribute={attribute} />
       </details>
@@ -197,6 +186,7 @@ export default function FacetSection({
     return null;
   }
 
+  // Filter/search logic for searchable lists
   const filteredItems =
     searchInput && isSearchable
       ? items.filter((item) =>
@@ -209,25 +199,25 @@ export default function FacetSection({
       className="border-b border-neutral-200 py-4"
       open={attribute === "condition"}
     >
-      <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold">
+      <summary className="flex cursor-pointer list-none items-center justify-between select-none text-lg font-semibold text-neutral-900">
         <span className="flex items-center gap-3">
-          <span className="text-[18px]">{label ?? attribute}</span>
+          <span className="text-lg">{label ?? attribute}</span>
         </span>
         <span className="flex items-center gap-3">
           {refinedCount > 0 && (
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-neutral-900 text-sm font-semibold text-white">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-black text-xs font-bold text-white">
               {refinedCount}
             </span>
           )}
-          <span className="text-neutral-500">▾</span>
+          <span className="text-neutral-500 text-xl">▾</span>
         </span>
       </summary>
 
-      <div className="mt-3 space-y-3 text-sm">
+      <div className="mt-4 space-y-3 text-base">
         {isSearchable && items.length > 5 && (
-          <div className="mb-3">
+          <div className="mb-2">
             <input
-              className="w-full rounded-md border px-3 py-2 text-sm"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-base focus:border-black focus:ring-black transition"
               placeholder={`Search ${label?.toLowerCase() || attribute}...`}
               value={searchInput}
               onChange={(e) => {
@@ -243,12 +233,12 @@ export default function FacetSection({
         {filteredItems.slice(0, 10).map((item) => (
           <label
             key={item.value}
-            className="flex items-center justify-between text-base cursor-pointer"
+            className={`flex items-center justify-between cursor-pointer rounded-md px-2 py-2 transition hover:bg-neutral-100 text-base font-medium`}
           >
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                className="size-4"
+                className="form-checkbox h-4 w-4 accent-black border-neutral-400 rounded transition"
                 checked={item.isRefined}
                 onChange={() => refine(item.value)}
               />
@@ -260,8 +250,9 @@ export default function FacetSection({
 
         {filteredItems.length > 10 && (
           <button
-            className="text-sm text-neutral-600 hover:text-neutral-900"
+            className="text-sm font-semibold text-neutral-600 hover:text-black transition"
             onClick={() => {
+              // You may want to set state to show the rest!
               console.log("Show more clicked for", attribute);
             }}
           >
