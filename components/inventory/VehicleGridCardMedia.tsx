@@ -28,7 +28,6 @@ function VehicleGridCardMedia(props: Props) {
         height={300}
         fetchPriority={"high"}
         loading={"lazy"}
-        priority
         src={encryptedUrl || photo}
         quality={75}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
