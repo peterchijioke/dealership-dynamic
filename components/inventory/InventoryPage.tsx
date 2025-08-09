@@ -6,6 +6,7 @@ import type { Vehicle } from "@/types/vehicle";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { searchClient, srpIndex } from "@/configs/config";
 import DynamicRefinements from "./DynamicRefinements";
+import { SearchInventory } from "./search-inventory";
 
 type Props = { vehicleType: "new" | "used" };
 
@@ -31,7 +32,8 @@ export default function InventoryPage({ vehicleType }: Props) {
           </aside>
 
           {/* Right: main content area with its own scroll and proper padding */}
-          <main className="flex-1 overflow-y-auto ">
+          <main className="flex-1 overflow-y-auto pt-4 ">
+            <SearchInventory />
             <VehicleGrid />
             <div className="h-6" />
           </main>
