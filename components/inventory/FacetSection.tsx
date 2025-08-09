@@ -15,12 +15,13 @@ interface FacetSectionProps {
   type: "list" | "toggle" | "range";
 }
 
-// ----- Modern Black/Gray Toggle Switch -----
+// ---------------- Compact Black/Gray Toggle ----------------
 type ToggleProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   ariaLabel?: string;
 };
+
 export const Toggle: FC<ToggleProps> = ({ checked, onChange, ariaLabel }) => (
   <button
     type="button"
@@ -34,26 +35,26 @@ export const Toggle: FC<ToggleProps> = ({ checked, onChange, ariaLabel }) => (
         onChange(!checked);
       }
     }}
-    className={`relative inline-flex h-6 w-12 items-center rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+    className={`relative inline-flex h-5 w-9 items-center rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
       checked ? "bg-black" : "bg-gray-300"
     }`}
   >
     <span
-      className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-300 ${
-        checked ? "translate-x-6" : "translate-x-1"
+      className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-300 ${
+        checked ? "translate-x-4" : "translate-x-0.5"
       }`}
     />
   </button>
 );
 
-// --------------- Helper -----------------
+// ---------------- Helper ----------------
 function formatRangeValue(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value)
     ? value.toString()
     : "";
 }
 
-// ----------- Custom Range Input ----------
+// ---------------- Custom Range Input ----------------
 const CustomRangeInput = ({ attribute }: { attribute: string }) => {
   const { range, start, refine } = useRange({ attribute });
   const [localState, setLocalState] = useState({
@@ -119,7 +120,7 @@ const CustomRangeInput = ({ attribute }: { attribute: string }) => {
   );
 };
 
-// ----------- FacetSection -----------
+// ---------------- FacetSection Component ----------------
 export default function FacetSection({
   attribute,
   label,
@@ -130,7 +131,6 @@ export default function FacetSection({
 
   const { results } = useInstantSearch();
 
-  // Always call hooks
   const refinementList = useRefinementList({ attribute });
   const toggle = useToggleRefinement({ attribute });
   const { items: makeItems } = useRefinementList({ attribute: "make" });
@@ -186,7 +186,7 @@ export default function FacetSection({
     return null;
   }
 
-  // Filter/search logic for searchable lists
+  // Filter/search logic
   const filteredItems =
     searchInput && isSearchable
       ? items.filter((item) =>
@@ -233,7 +233,7 @@ export default function FacetSection({
         {filteredItems.slice(0, 10).map((item) => (
           <label
             key={item.value}
-            className={`flex items-center justify-between cursor-pointer rounded-md px-2 py-2 transition hover:bg-neutral-100 text-base font-medium`}
+            className="flex items-center justify-between cursor-pointer rounded-md px-2 py-2 transition hover:bg-neutral-100 text-base font-medium"
           >
             <div className="flex items-center gap-2">
               <input
@@ -252,7 +252,6 @@ export default function FacetSection({
           <button
             className="text-sm font-semibold text-neutral-600 hover:text-black transition"
             onClick={() => {
-              // You may want to set state to show the rest!
               console.log("Show more clicked for", attribute);
             }}
           >
