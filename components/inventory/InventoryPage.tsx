@@ -15,7 +15,11 @@ export default function InventoryPage({ vehicleType }: Props) {
   // TODO: replace with Algolia hits
 
   return (
-    <InstantSearchNext indexName={srpIndex} searchClient={searchClient}>
+    <InstantSearchNext
+      ignoreMultipleHooksWarning
+      indexName={srpIndex}
+      searchClient={searchClient}
+    >
       <div className="h-screen flex flex-col ">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between gap-3 lg:mb-6 flex-shrink-0">

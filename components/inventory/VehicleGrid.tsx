@@ -8,7 +8,7 @@ const sessionStorageCache = createInfiniteHitsSessionStorageCache();
 
 export default function VehicleGrid() {
   return (
-    <div className="vehicle-grid vehicle-grid--container px-4 py-1">
+    <div className="vehicle-grid vehicle-grid--container py-1">
       <InfiniteHits
         hitComponent={VehicleCard}
         cache={sessionStorageCache}
