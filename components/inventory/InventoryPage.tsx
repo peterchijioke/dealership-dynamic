@@ -37,7 +37,7 @@ export default function InventoryPage({ vehicleType }: Props) {
         {/* Two-pane layout - takes remaining height */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Left: sidebar with its own scroll */}
-          <aside className="hidden lg:block lg:w-[300px] lg:flex-shrink-0">
+          <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0">
             <div className="h-full overflow-y-auto px-2">
               <DynamicRefinements />
             </div>
