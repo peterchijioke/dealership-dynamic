@@ -23,16 +23,13 @@ function VehicleGridCardMedia(props: Props) {
   return (
     <div className="relative aspect-[3/2] overflow-hidden">
       {encryptedUrl && (
-        <Image
+        <img
           width={1600}
           height={900}
-          priority
-          quality={35}
           alt={alt}
           fetchPriority="high"
           src={photo || ""}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
-          unoptimized={false}
         />
       )}
     </div>
