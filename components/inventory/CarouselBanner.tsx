@@ -162,7 +162,11 @@ const CarouselBanner = () => {
           className="absolute left-4 top-1/2  transform -translate-y-1/2 text-white hover:bg-white/20 bg-white/80 backdrop-blur-sm rounded-full p-2 z-10 shadow-lg"
           onClick={prevSlide}
         >
-          <ChevronLeft aria-hidden="true" focusable="false" className="w-6 h-6 text-black" />
+          <ChevronLeft
+            aria-hidden="true"
+            focusable="false"
+            className="w-6 h-6 text-black"
+          />
         </Button>
 
         <Button
@@ -172,7 +176,11 @@ const CarouselBanner = () => {
           className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 bg-white/80 backdrop-blur-sm rounded-full p-2 z-10 shadow-lg"
           onClick={nextSlide}
         >
-          <ChevronRight aria-hidden="true" focusable="false" className="w-6 h-6 text-black" />
+          <ChevronRight
+            aria-hidden="true"
+            focusable="false"
+            className="w-6 h-6 text-black"
+          />
         </Button>
       </div>
     </Fragment>
