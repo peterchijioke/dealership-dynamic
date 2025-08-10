@@ -1,5 +1,5 @@
 import InventoryPage from "@/components/inventory/InventoryPage";
 
 export default function Page() {
-  return <InventoryPage vehicleType="new" />;
+  return <InventoryPage vehicleType="used" />;
 }
