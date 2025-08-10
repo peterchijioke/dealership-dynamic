@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { useState, FC, useCallback } from "react";
 import {
   useRefinementList,
   useToggleRefinement,
@@ -134,7 +134,29 @@ export default function FacetSection({
 }: FacetSectionProps) {
   const [searchInput, setSearchInput] = useState("");
   const isSearchable = !NON_SEARCHABLE_ATTRIBUTES.has(attribute);
-  const refinementList = useRefinementList({ attribute });
+  
+  const conditionTransformItems = useCallback((items: any[]) => {
+    // Normalize condition values and remove duplicates
+    const seen = new Set();
+    return items.filter(item => {
+      const normalizedLabel = item.label.toUpperCase();
+      if (seen.has(normalizedLabel)) {
+        return false;
+      }
+      seen.add(normalizedLabel);
+      // Update the label to be consistent
+      item.label = normalizedLabel === "NEW" ? "New" : normalizedLabel === "USED" ? "Used" : item.label;
+      return true;
+    });
+  }, []);
+  
+  const refinementList = useRefinementList({ 
+    attribute,
+    sortBy: ['name:asc'],
+    limit: 1000,
+    transformItems: attribute === "condition" ? conditionTransformItems : undefined,
+  });
+  
   const toggle = useToggleRefinement({ attribute });
 
   const { items, refine, searchForItems } = refinementList;

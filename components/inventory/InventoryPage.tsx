@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import VehicleGrid from "./VehicleGrid";
 import {
   createInstantSearchNextInstance,
@@ -13,7 +14,16 @@ import { Configure } from "react-instantsearch";
 
 type Props = { vehicleType: "new" | "used" };
 const instance = createInstantSearchNextInstance();
+
 export default function InventoryPage({ vehicleType }: Props) {
+  const [initialUiState] = useState(() => ({
+    [srpIndex as string]: {
+      refinementList: {
+        condition: [vehicleType === "new" ? "New" : "Used"],
+      },
+    },
+  }));
+
   return (
     <InstantSearchNext
       instance={instance}
@@ -21,14 +31,9 @@ export default function InventoryPage({ vehicleType }: Props) {
       insights={true}
       indexName={srpIndex}
       searchClient={searchClient}
+      initialUiState={initialUiState}
     >
-      <Configure 
-        facets={["*"]} 
-        facetingAfterDistinct={true}
-      />
-      <Configure
-        filters={`condition:${vehicleType === "new" ? "NEW" : "USED"}`}
-      />
+      <Configure facets={["*"]} facetingAfterDistinct={true} />
       <div className="h-screen flex flex-col relative pt-24 ">
         <div className="flex-1 relative flex flex-col lg:flex-row overflow-hidden">
           <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0">
