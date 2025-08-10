@@ -19,7 +19,7 @@ const SHOW_CAROUSEL_PATHS = ["/new-vehicles", "/used-vehicles"];
 
 const CarouselBanner = () => {
   const pathname = usePathname();
-  const [dynamicSlides, setDynamicSlides] = useState<Slide[]>([]);
+  const [specials, setSpecials] = useState<Special[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -35,13 +35,8 @@ const CarouselBanner = () => {
         };
         const data = await getSpecialBanner(payload);
         const final = data?.data.flatMap((item: any) => item);
-        const res = final.map((special: any) => ({
-          id: special.id,
-          image: special.image_url,
-          title: special.title,
-          subtitle: special.subtitle,
-        }));
-        setDynamicSlides(res);
+
+        setSpecials(final);
       } catch (error) {
         console.error("Error fetching specials:", error);
       } finally {
@@ -49,6 +44,21 @@ const CarouselBanner = () => {
       }
     })();
   }, []);
+
+  const specialsData: Special[] = useMemo(() => {
+    return specials;
+  }, [specials]);
+
+  // Use specialsData for slides if available
+  const dynamicSlides: Slide[] =
+    specialsData.length > 0
+      ? specialsData.map((special, index) => ({
+          id: index + 1,
+          image: special.image_url,
+          title: special.title,
+          subtitle: special.subtitle,
+        }))
+      : [];
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -85,6 +95,10 @@ const CarouselBanner = () => {
   if (!shouldShowCarousel) {
     return null;
   }
+
+  console.log("============dynamicSlides========================");
+  console.log(JSON.stringify(dynamicSlides, null, 2));
+  console.log("============dynamicSlides========================");
 
   // Show loading state
   if (isLoading) {
@@ -210,137 +224,3 @@ type Special = {
   special_element: any | null; // Use more specific type if structure is known
   inventory_count: number;
 };
-
-const hhhhh = [
-  {
-    lease_due_at_signing: null,
-    sale_price: null,
-    lease_months: null,
-    discounts: null,
-    additional_fields: null,
-    finance_apr: null,
-    settings: {
-      srp_banner_location: "srp_banner_top",
-    },
-    mobile_image_url: null,
-    finance_apr_month: null,
-    coupon_description: null,
-    id: "829d365f-9881-4f9c-b2a4-8ecc515c083a",
-    special_types: ["image"],
-    title: "KBB SRP Banner",
-    finance_monthly_payment: null,
-    image_description: null,
-    channels: ["srp_banner"],
-    mobile_image_id: null,
-    subtitle: null,
-    cashback_price: null,
-    image_is_vertical: null,
-    channels_exclusion: null,
-    image_url:
-      "https://storage.dealertower.app/bulk-rule-special-image/36c1da2f-ea46-4047-9275-5bf42127a2be.webp",
-    disclaimer: null,
-    cashback_description: null,
-    image_is_dynamic: null,
-    image_id: "ff197588-a0f1-42bc-a068-406267e28c5c",
-    lease_monthly_payment: null,
-    msrp_price: null,
-    cta: [
-      {
-        device: "both",
-        cta_type: "link",
-        cta_label: "",
-        btn_styles: {
-          bg: "#1F1E1E",
-          bg_hover: "#424242",
-          text_color: "#FFFFFF",
-          text_hover_color: "#FFFFFF",
-        },
-        btn_classes: [],
-        btn_content: "/value-your-trade",
-        open_newtab: false,
-        cta_location: "both",
-        btn_attributes: [],
-        cta_conditions: ["new", "used", "certified"],
-      },
-    ],
-    triggers: null,
-    start_at: "2025-02-05",
-    expire_at: null,
-    background_image: null,
-    background_image_mobile: null,
-    special_element_mobile: null,
-    homepage_special_element_mobile: null,
-    homepage_special_element: null,
-    special_element: null,
-    inventory_count: null,
-  },
-  {
-    lease_due_at_signing: null,
-    sale_price: null,
-    lease_months: null,
-    discounts: null,
-    additional_fields: null,
-    finance_apr: null,
-    settings: {
-      srp_banner_location: "srp_banner_top",
-    },
-    mobile_image_url: null,
-    finance_apr_month: null,
-    coupon_description: null,
-    id: "58d691ec-b1d7-4b84-a5e8-d65454728f9c",
-    special_types: ["image"],
-    title: "SRP Lifetime Powertrain Warranty",
-    finance_monthly_payment: null,
-    image_description: null,
-    channels: ["srp_banner"],
-    mobile_image_id: null,
-    subtitle: null,
-    cashback_price: null,
-    image_is_vertical: null,
-    channels_exclusion: null,
-    image_url:
-      "https://storage.dealertower.app/bulk-rule-special-image/fd1a8ce7-3139-4ebe-96cc-ab2435d6d221.webp",
-    disclaimer: null,
-    cashback_description: null,
-    image_is_dynamic: null,
-    image_id: "d6db69bb-43e7-4041-aec4-b0a69e953090",
-    lease_monthly_payment: null,
-    msrp_price: null,
-    cta: [
-      {
-        device: "both",
-        cta_type: "link",
-        cta_label: "Learn more",
-        btn_styles: {
-          bg: "#1F1E1E",
-          bg_hover: "#424242",
-          text_color: "#FFFFFF",
-          text_hover_color: "#FFFFFF",
-        },
-        btn_classes: [],
-        btn_content: "/lifetime-powertrain-warranty/",
-        open_newtab: null,
-        cta_location: null,
-        btn_attributes: [],
-        cta_conditions: ["new", "used", "certified"],
-      },
-    ],
-    triggers: {
-      condition: [
-        {
-          value: ["new"],
-          operator: "include",
-        },
-      ],
-    },
-    start_at: null,
-    expire_at: null,
-    background_image: null,
-    background_image_mobile: null,
-    special_element_mobile: null,
-    homepage_special_element_mobile: null,
-    homepage_special_element: null,
-    special_element: null,
-    inventory_count: 102,
-  },
-];
