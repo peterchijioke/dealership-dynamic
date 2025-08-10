@@ -37,7 +37,7 @@ export const SearchInventory = memo(function SearchInventory() {
           </div>
 
           <Button
-            className="w-full md:w-auto h-10 capitalize focus-visible:ring-0 cursor-pointer bg-rose-700 hover:bg-rose-700 flex-shrink-0"
+            className="w-full  md:w-fit h-full capitalize focus-visible:ring-0 cursor-pointer bg-rose-700 hover:bg-rose-700 flex-shrink-0"
             onClick={handleSort}
             style={{ transform: "translate3d(0,0,0)" }}
           >
