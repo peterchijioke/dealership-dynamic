@@ -10,24 +10,11 @@ import VehicleCardSkeleton from "./VehicleCardSkeleton";
 const sessionStorageCache = createInfiniteHitsSessionStorageCache();
 
 export default function VehicleGrid() {
-  const { status } = useInstantSearch();
   return (
     <div
       className="vehicle-grid vehicle-grid--container "
       style={{ ["--card-max" as any]: "420px" }}
     >
-      {(status === "loading" || status === "stalled") && (
-        <div
-          className={
-            styles.VehicleGrid +
-            " w-full gap-4 px-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4"
-          }
-        >
-          {Array.from({ length: 8 }).map((_, i) => (
-            <VehicleCardSkeleton key={i} />
-          ))}
-        </div>
-      )}
       <InfiniteHits
         hitComponent={(props) => (
           // Mark the very first hit on the first page as high priority to improve LCP
