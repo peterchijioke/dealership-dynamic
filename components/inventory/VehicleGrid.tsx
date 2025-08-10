@@ -5,8 +5,6 @@ import { VehicleCard } from "./VehicleCard";
 import { createInfiniteHitsSessionStorageCache } from "instantsearch.js/es/lib/infiniteHitsCache";
 import classNames from "classnames";
 import styles from "./VehicleGrid.module.css";
-import { useEffect } from "react";
-import { getSpecialBanner } from "@/lib/nav";
 import VehicleCardSkeleton from "./VehicleCardSkeleton";
 
 const sessionStorageCache = createInfiniteHitsSessionStorageCache();
