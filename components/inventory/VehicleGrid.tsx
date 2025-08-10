@@ -29,7 +29,13 @@ export default function VehicleGrid() {
         </div>
       )}
       <InfiniteHits
-        hitComponent={VehicleCard}
+        hitComponent={(props) => (
+          // Mark the very first hit on the first page as high priority to improve LCP
+          <VehicleCard
+            {...props}
+            isLcpCandidate={props.hit?.__position === 1}
+          />
+        )}
         cache={sessionStorageCache}
         showPrevious={false}
         classNames={{

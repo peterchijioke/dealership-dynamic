@@ -17,7 +17,7 @@ const formatMileage = (mileage?: number): string => {
   return `${mileage} miles`;
 };
 
-export const VehicleCard = ({ hit }: any) => {
+export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
   const data: Vehicle = hit;
   const router = useRouter();
   const pathName = usePathname();
@@ -100,7 +100,7 @@ export const VehicleCard = ({ hit }: any) => {
             }
             video={data.video || undefined}
             videoCc={data.subtitle || undefined}
-            shouldPreloadImage={false}
+            shouldPreloadImage={isLcpCandidate}
           />
         </button>
 
