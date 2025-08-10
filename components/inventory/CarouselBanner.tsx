@@ -156,19 +156,23 @@ const CarouselBanner = () => {
         </div>
 
         <Button
+          type="button"
+          aria-label="Previous slide"
           size="sm"
           className="absolute left-4 top-1/2  transform -translate-y-1/2 text-white hover:bg-white/20 bg-white/80 backdrop-blur-sm rounded-full p-2 z-10 shadow-lg"
           onClick={prevSlide}
         >
-          <ChevronLeft className="w-6 h-6 text-black" />
+          <ChevronLeft aria-hidden="true" focusable="false" className="w-6 h-6 text-black" />
         </Button>
 
         <Button
+          type="button"
+          aria-label="Next slide"
           size="sm"
           className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 bg-white/80 backdrop-blur-sm rounded-full p-2 z-10 shadow-lg"
           onClick={nextSlide}
         >
-          <ChevronRight className="w-6 h-6 text-black" />
+          <ChevronRight aria-hidden="true" focusable="false" className="w-6 h-6 text-black" />
         </Button>
       </div>
     </Fragment>
