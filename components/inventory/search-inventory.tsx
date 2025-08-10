@@ -1,9 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-
 import { VehicleFilterConditionDisplay } from "./filter-condition-display";
 import { useCallback, useRef, memo } from "react";
-
 import { SortBy } from "react-instantsearch";
 import { algoliaSortOptions } from "@/configs/config";
 import { VehicleCount } from "./vehicle-count";

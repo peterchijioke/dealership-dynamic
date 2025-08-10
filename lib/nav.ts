@@ -33,3 +33,23 @@ export const getThemeImage = async (path: string): Promise<any> => {
   
   return (await response.json()) as any;
 };
+
+
+
+export async function getSpecialBanner(data:any) {
+  const response = await fetch(`${baseUrl}/${getDynamicPath()}/get-specials`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return result;
+}
