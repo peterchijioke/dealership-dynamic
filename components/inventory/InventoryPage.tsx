@@ -22,7 +22,10 @@ export default function InventoryPage({ vehicleType }: Props) {
       indexName={srpIndex}
       searchClient={searchClient}
     >
-      <Configure facets={["*"]} />
+      <Configure 
+        facets={["*"]} 
+        facetingAfterDistinct={true}
+      />
       <Configure
         filters={`condition:${vehicleType === "new" ? "NEW" : "USED"}`}
       />
