@@ -73,7 +73,7 @@ const CarouselBanner = () => {
     if (dynamicSlides.length <= 1) return; // nothing to autoplay
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => ((prev + 1) % dynamicSlides.length));
+      setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -89,15 +89,17 @@ const CarouselBanner = () => {
   }, [dynamicSlides.length]);
 
   const nextSlide = () => {
-  if (dynamicSlides.length === 0) return;
-  setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
+    if (dynamicSlides.length === 0) return;
+    setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   const prevSlide = () => {
-  if (dynamicSlides.length === 0) return;
-  setCurrentSlide((prev) => (prev - 1 + dynamicSlides.length) % dynamicSlides.length);
+    if (dynamicSlides.length === 0) return;
+    setCurrentSlide(
+      (prev) => (prev - 1 + dynamicSlides.length) % dynamicSlides.length
+    );
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };

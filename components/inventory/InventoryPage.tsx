@@ -3,13 +3,18 @@
 import { useState } from "react";
 import VehicleGrid from "./VehicleGrid";
 import type { Vehicle } from "@/types/vehicle";
-import { InstantSearchNext } from "react-instantsearch-nextjs";
+import {
+  createInstantSearchNextInstance,
+  InstantSearchNext,
+} from "react-instantsearch-nextjs";
 import { searchClient, srpIndex } from "@/configs/config";
 import DynamicRefinements from "./DynamicRefinements";
 import { SearchInventory } from "./search-inventory";
 import CarouselBanner from "./CarouselBanner";
 
 type Props = { vehicleType: "new" | "used" };
+
+const instance = createInstantSearchNextInstance();
 
 export default function InventoryPage({ vehicleType }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -18,6 +23,7 @@ export default function InventoryPage({ vehicleType }: Props) {
 
   return (
     <InstantSearchNext
+      instance={instance}
       ignoreMultipleHooksWarning
       indexName={srpIndex}
       searchClient={searchClient}
