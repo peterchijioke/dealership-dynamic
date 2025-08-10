@@ -16,10 +16,10 @@ export default function CustomImage({ className, ...props }: ImageProps) {
 
   if (shouldFill) {
     return (
-    <div className={cn("relative w-full h-full")}> 
+      <div className={cn("relative w-full h-full")}>
         <Image
-      src={src as any}
-      {...(rest as any)}
+          src={src as any}
+          {...(rest as any)}
           fill
           sizes={sizes || "100vw"}
           className={cn("object-cover", className)}
@@ -31,8 +31,9 @@ export default function CustomImage({ className, ...props }: ImageProps) {
 
   return (
     <Image
-    src={src as any}
-    {...(rest as any)}
+      fetchpriority="high"
+      src={src as any}
+      {...(rest as any)}
       width={width as number}
       height={height as number}
       sizes={sizes || "100vw"}

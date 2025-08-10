@@ -23,6 +23,7 @@ const CarouselBanner = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isCancelled = false;
     (async () => {
       setIsLoading(true);
       try {
@@ -36,14 +37,18 @@ const CarouselBanner = () => {
         const data = await getSpecialBanner(payload);
         const final = data?.data.flatMap((item: any) => item);
 
-        setSpecials(final);
-      } catch (error) {
-        console.error("Error fetching specials:", error);
+        if (!isCancelled) setSpecials(final ?? []);
+      } catch (_error) {
+        // Swallow network errors to avoid noisy console in production
+        if (!isCancelled) setSpecials([]);
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) setIsLoading(false);
       }
     })();
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [pathname]);
 
   const specialsData: Special[] = useMemo(() => {
     return specials;
@@ -65,24 +70,34 @@ const CarouselBanner = () => {
 
   useEffect(() => {
     if (!isAutoPlaying) return;
+    if (dynamicSlides.length <= 1) return; // nothing to autoplay
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
+      setCurrentSlide((prev) => ((prev + 1) % dynamicSlides.length));
     }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, dynamicSlides.length]);
 
+  // Clamp currentSlide if slides shrink (e.g., from 1 to 0)
+  useEffect(() => {
+    if (dynamicSlides.length === 0) {
+      setCurrentSlide(0);
+    } else if (currentSlide >= dynamicSlides.length) {
+      setCurrentSlide(0);
+    }
+  }, [dynamicSlides.length]);
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
+  if (dynamicSlides.length === 0) return;
+  setCurrentSlide((prev) => (prev + 1) % dynamicSlides.length);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   const prevSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev - 1 + dynamicSlides.length) % dynamicSlides.length
-    );
+  if (dynamicSlides.length === 0) return;
+  setCurrentSlide((prev) => (prev - 1 + dynamicSlides.length) % dynamicSlides.length);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
@@ -96,9 +111,7 @@ const CarouselBanner = () => {
     return null;
   }
 
-  console.log("============dynamicSlides========================");
-  console.log(JSON.stringify(dynamicSlides, null, 2));
-  console.log("============dynamicSlides========================");
+  // Debug logs removed to keep console clean
 
   // Show loading state
   if (isLoading) {

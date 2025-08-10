@@ -25,11 +25,16 @@ function useEncryptedImageUrl(photo: string) {
 			width: 400,
 			quality: 65,
 			cache: 1,
-		}, key).then((str) => {
-			const finalUrl = `https://dealertower.app/image/${str}.avif`;
-			urlCache.set(cacheKey, finalUrl);
-			if (!isCancelled) setEncryptedUrl(finalUrl);
-		});
+			}, key)
+				.then((str) => {
+					const finalUrl = `https://dealertower.app/image/${str}.avif`;
+					urlCache.set(cacheKey, finalUrl);
+					if (!isCancelled) setEncryptedUrl(finalUrl);
+				})
+				.catch(() => {
+					// ignore encryption errors in UI; keep previous image or placeholder
+					if (!isCancelled) setEncryptedUrl(undefined);
+				});
 
 		return () => {
 			isCancelled = true;
