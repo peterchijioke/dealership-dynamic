@@ -24,6 +24,7 @@ export default function CustomImage({ className, ...props }: ImageProps) {
           sizes={sizes || "100vw"}
           className={cn("object-cover", className)}
           alt={alt || ""}
+          fetchpriority="high"
         />
       </div>
     );
@@ -31,11 +32,11 @@ export default function CustomImage({ className, ...props }: ImageProps) {
 
   return (
     <Image
-      fetchpriority="high"
       src={src as any}
       {...(rest as any)}
       width={width as number}
       height={height as number}
+      fetchpriority="high"
       sizes={sizes || "100vw"}
       className={cn(className)}
       alt={alt || ""}
