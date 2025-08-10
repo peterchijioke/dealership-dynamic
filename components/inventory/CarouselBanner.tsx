@@ -4,6 +4,7 @@ import React, { useState, useEffect, Fragment, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { useCurrentRefinements } from "react-instantsearch";
 import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
 
@@ -19,8 +20,21 @@ const SHOW_CAROUSEL_PATHS = ["/new-vehicles", "/used-vehicles"];
 
 const CarouselBanner = () => {
   const pathname = usePathname();
+  const { items: currentRefinements } = useCurrentRefinements();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Extract selected makes from current refinements
+  const selectedMakes = useMemo(() => {
+    const makeRefinement = currentRefinements.find(
+      (refinement) => refinement.attribute === "make"
+    );
+
+    if (makeRefinement?.refinements) {
+      return makeRefinement.refinements.map((ref: any) => ref.value);
+    }
+    return ["Nissan"];
+  }, [currentRefinements]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -31,7 +45,7 @@ const CarouselBanner = () => {
           channels: ["srp_banner"],
           filters: {
             condition: [pathname.includes("new-vehicles") ? "new" : "used"],
-            make: ["Nissan"],
+            make: selectedMakes,
           },
         };
         const data = await getSpecialBanner(payload);
@@ -48,7 +62,7 @@ const CarouselBanner = () => {
     return () => {
       isCancelled = true;
     };
-  }, [pathname]);
+  }, [pathname, selectedMakes]);
 
   const specialsData: Special[] = useMemo(() => {
     return specials;
