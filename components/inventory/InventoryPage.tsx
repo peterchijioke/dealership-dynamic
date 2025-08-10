@@ -19,8 +19,6 @@ const instance = createInstantSearchNextInstance();
 export default function InventoryPage({ vehicleType }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // TODO: replace with Algolia hits
-
   return (
     <InstantSearchNext
       instance={instance}
