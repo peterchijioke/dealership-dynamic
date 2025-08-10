@@ -7,8 +7,6 @@ import classNames from "classnames";
 import styles from "./VehicleGrid.module.css";
 import VehicleCardSkeleton from "./VehicleCardSkeleton";
 
-const sessionStorageCache = createInfiniteHitsSessionStorageCache();
-
 export default function VehicleGrid() {
   const { status } = useInstantSearch();
   return (
@@ -36,7 +34,6 @@ export default function VehicleGrid() {
             isLcpCandidate={props.hit?.__position === 1}
           />
         )}
-        cache={sessionStorageCache}
         showPrevious={false}
         classNames={{
           root: "w-full",

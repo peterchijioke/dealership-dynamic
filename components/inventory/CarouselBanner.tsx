@@ -26,13 +26,21 @@ const CarouselBanner = () => {
 
   // Extract selected makes from current refinements
   const selectedMakes = useMemo(() => {
+    console.log("====================================");
+    console.log("Refinements changed:", currentRefinements);
+    console.log("====================================");
+
     const makeRefinement = currentRefinements.find(
       (refinement) => refinement.attribute === "make"
     );
 
     if (makeRefinement?.refinements) {
-      return makeRefinement.refinements.map((ref: any) => ref.value);
+      const makes = makeRefinement.refinements.map((ref: any) => ref.value);
+      console.log("Selected makes:", makes);
+      return makes;
     }
+
+    console.log("No make refinements found, using default:", ["Nissan"]);
     return ["Nissan"];
   }, [currentRefinements]);
 
@@ -118,18 +126,6 @@ const CarouselBanner = () => {
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  // Check if current path should show the carousel
-  const shouldShowCarousel = SHOW_CAROUSEL_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(path + "/")
-  );
-
-  if (!shouldShowCarousel) {
-    return null;
-  }
-
-  // Debug logs removed to keep console clean
-
-  // Show loading state
   if (isLoading) {
     return (
       <Fragment>
