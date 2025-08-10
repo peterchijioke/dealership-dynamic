@@ -26,7 +26,7 @@ export const SearchInventory = memo(function SearchInventory() {
       <div className="w-full flex-col flex">
         <div
           ref={searchContainerRef}
-          className="flex flex-col md:flex-row gap-5 md:gap-2 w-full items-stretch md:items-center px-2 sm:px-3 lg:px-4 min-h-10 relative z-[80]"
+          className="flex flex-col md:flex-row gap-5 md:gap-2 w-full items-stretch md:items-center px-2 sm:px-3 lg:px-4 min-h-10 relative"
           style={{ transform: "translate3d(0,0,0)" }}
         >
           <div className=" flex flex-row items-center flex-1 gap-5">
