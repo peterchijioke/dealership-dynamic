@@ -19,9 +19,7 @@ const formatMileage = (mileage?: number): string => {
 
 export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
   const data: Vehicle = hit;
-  const router = useRouter();
 
-  const vdpUrl = "";
   const tag: any =
     Array.isArray(data?.tag) && data.tag.length > 0 ? data.tag[0] : null;
 
