@@ -293,14 +293,7 @@ export default function FacetSection({
                 className="form-checkbox h-4 w-4 rounded border-neutral-400 accent-black transition"
                 checked={item.isRefined}
                 onChange={() => {
-                  // Navigate to semantic routes for primary conditions
-
-                  if (attribute !== "condition" || !item._values) {
-                    refine(item.value);
-                  } else {
-                    // Toggle all case variants together
-                    for (const v of item._values) refine(v);
-                  }
+                  refine(item.value);
                 }}
               />
               <span>{item.label}</span>
