@@ -28,6 +28,43 @@ export default function InventoryPage() {
   return (
     <InstantSearchNext
       key={`is-${pathname}`}
+      future={{
+        preserveSharedStateOnUnmount: true,
+      }}
+      routing={{
+        stateMapping: {
+          stateToRoute: (state) => {
+            const { refinementList = {}, query, page } = state as any;
+            return {
+              query,
+              page,
+              refinementList: Object.entries(
+                refinementList as Record<string, any>
+              ).map(([key, value]) => ({
+                key,
+                value,
+              })),
+            };
+          },
+          routeToState: (route) => {
+            const { query, page, refinementList } = route as any;
+            const refinementArray = Array.isArray(refinementList)
+              ? refinementList
+              : [];
+            return {
+              query,
+              page,
+              refinementList: refinementArray.reduce(
+                (acc: Record<string, any>, { key, value }) => {
+                  acc[key] = value;
+                  return acc;
+                },
+                {}
+              ),
+            };
+          },
+        },
+      }}
       instance={searchInstance}
       ignoreMultipleHooksWarning
       insights={true}
