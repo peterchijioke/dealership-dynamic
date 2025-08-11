@@ -22,17 +22,19 @@ function VehicleGridCardMedia(props: Props) {
 
   return (
     <div className="relative aspect-[3/2] overflow-hidden">
-      {photo && encryptedUrl && (
+      {photo && (
         <Image
           alt={alt}
           width={400}
           height={300}
           // Only prioritize the LCP/hero image when explicitly requested
           priority={!!shouldPreloadImage}
-          fetchPriority={"high"}
+          fetchPriority={shouldPreloadImage ? "high" : "auto"}
           loading={shouldPreloadImage ? "eager" : "lazy"}
-          src={encryptedUrl || photo}
-          quality={70}
+          // Render immediately with fallback while encrypted URL resolves
+          src={encryptedUrl ?? photo}
+          // Slightly lower quality for non-LCP images to save bytes
+          quality={shouldPreloadImage ? 75 : 60}
           // Match grid breakpoints for more accurate responsive selection
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
           // Use blur placeholder only for the prioritized image to save bytes
