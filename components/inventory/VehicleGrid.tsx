@@ -6,7 +6,7 @@ import { createInfiniteHitsSessionStorageCache } from "instantsearch.js/es/lib/i
 import classNames from "classnames";
 import styles from "./VehicleGrid.module.css";
 import VehicleCardSkeleton from "./VehicleCardSkeleton";
-
+const cache = createInfiniteHitsSessionStorageCache({});
 export default function VehicleGrid() {
   const { status } = useInstantSearch();
   return (
@@ -27,6 +27,7 @@ export default function VehicleGrid() {
         </div>
       )}
       <InfiniteHits
+        cache={cache}
         hitComponent={(props) => (
           // Mark the very first hit on the first page as high priority to improve LCP
           <VehicleCard

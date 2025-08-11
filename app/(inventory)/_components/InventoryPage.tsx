@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo, useEffect } from "react";
 import VehicleGrid from "../../../components/inventory/VehicleGrid";
 import {
   createInstantSearchNextInstance,
@@ -11,28 +10,31 @@ import DynamicRefinements from "../../../components/inventory/DynamicRefinements
 import { SearchInventory } from "../../../components/inventory/search-inventory";
 import CarouselBanner from "../../../components/inventory/CarouselBanner";
 import { Configure } from "react-instantsearch";
-
-// Create instance outside component to avoid recreation on every render
-const searchInstance = createInstantSearchNextInstance();
+import { usePathname } from "next/navigation";
 
 export default function InventoryPage() {
+  const pathname = usePathname();
+  if (!srpIndex) {
+    return (
+      <div className="pt-24 px-4 text-sm text-red-600">
+        Missing NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON environment variable.
+      </div>
+    );
+  }
+
+  const indexName = srpIndex as string;
+  const searchInstance = createInstantSearchNextInstance();
+
   return (
     <InstantSearchNext
+      key={`is-${pathname}`}
       instance={searchInstance}
       ignoreMultipleHooksWarning
       insights={true}
-      indexName={srpIndex}
+      indexName={indexName}
       searchClient={searchClient}
-      initialUiState={{
-        [srpIndex as string]: {
-          refinementList: {
-            condition: ["used"],
-          },
-        },
-      }}
     >
       <Configure facets={["*"]} facetingAfterDistinct hitsPerPage={20} />
-
       <div className="h-screen flex flex-col relative pt-24 ">
         <div className="flex-1 relative flex flex-col lg:flex-row overflow-hidden">
           <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0">

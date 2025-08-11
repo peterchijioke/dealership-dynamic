@@ -36,7 +36,7 @@ const NavigationMenuComponent = ({
                       "bg-transparent rounded-none  cursor-pointer hover:bg-transparent font-semibold px-4 py-3 capitalize"
                     )}
                   >
-                    <Link prefetch={true} href={item.link}>
+                    <Link href={`/inventory/${item.link}`}>
                       {item.label.toLowerCase()}
                     </Link>
                   </NavigationMenuTrigger>

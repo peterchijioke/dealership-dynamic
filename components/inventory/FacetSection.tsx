@@ -134,29 +134,13 @@ export default function FacetSection({
 }: FacetSectionProps) {
   const [searchInput, setSearchInput] = useState("");
   const isSearchable = !NON_SEARCHABLE_ATTRIBUTES.has(attribute);
-  
-  const conditionTransformItems = useCallback((items: any[]) => {
-    // Normalize condition values and remove duplicates
-    const seen = new Set();
-    return items.filter(item => {
-      const normalizedLabel = item.label.toUpperCase();
-      if (seen.has(normalizedLabel)) {
-        return false;
-      }
-      seen.add(normalizedLabel);
-      // Update the label to be consistent
-      item.label = normalizedLabel === "NEW" ? "New" : normalizedLabel === "USED" ? "Used" : item.label;
-      return true;
-    });
-  }, []);
-  
-  const refinementList = useRefinementList({ 
+
+  const refinementList = useRefinementList({
     attribute,
-    sortBy: ['name:asc'],
+    sortBy: ["name:asc"],
     limit: 1000,
-    transformItems: attribute === "condition" ? conditionTransformItems : undefined,
   });
-  
+
   const toggle = useToggleRefinement({ attribute });
 
   const { items, refine, searchForItems } = refinementList;
@@ -216,6 +200,52 @@ export default function FacetSection({
 
   const displayLabel = label ?? attribute;
 
+  // For the `condition` facet, normalize case so duplicate values (e.g., New/new) merge.
+  const displayItems = (() => {
+    if (attribute !== "condition") return filteredItems;
+
+    type Group = { values: string[]; count: number; isRefined: boolean };
+    const groups = new Map<string, Group>();
+
+    for (const it of filteredItems) {
+      const key = it.label.toLowerCase().trim();
+      const g = groups.get(key) ?? { values: [], count: 0, isRefined: false };
+      g.values.push(it.value);
+      g.count += it.count;
+      g.isRefined = g.isRefined || it.isRefined;
+      groups.set(key, g);
+    }
+
+    const order = ["new", "used", "certified"] as const;
+    const toTitle = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+    const arr = Array.from(groups.entries()).map(([key, g]) => ({
+      // Use the normalized key as the stable id
+      key,
+      // Render label nicely cased
+      label: toTitle(key),
+      // Combined count
+      count: g.count,
+      // Combined refined state
+      isRefined: g.isRefined,
+      // All underlying values we must toggle together
+      _values: g.values,
+      // Keep a representative value for compatibility where needed
+      value: key,
+    }));
+
+    arr.sort((a, b) => {
+      const ia = order.indexOf(a.key as (typeof order)[number]);
+      const ib = order.indexOf(b.key as (typeof order)[number]);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.label.localeCompare(b.label);
+    });
+
+    return arr;
+  })();
+
   return (
     <details
       className="border-b border-neutral-200 py-3"
@@ -252,9 +282,9 @@ export default function FacetSection({
         )}
 
         {/* Render filtered items */}
-        {filteredItems.slice(0, 10).map((item) => (
+        {displayItems.slice(0, 10).map((item: any) => (
           <label
-            key={item.value}
+            key={item.key ?? item.value}
             className="flex cursor-pointer items-center justify-between rounded-md px-2 py-1 text-sm font-medium transition hover:bg-neutral-100"
           >
             <div className="flex items-center gap-2">
@@ -262,7 +292,14 @@ export default function FacetSection({
                 type="checkbox"
                 className="form-checkbox h-4 w-4 rounded border-neutral-400 accent-black transition"
                 checked={item.isRefined}
-                onChange={() => refine(item.value)}
+                onChange={() => {
+                  if (attribute !== "condition" || !item._values) {
+                    refine(item.value);
+                  } else {
+                    // Toggle all case variants together
+                    for (const v of item._values) refine(v);
+                  }
+                }}
               />
               <span>{item.label}</span>
             </div>
