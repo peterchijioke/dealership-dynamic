@@ -15,15 +15,8 @@ const searchInstance = createInstantSearchNextInstance();
 
 export default function InventoryPage() {
   const pathname = usePathname();
-  if (!srpIndex) {
-    return (
-      <div className="pt-24 px-4 text-sm text-red-600">
-        Missing NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON environment variable.
-      </div>
-    );
-  }
 
-  const indexName = srpIndex as string;
+  const indexName = srpIndex!;
 
   return (
     <InstantSearchNext
