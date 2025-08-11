@@ -68,7 +68,7 @@ export default function InventoryPage() {
         facets={["*"]}
         facetingAfterDistinct
         hitsPerPage={20}
-        maxValuesPerFacet={1000} // match the highest widget setting to avoid extra request
+        maxValuesPerFacet={1000}
       />
       <div className="h-screen flex flex-col relative pt-24 ">
         <div className="flex-1 relative flex flex-col lg:flex-row overflow-hidden">
