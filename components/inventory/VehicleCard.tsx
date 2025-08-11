@@ -20,13 +20,6 @@ const formatMileage = (mileage?: number): string => {
 export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
   const data: Vehicle = hit;
   const router = useRouter();
-  const pathName = usePathname();
-  const isUsed = useMemo(
-    () =>
-      pathName.includes("used-vehicles") ||
-      data?.condition?.toLowerCase() === "used",
-    [pathName, data?.condition]
-  );
 
   const vdpUrl = "";
   const tag: any =
@@ -89,7 +82,7 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
       <div className="bg-white rounded-2xl h-full overflow-hidden border border-gray-100 flex flex-col max-w-md transition-colors duration-200">
         <button
           aria-label="vdp"
-          onClick={() => router.push(vdpUrl)}
+          // onClick={() => router.push(vdpUrl)}
           className="relative w-full overflow-hidden cursor-pointer"
         >
           <VehicleGridCardMedia
@@ -257,33 +250,36 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
           )}
 
           {/* Carfax + mileage */}
-          {isUsed && data?.carfax_url && data?.carfax_icon_url && (
-            <div className="flex items-center justify-between mt-2 mb-4">
-              <div className="relative w-20 h-10">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(data!.carfax_url!, "_blank");
-                  }}
-                  className="w-full h-full"
-                >
-                  <Image
-                    src={data.carfax_icon_url!}
-                    alt="Certified"
-                    width={100}
-                    height={50}
-                    className="object-contain"
-                  />
-                </button>
+          {data?.condition?.toLowerCase() === "used" &&
+            data?.condition?.toLowerCase() === "certified" &&
+            data?.carfax_url &&
+            data?.carfax_icon_url && (
+              <div className="flex items-center justify-between mt-2 mb-4">
+                <div className="relative w-20 h-10">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(data!.carfax_url!, "_blank");
+                    }}
+                    className="w-full h-full"
+                  >
+                    <Image
+                      src={data.carfax_icon_url!}
+                      alt="Certified"
+                      width={100}
+                      height={50}
+                      className="object-contain"
+                    />
+                  </button>
+                </div>
+                <div className="text-xs font-bold">
+                  <span className="font-semibold text-[#696969]">
+                    {formatMileage(data?.mileage)}
+                  </span>
+                </div>
               </div>
-              <div className="text-xs font-bold">
-                <span className="font-semibold text-[#696969]">
-                  {formatMileage(data?.mileage)}
-                </span>
-              </div>
-            </div>
-          )}
+            )}
 
           {/* CTAs */}
           <div className="flex-col flex w-full mt-auto">
