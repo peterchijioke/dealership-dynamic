@@ -111,10 +111,17 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
               <span
                 className={classNames(
                   "uppercase font-bold",
-                  isUsed ? "text-[#0851c4]" : "text-green-700"
+                  data?.condition?.toLowerCase() === "used" ||
+                    data?.condition?.toLowerCase() === "certified"
+                    ? "text-[#0851c4]"
+                    : "text-green-700"
                 )}
               >
-                {isUsed ? "pre-owned" : (data?.condition ?? "").toLowerCase()}
+                {data?.condition?.toLowerCase() === "used"
+                  ? "pre-owned"
+                  : data?.condition?.toLowerCase() === "certified"
+                  ? "certified"
+                  : (data?.condition ?? "").toLowerCase()}
               </span>
               <span className="text-black">|</span>
               <span
