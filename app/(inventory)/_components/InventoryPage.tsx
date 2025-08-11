@@ -71,7 +71,12 @@ export default function InventoryPage() {
       indexName={indexName}
       searchClient={searchClient}
     >
-      <Configure facets={["*"]} facetingAfterDistinct hitsPerPage={20} />
+      <Configure
+        facets={["*"]}
+        facetingAfterDistinct
+        hitsPerPage={20}
+        maxValuesPerFacet={1000} // match the highest widget setting to avoid extra request
+      />
       <div className="h-screen flex flex-col relative pt-24 ">
         <div className="flex-1 relative flex flex-col lg:flex-row overflow-hidden">
           <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0">
