@@ -11,6 +11,7 @@ import { SearchInventory } from "../../../components/inventory/search-inventory"
 import CarouselBanner from "../../../components/inventory/CarouselBanner";
 import { Configure } from "react-instantsearch";
 import { usePathname } from "next/navigation";
+const searchInstance = createInstantSearchNextInstance();
 
 export default function InventoryPage() {
   const pathname = usePathname();
@@ -23,7 +24,6 @@ export default function InventoryPage() {
   }
 
   const indexName = srpIndex as string;
-  const searchInstance = createInstantSearchNextInstance();
 
   return (
     <InstantSearchNext
