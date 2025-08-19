@@ -12,7 +12,7 @@ const validPaths = [
 ];
 
 interface PageProps {
-    params: Promise<{ slug?: string[] }>;
+    params: { slug: string[] };
 }
 
 export default async function CatchAllPage({ params }: PageProps) {
