@@ -22,7 +22,7 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
   );
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <div className="bg-white border-b border-gray-200">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left section with mobile menu and logo */}
@@ -117,7 +117,7 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 };
 

@@ -119,12 +119,12 @@ const NavigationMenuComponent = ({
                 </>
               ) : item.children && item.children.length > 0 ? (
                 <>
-                  <NavigationMenuTrigger className="bg-transparent rounded-none cursor-pointer hover:bg-transparent font-semibold px-4 py-3 capitalize">
+                    <NavigationMenuTrigger className="bg-transparent rounded-none cursor-pointer hover:bg-transparent font-semibold px-4 py-6 uppercase">
                     <Link prefetch={true} href={item.link}>
                       {item.label.toLowerCase()}
                     </Link>
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className=" ">
+                  <NavigationMenuContent className="uppercase">
                     <ul className="w-[300px] p-4 space-y-2">
                       {item.children.map((child: any) => (
                         <li key={child.label}>

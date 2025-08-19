@@ -14,11 +14,12 @@ export default async function PageWrapper({
   const data = navItems?.data;
   return (
     <>
-      <div className={sticky ? "fixed top-0 z-50" : ""}>
+      <div className={sticky ? "fixed top-0 z-50 w-full" : ""}>
         <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} />
       </div>
+      {/* <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} /> */}
 
-      <main className=" w-full">{children}</main>
+      <div className="w-full">{children}</div>
     </>
   );
 }
