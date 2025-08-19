@@ -11,7 +11,11 @@ const validPaths = [
     ["used-vehicles", "certified"],
 ];
 
-export default async function CatchAllPage({ params }: { params: { slug?: string[] } }) {
+interface PageProps {
+    params: Promise<{ slug: string[] | undefined }>;
+}
+
+export default async function CatchAllPage({ params }: PageProps) {
     const { slug } = await params;
     if (!slug) return notFound();
 
