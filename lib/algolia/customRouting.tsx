@@ -80,6 +80,6 @@ export const customStateMapping = {
 };
 
 export const nextRouter = createInstantSearchRouterNext({
-  serverUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+  serverUrl: process.env.NEXT_PUBLIC_BASE_URL,
   singletonRouter
 });
