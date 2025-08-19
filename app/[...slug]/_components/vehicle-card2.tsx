@@ -33,9 +33,9 @@ export default function VehicleCard({ hit }: VehicleCardProps) {
                     src={encryptedUrl ?? "/placeholder.jpg"}
                     alt={hit.year + " " + hit.make + " " + hit.model}
                     fill
-                    // priority={true}
+                    priority={true}
                     fetchPriority={"high"}
-                    loading="lazy"
+                    loading="eager"
                     quality={75}
                     placeholder="blur"
                     className="object-cover transition-transform duration-300 hover:scale-105"
