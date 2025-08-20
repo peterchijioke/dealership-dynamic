@@ -7,7 +7,7 @@ import { searchClient, srpIndex } from "@/configs/config";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { Configure } from "react-instantsearch";
 import { Hits, SearchBox, Pagination, } from "react-instantsearch";
-// import VehicleCard from './vehicle-card2';
+import VehicleCard from './vehicle-card2';
 import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
 
 // lazy load only when visible
@@ -16,7 +16,7 @@ const CustomRefinementList = dynamic(() => import("@/components/algolia/custom-r
 const CustomRangeInput = dynamic(() => import("@/components/algolia/custom-range-input"), { ssr: false });
 const CustomToggleRefinement = dynamic(() => import("@/components/algolia/custom-toggle-refinement"), { ssr: false });
 const RefinementAccordionItem = dynamic(() => import("@/components/algolia/refinement-accordion-item"), { ssr: false });
-const VehicleCard = dynamic(() => import("./vehicle-card2"));
+// const VehicleCard = dynamic(() => import("./vehicle-card2"));
 
 export default function SearchClient() {
     
