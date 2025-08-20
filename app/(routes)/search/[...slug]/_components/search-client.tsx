@@ -5,44 +5,16 @@ import { searchClient, srpIndex } from "@/configs/config";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { Configure, Hits } from "react-instantsearch";
 import { nextRouter, customStateMapping } from "@/lib/algolia/customRouting";
+import SidebarFilters from "./sidebar-filters";
 import type { Vehicle } from "@/types/vehicle";
 import VehicleCard from "./vehicle-card2";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 
-// Lazy load filters & cards
-const SidebarFilters = dynamic(() => import("./sidebar-filters"), {
-    ssr: false,
-    loading: () => null,
-});
-// const VehicleCard = dynamic(() => import("./vehicle-card2"), {
+// const SidebarFilters = dynamic(() => import("./sidebar-filters"), {
 //     ssr: false,
-//     loading: () => (
-//         <div className="h-40 bg-gray-200 animate-pulse rounded-xl" />
-//     ),
+//     loading: () => null,
 // });
-
-// function LazySidebar() {
-//     const [show, setShow] = React.useState(false);
-//     const ref = React.useRef<HTMLDivElement>(null);
-
-//     React.useEffect(() => {
-//         if (!ref.current) return;
-//         const observer = new IntersectionObserver(
-//             (entries) => {
-//                 if (entries[0].isIntersecting) {
-//                     setShow(true);
-//                     observer.disconnect();
-//                 }
-//             },
-//             { rootMargin: "200px" } // load earlier
-//         );
-//         observer.observe(ref.current);
-//         return () => observer.disconnect();
-//     }, []);
-
-//     return <div ref={ref}>{show ? <SidebarFilters /> : null}</div>;
-// }
 
 export default function SearchClient() {
     return (
@@ -50,6 +22,11 @@ export default function SearchClient() {
             searchClient={searchClient}
             indexName={srpIndex}
             ignoreMultipleHooksWarning
+            future={{
+                preserveSharedStateOnUnmount: true,
+                persistHierarchicalRootCount: true,
+            }}
+            // routing={routing as unknown as any}
             routing={{
                 router: nextRouter as unknown as any,
                 stateMapping: customStateMapping,
@@ -58,13 +35,11 @@ export default function SearchClient() {
             <Configure hitsPerPage={20} maxValuesPerFacet={100} facetingAfterDistinct />
 
             <div className="flex-1 relative flex flex-col lg:flex-row">
-                {/* Sidebar only visible on desktop */}
                 <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0 pt-4 sticky top-[120px] h-[calc(100vh-120px)] overflow-y-auto">
                     <h2 className="font-bold text-center uppercase">Search Filters</h2>
                     <SidebarFilters />
                 </aside>
 
-                {/* Hits list */}
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
                     <Hits
                         hitComponent={VehicleHit}

@@ -112,6 +112,19 @@ export interface Vehicle {
   __position: number;
 }
 
+export interface VehicleHit {
+  hits: Vehicle[];
+  nbHits: number;
+  page: number;
+  nbPages?: number;
+  facets?: Record<string, Record<string, number>>;
+}
+
+export interface VehicleFacet {
+  value: string;
+  count: number;
+}
+
 interface HighlightResult {
   value: string;
   matchLevel: string;

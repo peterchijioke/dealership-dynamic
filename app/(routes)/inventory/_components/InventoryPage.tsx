@@ -1,14 +1,14 @@
 "use client";
 
-import VehicleGrid from "../../../components/inventory/VehicleGrid";
+import VehicleGrid from "../../../../components/inventory/VehicleGrid";
 import {
   createInstantSearchNextInstance,
   InstantSearchNext,
 } from "react-instantsearch-nextjs";
 import { searchClient, srpIndex } from "@/configs/config";
-import DynamicRefinements from "../../../components/inventory/DynamicRefinements";
-import { SearchInventory } from "../../../components/inventory/search-inventory";
-import CarouselBanner from "../../../components/inventory/CarouselBanner";
+import DynamicRefinements from "../../../../components/inventory/DynamicRefinements";
+import { SearchInventory } from "../../../../components/inventory/search-inventory";
+import CarouselBanner from "../../../../components/inventory/CarouselBanner";
 import { Configure } from "react-instantsearch";
 import { usePathname } from "next/navigation";
 import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';

@@ -20,12 +20,16 @@ export const customStateMapping = {
 
     const condition = indexUiState.refinementList?.condition?.[0];
     const make = indexUiState.refinementList?.make?.[0];
-    const models = indexUiState.refinementList?.model || [];
-    const years = indexUiState.refinementList?.year || [];
+    const models = Array.isArray(indexUiState.refinementList?.model)
+      ? indexUiState.refinementList.model
+      : [];
 
-    // console.log("condition:", indexUiState.refinementList?.condition)
+    const years = Array.isArray(indexUiState.refinementList?.year)
+      ? indexUiState.refinementList.year
+      : [];
 
-    // read toggle (hooks store it under `toggle`)
+    console.log("stateToRoute:", indexUiState.refinementList?.condition)
+
     const isSpecial =
       indexUiState.toggle?.is_special === true ||
       indexUiState.refinementList?.is_special?.includes("true");
@@ -60,8 +64,8 @@ export const customStateMapping = {
     let condition: string | undefined = "New";
     if (segments[0] === "used-vehicles") condition = "Used";
 
-    const make = segments[1];
-    const modelSegment = segments[2];
+    const make = segments?.[1] ?? "";
+    const modelSegment = segments?.[2] ?? "";
 
     return {
       [srpIndex]: {
@@ -83,5 +87,6 @@ export const customStateMapping = {
 
 export const nextRouter = createInstantSearchRouterNext({
   serverUrl: process.env.NEXT_PUBLIC_BASE_URL,
-  singletonRouter
+  singletonRouter,
+  routerOptions: {}
 });

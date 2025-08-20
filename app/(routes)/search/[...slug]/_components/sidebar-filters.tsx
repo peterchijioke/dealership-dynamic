@@ -1,11 +1,16 @@
 import React from 'react'
 import { Accordion } from '@/components/ui/accordion'
-import dynamic from "next/dynamic";
+import CustomRefinementList from "@/components/algolia/custom-refinement-list"
+import CustomRangeInput from "@/components/algolia/custom-range-input"
+import CustomToggleRefinement from "@/components/algolia/custom-toggle-refinement"
+import RefinementAccordionItem from "@/components/algolia/refinement-accordion-item"
 
-const CustomRefinementList = dynamic(() => import("@/components/algolia/custom-refinement-list"), { ssr: false });
-const CustomRangeInput = dynamic(() => import("@/components/algolia/custom-range-input"), { ssr: false });
-const CustomToggleRefinement = dynamic(() => import("@/components/algolia/custom-toggle-refinement"), { ssr: false });
-const RefinementAccordionItem = dynamic(() => import("@/components/algolia/refinement-accordion-item"), { ssr: false });
+// import dynamic from "next/dynamic";
+
+// const CustomRefinementList = dynamic(() => import("@/components/algolia/custom-refinement-list"), { ssr: false });
+// const CustomRangeInput = dynamic(() => import("@/components/algolia/custom-range-input"), { ssr: false });
+// const CustomToggleRefinement = dynamic(() => import("@/components/algolia/custom-toggle-refinement"), { ssr: false });
+// const RefinementAccordionItem = dynamic(() => import("@/components/algolia/refinement-accordion-item"), { ssr: false });
 
 export default function SidebarFilters() {
     return (
