@@ -5,21 +5,22 @@ import { searchClient, srpIndex } from "@/configs/config";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { Configure, Hits } from "react-instantsearch";
 import { nextRouter, customStateMapping } from "@/lib/algolia/customRouting";
+import type { Vehicle } from "@/types/vehicle";
+import VehicleCard from "./vehicle-card2";
 
 import dynamic from "next/dynamic";
-import type { Vehicle } from "@/types/vehicle";
 
 // Lazy load filters & cards
 const SidebarFilters = dynamic(() => import("./sidebar-filters"), {
     ssr: false,
     loading: () => null,
 });
-const VehicleCard = dynamic(() => import("./vehicle-card2"), {
-    ssr: false,
-    loading: () => (
-        <div className="h-40 bg-gray-200 animate-pulse rounded-xl" />
-    ),
-});
+// const VehicleCard = dynamic(() => import("./vehicle-card2"), {
+//     ssr: false,
+//     loading: () => (
+//         <div className="h-40 bg-gray-200 animate-pulse rounded-xl" />
+//     ),
+// });
 
 // function LazySidebar() {
 //     const [show, setShow] = React.useState(false);
