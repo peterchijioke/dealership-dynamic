@@ -15,11 +15,17 @@ export async function GET(req: NextRequest) {
       ? parseInt(searchParams.get("page")!, 10)
       : 0;
 
-    // Optional: facets and facetFilters as comma-separated strings
+    // Optional: facets, attributes and facetFilters as comma-separated strings
     const facetsParam = searchParams.get("facets");
+    const attributesParam = searchParams.get("attributesToRetrieve");
     const facetFiltersParam = searchParams.get("facetFilters");
 
-    const facets = facetsParam ? facetsParam.split(",") : undefined;
+    const facets = facetsParam ? JSON.parse(facetsParam) : undefined;
+    const attributesToRetrieve = attributesParam
+      ? JSON.parse(attributesParam)
+      : undefined;
+
+      console.log("Search API called with:", facets, attributesToRetrieve);
 
     // facetFilters: comma-separated inner arrays separated by ";"
     // Example: "category:clothing;brand:Nike,category:shoes"
@@ -36,6 +42,7 @@ export async function GET(req: NextRequest) {
       hitsPerPage,
       page,
       facets,
+      attributesToRetrieve,
       facetFilters,
     });
 

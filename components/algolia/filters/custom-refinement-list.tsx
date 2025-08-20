@@ -23,7 +23,6 @@ export default function CustomRefinementList({
     const { filters, setFilter } = useUrlFilters();
     const selected = filters[attribute]?.split(",") ?? [];
     // const selected = selectedFacets[attribute] || [];
-    // console.log("Facets for", attribute, ":", values, "Selected:", selected);
 
     function toggle(value: string) {
         // Update state
@@ -55,18 +54,20 @@ export default function CustomRefinementList({
                     const isChecked = selected.includes(value);
 
                     return (
-                        <li key={value} className="flex items-center justify-between">
-                            <label className="flex items-center gap-2">
-                                <div className="flex">
+                        <li key={value}>
+                            <label className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
                                         checked={isChecked}
                                         onChange={() => toggle(value)}
-                                        className="h-4 w-4 mr-1"
+                                        className="h-4 w-4"
                                     />
                                     <span className="text-sm">{value}</span>
                                 </div>
-                                <span className="text-gray-500">({count})</span>
+                                <span className="text-xs text-gray-500">
+                                    {count}
+                                </span>
                             </label>
                         </li>
                     )

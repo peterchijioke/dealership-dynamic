@@ -52,3 +52,41 @@ export const algoliaSortOptions = [
     value: "prod_73d6c4fc8ffb471e88c45e8eeddc1c63_srp_mpg_highway_desc",
   },
 ];
+
+export const FACETS = [
+  "condition",
+  "year",
+  "make",
+  "model",
+  "trim",
+  "prices",
+  "body",
+  "drive_train",
+  "fuel_type",
+  "ext_color",
+  "int_color",
+  "transmission",
+  "mileage",
+  "is_special",
+];
+
+export const ATTRUBUTES_TO_RETRIEVE = [
+  "objectID",
+  "condition",
+  "year",
+  "make",
+  "model",
+  "trim",
+  "prices",
+  "photo",
+  "video",
+  "stock_number",
+  "body",
+  "drive_train",
+  "ext_color",
+  "int_color",
+  "transmission",
+  "mileage",
+  "cta",
+  "is_special",
+];

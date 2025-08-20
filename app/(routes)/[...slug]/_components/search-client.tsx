@@ -6,6 +6,7 @@ import type { SearchResponse } from "algoliasearch";
 import type { VehicleHit } from "@/types/vehicle";
 import VehicleCard from "./vehicle-card";
 import SidebarFilters from "./sidebar-filters";
+import { ATTRUBUTES_TO_RETRIEVE, FACETS } from "@/configs/config";
 
 interface Props {
     initialResults: SearchResponse<VehicleHit[]>;
@@ -23,7 +24,7 @@ export default function SearchClient({ initialResults }: Props) {
     const [results, setResults] = useState<SearchResponse<VehicleHit[]>>(initialResults);
     const [selectedFacets, setSelectedFacets] = useState<Record<string, string[]>>({});
     const [page, setPage] = useState(0);
-    const hitsPerPage = 10;
+    const hitsPerPage = 12;
     const loadingRef = useRef(false);
 
     const updateFacet = (facet: string, value: string) => {
@@ -50,6 +51,12 @@ export default function SearchClient({ initialResults }: Props) {
             if (query) params.append("query", query);
             params.append("hitsPerPage", hitsPerPage.toString());
             params.append("page", currentPage.toString());
+            params.append("facets", JSON.stringify(FACETS));
+            params.append(
+                "attributesToRetrieve",
+                JSON.stringify(ATTRUBUTES_TO_RETRIEVE)
+            );
+
             if (facetFilters.length) {
                 params.append(
                     "facetFilters",
@@ -117,6 +124,7 @@ export default function SearchClient({ initialResults }: Props) {
                     <SidebarFilters
                         facets={results.facets}
                         currentRefinements={selectedFacets}
+                        onToggleFacet={updateFacet}
                     />
                     {/* {results.facets &&
                         Object.entries(results.facets).map(([facetName, counts]) => (

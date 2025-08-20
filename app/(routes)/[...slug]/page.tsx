@@ -1,6 +1,7 @@
 import { search } from "@/lib/algolia";
 import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
+import { ATTRUBUTES_TO_RETRIEVE, FACETS } from "@/configs/config";
 
 const validPaths = [
     ["new-vehicles"],
@@ -33,8 +34,8 @@ export default async function CatchAllPage({ params }: PageProps) {
     const initialResults = await search({
         query: searchQuery,
         hitsPerPage: 12,
-        facets: ["condition", "year", "make", "model", "trim", "prices", "body", "drive_train", "fuel_type", "ext_color", "int_color", "transmission", "mileage", "is_special"],
-        attributesToRetrieve: ["objectID", "condition", "year", "make", "model", "trim", "prices", "photo", "video", "stock_number", "body", "drive_train", "ext_color", "int_color", "transmission", "mileage", "cta", "is_special"],
+        facets: FACETS,
+        attributesToRetrieve: ATTRUBUTES_TO_RETRIEVE,
     });
 
     // console.log("Initial search results:", initialResults);

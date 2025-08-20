@@ -6,9 +6,8 @@ import CustomToggleRefinement from "@/components/algolia/filters/custom-toggle-r
 
 type Props = {
     facets: { [key: string]: { [key: string]: number; } } | undefined;  // { facetName: { value: count } }
-    //   facets: Record<string, Record<string, number>>; // { facetName: { value: count } }
     currentRefinements: Record<string, string[]>;   // { facetName: [values...] }
-    //   onToggle: (attribute: string, value: string) => void;
+    onToggleFacet: (attribute: string, value: string) => void;
 };
 
 export default function SidebarFilters({ facets, currentRefinements }: Props) {
