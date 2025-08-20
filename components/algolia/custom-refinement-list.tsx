@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default function CustomRefinementList({ attribute, searchable, className }: Props) {
-    const { items, refine, searchForItems } = useRefinementList({ attribute }, { skipSuspense: true });
+    const { items, refine, searchForItems } = useRefinementList({ attribute }/*, { skipSuspense: true }*/);
 
     return (
         <div className={cn("w-full", className)}>

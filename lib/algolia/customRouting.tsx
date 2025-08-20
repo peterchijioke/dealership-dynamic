@@ -1,6 +1,8 @@
 import { createInstantSearchRouterNext } from "react-instantsearch-router-nextjs";
 import singletonRouter from 'next/router';
 
+const srpIndex = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON as string;
+
 function slugify(str: string) {
   return str
     .toString()
@@ -14,19 +16,19 @@ function slugify(str: string) {
 export const customStateMapping = {
   stateToRoute(uiState: any) {
     const indexUiState =
-      uiState["prod_73d6c4fc8ffb471e88c45e8eeddc1c63_srp"] || {};
+      uiState[srpIndex] || {};
 
     const condition = indexUiState.refinementList?.condition?.[0];
     const make = indexUiState.refinementList?.make?.[0];
     const models = indexUiState.refinementList?.model || [];
     const years = indexUiState.refinementList?.year || [];
 
-    console.log("condition:", indexUiState.refinementList?.condition)
+    // console.log("condition:", indexUiState.refinementList?.condition)
 
-    // 🔁 read toggle (hooks store it under `toggle`)
+    // read toggle (hooks store it under `toggle`)
     const isSpecial =
       indexUiState.toggle?.is_special === true ||
-      indexUiState.refinementList?.is_special?.includes("true"); // fallback if it ever comes from RL
+      indexUiState.refinementList?.is_special?.includes("true");
 
     // build path
     let pathname = "/new-vehicles";
@@ -41,7 +43,7 @@ export const customStateMapping = {
     const query: Record<string, string> = {};
     if (years.length > 0) query.year = years.join(",");
     if (models.length > 1) query.model = models.slice(0, -1).join(",");
-    if (isSpecial) query.is_special = "true"; // <-- serialize toggle
+    if (isSpecial) query.is_special = "true";
 
     return query; // only query params (path handled by actual route)
   },
@@ -62,7 +64,7 @@ export const customStateMapping = {
     const modelSegment = segments[2];
 
     return {
-      "prod_73d6c4fc8ffb471e88c45e8eeddc1c63_srp": {
+      [srpIndex]: {
         refinementList: {
           ...(condition ? { condition: [condition] } : {}),
           ...(make ? { make: [make] } : {}),
@@ -70,7 +72,7 @@ export const customStateMapping = {
           ...(year ? { year: year.split(",") } : {}),
           ...(model ? { model: model.split(",") } : {}),
         },
-        // 🔁 restore toggle from URL
+
         toggle: {
           ...(is_special === "true" ? { is_special: true } : {}),
         },

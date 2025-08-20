@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@algolia/cache-in-memory':
+        specifier: ^4.25.2
+        version: 4.25.2
       '@radix-ui/react-label':
         specifier: ^2.1.7
         version: 2.1.7(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -108,6 +111,12 @@ packages:
   '@algolia/abtesting@1.1.0':
     resolution: {integrity: sha512-sEyWjw28a/9iluA37KLGu8vjxEIlb60uxznfTUmXImy7H5NvbpSO6yYgmgH5KiD7j+zTUUihiST0jEP12IoXow==}
     engines: {node: '>= 14.0.0'}
+
+  '@algolia/cache-common@4.25.2':
+    resolution: {integrity: sha512-E+aZwwwmhvZXsRA1+8DhH2JJIwugBzHivASTnoq7bmv0nmForLyH7rMG5cOTiDK36DDLnKq1rMGzxWZZ70KZag==}
+
+  '@algolia/cache-in-memory@4.25.2':
+    resolution: {integrity: sha512-KYcenhfPKgR+WJ6IEwKVEFMKKCWLZdnYuw08+3Pn1cxAXbJcTIKjoYgEXzEW6gJmDaau2l55qNrZo6MBbX7+sw==}
 
   '@algolia/client-abtesting@5.35.0':
     resolution: {integrity: sha512-uUdHxbfHdoppDVflCHMxRlj49/IllPwwQ2cQ8DLC4LXr3kY96AHBpW0dMyi6ygkn2MtFCc6BxXCzr668ZRhLBQ==}
@@ -2284,6 +2293,12 @@ snapshots:
       '@algolia/requester-browser-xhr': 5.35.0
       '@algolia/requester-fetch': 5.35.0
       '@algolia/requester-node-http': 5.35.0
+
+  '@algolia/cache-common@4.25.2': {}
+
+  '@algolia/cache-in-memory@4.25.2':
+    dependencies:
+      '@algolia/cache-common': 4.25.2
 
   '@algolia/client-abtesting@5.35.0':
     dependencies:

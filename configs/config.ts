@@ -1,7 +1,13 @@
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
+import { createInMemoryCache } from "@algolia/cache-in-memory";
+
 export const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
+  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!,
+  {
+    responsesCache: createInMemoryCache(),
+    requestsCache: createInMemoryCache(),
+  }
 );
 export const vdpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP
 export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON

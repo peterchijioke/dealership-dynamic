@@ -5,6 +5,7 @@ import React from 'react'
 import { Accordion } from '@/components/ui/accordion'
 import { searchClient, srpIndex } from "@/configs/config";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
+import { Configure } from "react-instantsearch";
 import { Hits, SearchBox, Pagination, } from "react-instantsearch";
 import VehicleCard from './vehicle-card2';
 import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
@@ -22,11 +23,16 @@ export default function SearchClient() {
         <InstantSearchNext
             searchClient={searchClient}
             indexName={srpIndex}
+            ignoreMultipleHooksWarning
             routing={{
                 router: nextRouter as unknown as any,
                 stateMapping: customStateMapping,
             }}
         >
+            <Configure
+                hitsPerPage={20}
+                maxValuesPerFacet={100}
+            />
             <div className="flex-1 relative flex flex-col lg:flex-row overflow-hiddenx">
                 <aside className="hidden sticky top-30 h-[calc(100vh-30px)] overflow-y-auto lg:block lg:w-[280px] lg:flex-shrink-0 pt-4">
                     <h2 className="font-bold text-center uppercase">Search Filters</h2>
@@ -95,6 +101,7 @@ export default function SearchClient() {
                             item: "flex", // ensures cards stretch uniformly
                         }}
                     />
+                    {/* <Pagination /> */}
                 </main>
             </div>
         </InstantSearchNext>

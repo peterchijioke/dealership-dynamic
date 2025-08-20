@@ -30,7 +30,7 @@ export default function VehicleCard({ hit }: VehicleCardProps) {
             {/* Vehicle Image */}
             <div className="relative w-full h-52">
                 <Image
-                    src={encryptedUrl ?? "/placeholder.jpg"}
+                    src={encryptedUrl ?? "https://placehold.co/600x400"}
                     alt={hit.year + " " + hit.make + " " + hit.model}
                     fill
                     // priority={true}
@@ -114,9 +114,9 @@ export default function VehicleCard({ hit }: VehicleCardProps) {
                     )}
 
                     {/* Final Price */}
-                    {hit.sale_price && <div className="flex justify-between font-bold text-red-600 text-lg mt-2">
+                    {hit.sale_price && <div className="flex justify-between font-bold text-lg mt-2">
                         <span>AFTER ALL REBATES</span>
-                        <span>{hit.sale_price.toLocaleString("en-US", {
+                        <span className="text-red-600">{hit.sale_price.toLocaleString("en-US", {
                             style: "currency",
                             currency: "USD",
                         })}</span>
