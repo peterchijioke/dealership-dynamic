@@ -21,27 +21,27 @@ const VehicleCard = dynamic(() => import("./vehicle-card2"), {
     ),
 });
 
-function LazySidebar() {
-    const [show, setShow] = React.useState(false);
-    const ref = React.useRef<HTMLDivElement>(null);
+// function LazySidebar() {
+//     const [show, setShow] = React.useState(false);
+//     const ref = React.useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
-        if (!ref.current) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    setShow(true);
-                    observer.disconnect();
-                }
-            },
-            { rootMargin: "200px" } // load earlier
-        );
-        observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, []);
+//     React.useEffect(() => {
+//         if (!ref.current) return;
+//         const observer = new IntersectionObserver(
+//             (entries) => {
+//                 if (entries[0].isIntersecting) {
+//                     setShow(true);
+//                     observer.disconnect();
+//                 }
+//             },
+//             { rootMargin: "200px" } // load earlier
+//         );
+//         observer.observe(ref.current);
+//         return () => observer.disconnect();
+//     }, []);
 
-    return <div ref={ref}>{show ? <SidebarFilters /> : null}</div>;
-}
+//     return <div ref={ref}>{show ? <SidebarFilters /> : null}</div>;
+// }
 
 export default function SearchClient() {
     return (
@@ -60,7 +60,7 @@ export default function SearchClient() {
                 {/* Sidebar only visible on desktop */}
                 <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0 pt-4 sticky top-[120px] h-[calc(100vh-120px)] overflow-y-auto">
                     <h2 className="font-bold text-center uppercase">Search Filters</h2>
-                    <LazySidebar />
+                    <SidebarFilters />
                 </aside>
 
                 {/* Hits list */}
