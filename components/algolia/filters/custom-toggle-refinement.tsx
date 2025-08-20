@@ -1,6 +1,8 @@
 "use client";
 
 import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -20,9 +22,18 @@ export default function CustomToggleRefinement({ attribute, label, labelPosition
 
     return (
         <div className={cn("flex items-center", className)}>
-            {labelPosition === "left" && <span>{label}</span>}
-            <input type="checkbox" checked={isOn} onChange={toggle} className="h-4 w-4" />
-            {labelPosition === "right" && <span>{label}</span>}
+            {labelPosition === "left" &&
+                <Label htmlFor={attribute}>{label}</Label>
+            }
+            <Switch
+                checked={isOn}
+                onCheckedChange={toggle}
+                id={attribute}
+                className="cursor-pointer"
+            />
+            {labelPosition === "right" &&
+                <Label htmlFor={attribute}>{label}</Label>
+            }
         </div>
     );
 }

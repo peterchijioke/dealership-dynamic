@@ -25,7 +25,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
         )}>
             {/* Banner */}
             {hit.is_special && (
-                <div className="bg-green-600 text-white text-sm font-semibold text-center py-1">
+                <div className="bg-green-700 text-white text-sm font-semibold text-center py-1">
                     Eligible for $5k Oregon Charge Ahead Rebate
                 </div>
             )}
@@ -49,13 +49,15 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
             </div>
 
             {/* Vehicle Content */}
-            <div className="p-4 flex flex-col flex-1">
+            <div className="px-4 flex flex-col flex-1">
                 {/* Header */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                    <span className="font-semibold text-green-600 uppercase">
-                        {hit.condition}
-                    </span>
-                    <span>#{hit.stock_number} | VIN</span>
+                    <div>
+                        <span className="font-semibold text-green-800 uppercase">
+                            {hit.condition}
+                        </span>
+                        <span> | #{hit.stock_number} | VIN</span>
+                    </div>
                     <div className="flex gap-2 items-center">
                         {/* Example color swatches */}
                         <Circle className="w-4 h-4 text-black" />
