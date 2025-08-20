@@ -11,6 +11,7 @@ import { SearchInventory } from "../../../components/inventory/search-inventory"
 import CarouselBanner from "../../../components/inventory/CarouselBanner";
 import { Configure } from "react-instantsearch";
 import { usePathname } from "next/navigation";
+import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
 
 export default function InventoryPage() {
   const pathname = usePathname();
@@ -222,6 +223,10 @@ export default function InventoryPage() {
         persistHierarchicalRootCount: true,
       }}
       // routing={routing}
+      routing={{
+        router: nextRouter as unknown as any,
+        stateMapping: customStateMapping,
+      }}
       instance={searchInstance}
       ignoreMultipleHooksWarning
       insights={true}

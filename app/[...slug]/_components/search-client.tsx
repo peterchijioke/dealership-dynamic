@@ -98,7 +98,7 @@ export default function SearchClient() {
                         hitComponent={VehicleHit}
                         classNames={{
                             list: "grid grid-cols-1 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-3 gap-3",
-                            item: "flex", // ensures cards stretch uniformly
+                            item: "flex",
                         }}
                     />
                     {/* <Pagination /> */}
