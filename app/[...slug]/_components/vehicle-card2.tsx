@@ -38,7 +38,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                     fill
                     // priority={true}
                     fetchPriority={hit.__position <= 3 ? "high" : "auto"}
-                    loading={hit.__position <= 3 ? "eager" : "lazy"}
+                    loading={"lazy"}
                     // loading="eager"
                     quality={50}
                     placeholder="blur"
