@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,9 @@ interface VehicleCardProps {
     hit: Vehicle;
 }
 
-export default function VehicleCard({ hit }: VehicleCardProps) {
+export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
+    const BLUR_PLACEHOLDER =
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
     const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
     return (
         <Card className={cn(
@@ -28,22 +31,20 @@ export default function VehicleCard({ hit }: VehicleCardProps) {
             )}
 
             {/* Vehicle Image */}
-            <div className="relative w-full h-52">
+            <div className="relative w-full aspect-[4/3]">
                 <Image
                     src={encryptedUrl ?? "https://placehold.co/600x400"}
                     alt={hit.year + " " + hit.make + " " + hit.model}
                     fill
                     // priority={true}
-                    fetchPriority={"high"}
-                    loading="lazy"
+                    fetchPriority={hit.__position <= 3 ? "high" : "auto"}
+                    loading={hit.__position <= 3 ? "eager" : "lazy"}
                     // loading="eager"
-                    quality={60}
+                    quality={50}
                     placeholder="blur"
-                    className="object-cover transition-transform duration-300 hover:scale-105"
+                    className="object-cover transition-transform duration-300 md:hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    blurDataURL={
-                        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                    }
+                    blurDataURL={BLUR_PLACEHOLDER}
                 />
             </div>
 
@@ -140,4 +141,4 @@ export default function VehicleCard({ hit }: VehicleCardProps) {
             </div>
         </Card>
     );
-}
+})
