@@ -7,8 +7,11 @@ export function useUrlFilters() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  // Read filters from URL
-  const filters = Object.fromEntries(searchParams.entries());
+  // Read filters from URL (split on commas if needed)
+  const filters: Record<string, string[]> = {};
+  searchParams.forEach((value, key) => {
+    filters[key] = value.split(",");
+  });
 
   // Update filters in URL
   function setFilter(key: string, value?: string | string[]) {
@@ -17,10 +20,14 @@ export function useUrlFilters() {
     if (!value || (Array.isArray(value) && value.length === 0)) {
       params.delete(key);
     } else {
-      params.set(key, Array.isArray(value) ? value.join(",") : value);
+      const val = Array.isArray(value) ? value.join(",") : value;
+      params.set(key, val);
     }
 
-    router.push(`${pathname}?${params.toString()}`);
+    // Prevent %2C encoding of commas
+    const queryString = params.toString().replace(/%2C/g, ",");
+
+    router.push(`${pathname}?${queryString}`);
   }
 
   return { filters, setFilter };

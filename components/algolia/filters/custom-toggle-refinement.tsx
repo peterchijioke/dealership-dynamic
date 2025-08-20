@@ -14,7 +14,10 @@ type Props = {
 
 export default function CustomToggleRefinement({ attribute, label, labelPosition = "right", className }: Props) {
     const { filters, setFilter } = useUrlFilters();
-    const isOn = filters[attribute] === "true";
+    const value = filters[attribute];
+    const isOn = Array.isArray(value)
+        ? value.includes("true")
+        : value === "true";
 
     function toggle() {
         setFilter(attribute, isOn ? undefined : "true");

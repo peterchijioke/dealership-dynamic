@@ -21,7 +21,7 @@ export default function CustomRefinementList({
     className,
 }: Props) {
     const { filters, setFilter } = useUrlFilters();
-    const selected = filters[attribute]?.split(",") ?? [];
+    const selected = filters[attribute] ?? [];
     // const selected = selectedFacets[attribute] || [];
 
     function toggle(value: string) {
