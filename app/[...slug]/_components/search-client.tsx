@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { Accordion } from '@/components/ui/accordion'
 import { searchClient, srpIndex } from "@/configs/config";
@@ -8,7 +8,7 @@ import { InstantSearchNext } from "react-instantsearch-nextjs";
 import { Configure } from "react-instantsearch";
 import { Hits, SearchBox, Pagination, } from "react-instantsearch";
 import VehicleCard from './vehicle-card2';
-import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
+// import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
 
 // lazy load only when visible
 import dynamic from "next/dynamic";
@@ -18,16 +18,37 @@ const CustomToggleRefinement = dynamic(() => import("@/components/algolia/custom
 const RefinementAccordionItem = dynamic(() => import("@/components/algolia/refinement-accordion-item"), { ssr: false });
 
 export default function SearchClient() {
+    const [routingConfig, setRoutingConfig] = useState<any>(null);
+
+    useEffect(() => {
+        // dynamically import routing logic only on the client
+        import("@/lib/algolia/customRouting").then((mod) => {
+            setRoutingConfig({
+                router: mod.nextRouter,
+                stateMapping: mod.customStateMapping,
+            });
+        });
+    }, []);
+
+    if (!routingConfig) {
+        // show fallback UI while routing loads
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <p className="text-gray-500">Loading search...</p>
+            </div>
+        );
+    }
     
     return (
         <InstantSearchNext
             searchClient={searchClient}
             indexName={srpIndex}
             ignoreMultipleHooksWarning
-            routing={{
-                router: nextRouter as unknown as any,
-                stateMapping: customStateMapping,
-            }}
+            routing={routingConfig}
+            // routing={{
+            //     router: nextRouter as unknown as any,
+            //     stateMapping: customStateMapping,
+            // }}
         >
             <Configure
                 hitsPerPage={20}
