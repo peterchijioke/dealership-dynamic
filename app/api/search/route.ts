@@ -1,6 +1,5 @@
-// app/api/search/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { search } from "@/lib/algolia"; // Adjust the path to your algolia.ts
+import { search } from "@/lib/algolia";
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,8 +24,6 @@ export async function GET(req: NextRequest) {
       ? JSON.parse(attributesParam)
       : undefined;
 
-      console.log("Search API called with:", facets, attributesToRetrieve);
-
     // facetFilters: comma-separated inner arrays separated by ";"
     // Example: "category:clothing;brand:Nike,category:shoes"
     // becomes [["category:clothing","brand:Nike"],["category:shoes"]]
@@ -48,7 +45,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(results);
   } catch (error: any) {
-    console.error("Search API error:", error);
+    // console.error("Search API error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

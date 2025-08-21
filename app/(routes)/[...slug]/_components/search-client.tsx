@@ -48,7 +48,7 @@ export default function SearchClient({ initialResults }: Props) {
                 .map(([facet, values]) => values.map(v => `${facet}:${v}`));
 
             const params = new URLSearchParams();
-            if (query) params.append("query", query);
+            // if (query) params.append("query", query);
             params.append("hitsPerPage", hitsPerPage.toString());
             params.append("page", currentPage.toString());
             params.append("facets", JSON.stringify(FACETS));

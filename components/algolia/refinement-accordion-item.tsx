@@ -1,5 +1,5 @@
 import { useCurrentRefinements } from "react-instantsearch";
-import { AccordionItem } from "../ui/accordion";
+import { AccordionItem } from "../ui/custom-accordion";
 
 export default function RefinementAccordionItem({
     attribute,
@@ -10,7 +10,7 @@ export default function RefinementAccordionItem({
     attribute: string;
     title: string;
     children: React.ReactNode;
-        className?: string;
+    className?: string;
 }) {
     const { items } = useCurrentRefinements();
 

@@ -28,11 +28,11 @@ export default async function CatchAllPage({ params }: PageProps) {
     if (!isValid) return notFound();
 
     // Convert slug to query if present
-    const searchQuery = path?.join(" ") || undefined;
+    // const searchQuery = path?.join(" ") || undefined;
 
     // Prefetch first page from Algolia
     const initialResults = await search({
-        query: searchQuery,
+        // query: searchQuery,
         hitsPerPage: 12,
         facets: FACETS,
         attributesToRetrieve: ATTRUBUTES_TO_RETRIEVE,

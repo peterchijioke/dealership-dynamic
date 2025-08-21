@@ -1,5 +1,5 @@
 import React from 'react'
-import { Accordion } from '@/components/ui/accordion'
+import { Accordion } from '@/components/ui/custom-accordion'
 import CustomRefinementList from "@/components/algolia/custom-refinement-list"
 import CustomRangeInput from "@/components/algolia/custom-range-input"
 import CustomToggleRefinement from "@/components/algolia/custom-toggle-refinement"

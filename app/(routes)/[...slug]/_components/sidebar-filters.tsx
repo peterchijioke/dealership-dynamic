@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Accordion, AccordionItem } from '@/components/ui/accordion'
+import { Accordion, AccordionItem } from '@/components/ui/custom-accordion'
 import CustomRefinementList from "@/components/algolia/filters/custom-refinement-list"
 // import CustomRangeInput from "@/components/algolia/custom-range-input"
 import CustomToggleRefinement from "@/components/algolia/filters/custom-toggle-refinement"
@@ -54,6 +54,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.year || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -63,6 +64,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.make || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -72,6 +74,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.model || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -81,6 +84,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.body || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -90,6 +94,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.fuel_type || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -99,6 +104,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.ext_color || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -108,6 +114,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.int_color || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -117,6 +124,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.drive_train || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -126,6 +134,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.transform || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -135,6 +144,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.engine || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -144,6 +154,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.doors || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -153,6 +164,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.key_features || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
@@ -162,6 +174,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                         values={facets?.mileage || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
+                        searchable
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
