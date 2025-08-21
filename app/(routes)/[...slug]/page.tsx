@@ -3,27 +3,26 @@ import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { ATTRUBUTES_TO_RETRIEVE, FACETS } from "@/configs/config";
 
-const validPaths = [
-    ["new-vehicles"],
-    ["new-vehicles", "certified"],
-    ["used-vehicles"],
-    ["used-vehicles", "certified"],
+const validBases = [
+    "new-vehicles",
+    "new-vehicles/certified",
+    "used-vehicles",
+    "used-vehicles/certified",
 ];
 
 interface PageProps {
     params: Promise<{ slug: string[] }>;
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function CatchAllPage({ params }: PageProps) {
+export default async function CatchAllPage({ params, searchParams }: PageProps) {
     const { slug = [] } = await params;
     if (!slug) return notFound();
 
     const path = slug;
 
-    // check if path exists in your data
-    const isValid = validPaths.some((valid) =>
-        valid.join("/") === path.join("/")
-    );
+    // check if has valid base
+    const isValid = validBases.some(base => path.join("/").startsWith(base));
 
     if (!isValid) return notFound();
 
