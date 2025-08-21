@@ -140,14 +140,14 @@ export function getSubUrlPattern(
 }
 
 export function refinementToUrl(filters: Record<string, string[]>): string {
-  let { condition, make, model, ...rest } = filters;
-  condition = condition || [];
-  make = make || [];
-  model = model || [];
+  const { condition, make, model, ...rest } = filters;
+  const conditionFilter = condition || [];
+  const makeFilter = make || [];
+  const modelFilter = model || [];
 
-  const leadingUrl = getLeadingUrlPattern(condition);
-  const makeUrl = getSubUrlPattern("make", make);
-  const modelUrl = getSubUrlPattern("model", model);
+  const leadingUrl = getLeadingUrlPattern(conditionFilter);
+  const makeUrl = getSubUrlPattern("make", makeFilter);
+  const modelUrl = getSubUrlPattern("model", modelFilter);
 
   const queryParams = orderParams(
     recordToSearchParams({
