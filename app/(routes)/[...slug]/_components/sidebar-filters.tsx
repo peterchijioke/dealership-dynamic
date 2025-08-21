@@ -10,7 +10,7 @@ type Props = {
     onToggleFacet: (attribute: string, value: string) => void;
 };
 
-export default function SidebarFilters({ facets, currentRefinements }: Props) {
+export default function SidebarFilters({ facets, currentRefinements, onToggleFacet }: Props) {
     const [selectedFacets, setSelectedFacets] = useState<Record<string, string[]>>(currentRefinements || {});
 
     const updateFacet = (attribute: string, value: string) => {
@@ -25,6 +25,7 @@ export default function SidebarFilters({ facets, currentRefinements }: Props) {
                     : [...currentValues, value], // add if not
             };
         });
+        onToggleFacet(attribute, value);
     };
 
     return (

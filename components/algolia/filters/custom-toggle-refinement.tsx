@@ -1,6 +1,6 @@
 "use client";
 
-import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { useAlgolia } from "@/hooks/useAlgolia";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default function CustomToggleRefinement({ attribute, label, labelPosition = "right", className }: Props) {
-    const { filters, setFilter } = useUrlFilters();
+    const { filters, setFilter } = useAlgolia();
     const value = filters[attribute];
     const isOn = Array.isArray(value)
         ? value.includes("true")

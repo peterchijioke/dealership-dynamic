@@ -7,7 +7,7 @@ import type { VehicleHit } from "@/types/vehicle";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.ALGOLIA_SEARCH_API_KEY!
+  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
 );
 
 type SearchOptions = SearchParams & {
@@ -31,4 +31,16 @@ async function search(options: SearchOptions) {
   return response;
 }
 
-export { client, search };
+function updateFacetFilter(
+  facet: Record<string, string[]>,
+  attribute: string,
+  value: string
+): Record<string, string[]> {
+  const current = facet[attribute] || [];
+  const updated = current.includes(value)
+    ? current.filter((v) => v !== value)
+    : [...current, value];
+  return { ...facet, [attribute]: updated };
+}
+
+export { client, search, updateFacetFilter };

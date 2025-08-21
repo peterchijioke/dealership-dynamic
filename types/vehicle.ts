@@ -121,8 +121,11 @@ export interface VehicleHit {
 }
 
 export interface VehicleFacet {
-  value: string;
-  count: number;
+  [key: string]: { [key: string]: number };
+}
+
+export interface FacetFilters {
+  [key: string]: string[] | number[] | undefined;
 }
 
 interface HighlightResult {

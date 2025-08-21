@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { useAlgolia } from "@/hooks/useAlgolia";
 import { useMemo, useState } from "react";
+import { updateFacetFilter } from "@/lib/algolia";
 
 type Props = {
     attribute: string;
@@ -23,14 +24,16 @@ export default function CustomRefinementList({
 }: Props) {
     const [search, setSearch] = useState("");
     const [showAll, setShowAll] = useState(false);
-    const { filters, setFilter } = useUrlFilters();
+    const { stateToRoute } = useAlgolia();
+
+    const selected = selectedFacets[attribute] || [];
 
     // Always normalize to string[]
-    const selected = Array.isArray(filters[attribute])
-        ? (filters[attribute] as string[])
-        : filters[attribute]
-            ? (filters[attribute] as string).split(",")
-            : [];
+    // const selected = Array.isArray(selectedFacets[attribute])
+    //     ? (selectedFacets[attribute] as string[])
+    //     : selectedFacets[attribute]
+    //         ? (selectedFacets[attribute] as string).split(",")
+    //         : [];
 
     // Filter by search (case-insensitive)
     const filtered = useMemo(() => {
@@ -49,11 +52,13 @@ export default function CustomRefinementList({
         updateFacet(attribute, value);
 
         // Update URL filter
-        const next = selected.includes(value)
-            ? selected.filter((v) => v !== value)
-            : [...selected, value];
+        // const next = selected.includes(value)
+        //     ? selected.filter((v) => v !== value)
+        //     : [...selected, value];
+        
+        const updated = updateFacetFilter(selectedFacets, attribute, value);
 
-        setFilter(attribute, next);
+        stateToRoute(updated);
     }
 
     return (
