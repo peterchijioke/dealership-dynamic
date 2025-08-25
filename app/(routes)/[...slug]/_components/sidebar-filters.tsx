@@ -5,7 +5,11 @@ import CustomRangeInput from "@/components/algolia/custom-range-input"
 import CustomToggleRefinement from "@/components/algolia/custom-toggle-refinement"
 import RefinementAccordionItem from "@/components/algolia/refinement-accordion-item"
 
-export default function SidebarFilters() {
+type Props = {
+    serverFacets: Record<string, Record<string, number>>;
+}
+
+export default function SidebarFilters({ serverFacets }: Props) {
     return (
         <div className="h-full overflow-y-autox pt-3">
             <CustomToggleRefinement

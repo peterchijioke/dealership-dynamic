@@ -16,8 +16,8 @@ export default async function DynamicSearchPage({ params }: PageProps) {
     // const indexName = section === 'blog' ? 'blog_posts' : 'products';
     const query = filters.join(' ');
 
-   const results = await search({
-       query: query,
+    const results = await search({
+        query: query,
         hitsPerPage: 12,
         facets: FACETS,
         attributesToRetrieve: ATTRUBUTES_TO_RETRIEVE,
@@ -28,6 +28,7 @@ export default async function DynamicSearchPage({ params }: PageProps) {
             indexName={srpIndex}
             query={query}
             serverHits={results.hits}
+            serverFacets={results.facets}
         />
     );
 }

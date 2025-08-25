@@ -11,7 +11,8 @@ type Props = {
 
 export default function CustomRefinementList({ attribute, searchable, className }: Props) {
     const { items, refine, searchForItems } = useRefinementList({ attribute }/*, { skipSuspense: true }*/);
-
+    console.log("CustomRefinementList:", attribute, items);
+    
     return (
         <div className={cn("w-full", className)}>
             {/* Custom search input */}
