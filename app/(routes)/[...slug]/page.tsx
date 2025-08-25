@@ -1,47 +1,21 @@
-import { search } from "@/lib/algolia";
 import { notFound } from "next/navigation";
-import SearchClient from "./_components/search-client";
-import { ATTRUBUTES_TO_RETRIEVE, FACETS } from "@/configs/config";
-
-const validBases = [
-    "new-vehicles",
-    "new-vehicles/certified",
-    "used-vehicles",
-    "used-vehicles/certified",
-];
+import { srpIndex } from '@/configs/config';
+import SearchPageClient from './_components/search-page-client';
 
 interface PageProps {
     params: Promise<{ slug: string[] }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function CatchAllPage({ params, searchParams }: PageProps) {
+export default async function DynamicSearchPage({ params }: PageProps) {
     const { slug = [] } = await params;
     if (!slug) return notFound();
 
-    const path = slug;
-
-    // check if has valid base
-    const isValid = validBases.some(base => path.join("/").startsWith(base));
-
-    if (!isValid) return notFound();
-
-    // Convert slug to query if present
-    // const searchQuery = path?.join(" ") || undefined;
-
-    // Prefetch first page from Algolia
-    const initialResults = await search({
-        // query: searchQuery,
-        hitsPerPage: 12,
-        facets: FACETS,
-        attributesToRetrieve: ATTRUBUTES_TO_RETRIEVE,
-    });
-
-    // console.log("Initial search results:", initialResults);
+    const [section, ...filters] = slug || [];
+    // const indexName = section === 'blog' ? 'blog_posts' : 'products';
+    const query = filters.join(' ');
 
     return (
-        <div className="h-screen flex flex-col relative">
-            <SearchClient initialResults={initialResults} />
-        </div>
+        <SearchPageClient indexName={srpIndex} query={query} />
     );
 }
