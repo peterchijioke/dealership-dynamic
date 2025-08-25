@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
-import { Configure } from 'react-instantsearch';
+import { Configure, useHits } from 'react-instantsearch';
 import { SearchBox, Hits } from 'react-instantsearch';
 import VehicleCard from './vehicle-card';
 import type { Vehicle } from '@/types/vehicle';
@@ -38,7 +38,7 @@ export default function SearchPageClient({
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
                     <SearchBox classNames={{ root: 'w-full' }} />
-                    {serverHits?.length > 0 && (
+                    {/* {serverHits?.length > 0 && (
                         <div id="serverHits" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                             {serverHits.map((hit) => (
                                 <Hit
@@ -47,14 +47,15 @@ export default function SearchPageClient({
                                 />
                             ))}
                         </div>
-                    )}
-                    <Hits
+                    )} */}
+                    {/* <Hits
                         hitComponent={Hit}
                         classNames={{
                             list: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3",
                             item: "flex",
                         }}
-                    />
+                    /> */}
+                    <HydratableHits serverHits={serverHits} />
                 </main>
             </div>
         </InstantSearchNext>
@@ -64,3 +65,25 @@ export default function SearchPageClient({
 function Hit({ hit }: { hit: Vehicle }) {
     return (<VehicleCard hit={hit} />);
 }
+
+function HydratableHits({ serverHits }: { serverHits: any[] }) {
+    const { hits } = useHits<any>();
+    const [hydrated, setHydrated] = useState(false);
+
+    useEffect(() => {
+        setHydrated(true);
+    }, []);
+
+    // ✅ Before hydration, render serverHits
+    // ✅ After hydration, render live hits
+    const displayHits = hydrated ? hits : serverHits;
+
+    return (
+        <div id="serverHits" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+            {displayHits.map((hit) => (
+                <Hit key={hit.objectID} hit={hit} />
+            ))}
+        </div>
+    );
+}
+
