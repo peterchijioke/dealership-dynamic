@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
 import { Configure } from 'react-instantsearch';
-import { SearchBox, Hits, Highlight } from 'react-instantsearch';
+import { SearchBox, Hits } from 'react-instantsearch';
 import VehicleCard from './vehicle-card';
-import type { Vehicle, VehicleHit } from '@/types/vehicle';
+import type { Vehicle } from '@/types/vehicle';
 import { searchClient } from '@/configs/config';
+import SidebarFilters from './sidebar-filters';
 
 export default function SearchPageClient({
     indexName,
@@ -18,6 +19,10 @@ export default function SearchPageClient({
     serverHits: any[];
 }) {
     const [hydrated, setHydrated] = useState(false);
+
+    useEffect(() => {
+        setHydrated(true);
+    }, []);
     
     return (
         <InstantSearchNext
@@ -29,7 +34,7 @@ export default function SearchPageClient({
             <div className="flex-1 relative flex flex-col lg:flex-row">
                 <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0 pt-4 sticky top-[120px] h-[calc(100vh-120px)] overflow-y-auto">
                     <h2 className="font-bold text-center uppercase">Search Filters</h2>
-                    {/* <SidebarFilters /> */}
+                    <SidebarFilters />
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
                     <SearchBox classNames={{ root: 'w-full' }} />
