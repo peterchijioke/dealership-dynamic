@@ -18,11 +18,11 @@ export default function SearchPageClient({
     query: string;
     serverHits: any[];
 }) {
-    const [hydrated, setHydrated] = useState(false);
+    // const [hydrated, setHydrated] = useState(false);
 
-    useEffect(() => {
-        setHydrated(true);
-    }, []);
+    // useEffect(() => {
+    //     setHydrated(true);
+    // }, []);
     
     return (
         <InstantSearchNext
@@ -38,7 +38,7 @@ export default function SearchPageClient({
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
                     <SearchBox classNames={{ root: 'w-full' }} />
-                    {!hydrated && serverHits?.length > 0 && (
+                    {serverHits?.length > 0 && (
                         <div id="serverHits" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                             {serverHits.map((hit) => (
                                 <Hit
