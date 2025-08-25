@@ -2,15 +2,19 @@
 
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
 import { Configure } from 'react-instantsearch';
-import { SearchClient } from './search-client';
+import { SearchBox, Hits, Highlight } from 'react-instantsearch';
+import VehicleCard from './vehicle-card';
+import type { Vehicle, VehicleHit } from '@/types/vehicle';
 import { searchClient } from '@/configs/config';
 
 export default function SearchPageClient({
     indexName,
     query,
+    serverHits,
 }: {
     indexName: string;
     query: string;
+    serverHits: any[];
 }) {
     return (
         <InstantSearchNext
@@ -25,9 +29,30 @@ export default function SearchPageClient({
                     {/* <SidebarFilters /> */}
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
-                    <SearchClient />
+                    <SearchBox classNames={{ root: 'w-full' }} />
+                    {serverHits?.length > 0 && (
+                        <div id="serverHits" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                            {serverHits.map((hit) => (
+                                <Hit
+                                    key={hit.objectID}
+                                    hit={hit}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    <Hits
+                        hitComponent={Hit}
+                        classNames={{
+                            list: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3",
+                            item: "flex",
+                        }}
+                    />
                 </main>
             </div>
         </InstantSearchNext>
     );
+}
+
+function Hit({ hit }: { hit: Vehicle }) {
+    return (<VehicleCard hit={hit} />);
 }
