@@ -6,7 +6,7 @@ import VehicleCard from "./vehicle-card";
 import type { Vehicle } from "@/types/vehicle";
 
 export default function InfiniteHits({ serverHits }: { serverHits: Vehicle[] }) {
-    const { hits, isLastPage, showMore } = useInfiniteHits<Vehicle>();
+    const { items: hits, isLastPage, showMore } = useInfiniteHits<Vehicle>();
     const sentinelRef = useRef<HTMLDivElement | null>(null);
 
     // IntersectionObserver to trigger loading next page

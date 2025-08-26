@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ATTRUBUTES_TO_RETRIEVE, FACETS, srpIndex } from '@/configs/config';
-import SearchPageClient from './_components/search-page-client';
+import SearchClient from './_components/search-client';
 import { search } from "@/lib/algolia";
 
 interface PageProps {
@@ -24,7 +24,7 @@ export default async function DynamicSearchPage({ params }: PageProps) {
     });
 
     return (
-        <SearchPageClient
+        <SearchClient
             indexName={srpIndex}
             query={query}
             serverHits={results.hits}
