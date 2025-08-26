@@ -7,6 +7,7 @@ import VehicleCard from './vehicle-card';
 import type { Vehicle } from '@/types/vehicle';
 import { searchClient } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
+import InfiniteHits from './infinite-hits';
 
 export default function SearchPageClient({
     indexName,
@@ -39,7 +40,8 @@ export default function SearchPageClient({
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4 mt-28">
                     <SearchBox classNames={{ root: 'w-full' }} />
-                    <HydratableHits serverHits={serverHits} />
+                    {/* <HydratableHits serverHits={serverHits} /> */}
+                    <InfiniteHits serverHits={serverHits} />
                 </main>
             </div>
         </InstantSearchNext>
