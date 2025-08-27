@@ -26,9 +26,6 @@ const CarouselBanner = () => {
 
   // Extract selected makes from current refinements
   const selectedMakes = useMemo(() => {
-    console.log("====================================");
-    console.log("Refinements changed:", currentRefinements);
-    console.log("====================================");
 
     const makeRefinement = currentRefinements.find(
       (refinement) => refinement.attribute === "make"
@@ -36,11 +33,9 @@ const CarouselBanner = () => {
 
     if (makeRefinement?.refinements) {
       const makes = makeRefinement.refinements.map((ref: any) => ref.value);
-      console.log("Selected makes:", makes);
       return makes;
     }
 
-    console.log("No make refinements found, using default:", ["Nissan"]);
     return ["Nissan"];
   }, [currentRefinements]);
 
@@ -160,7 +155,7 @@ const CarouselBanner = () => {
 
   return (
     <Fragment>
-      <div className="relative w-full overflow-hidden mt-5">
+      <div className="relative w-full overflow-hidden">
         {/* Image Container - Full Width */}
         <div className="relative w-full h-28 overflow-hidden">
           <div
