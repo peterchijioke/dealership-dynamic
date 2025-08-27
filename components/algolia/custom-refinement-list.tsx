@@ -11,8 +11,7 @@ type Props = {
 };
 
 export default function CustomRefinementList({ attribute, searchable, className, serverFacets }: Props) {
-    const { items, refine, searchForItems } = useRefinementList({ attribute }, { skipSuspense: true }/**/);
-    // console.log("CustomRefinementList:", attribute, items);
+    const { items, refine, searchForItems } = useRefinementList({ attribute }/*, { skipSuspense: true }*/);
 
     // Fallback: use server facets if client items are not ready
     const displayItems = items.length > 0

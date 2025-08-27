@@ -23,10 +23,12 @@ type SearchOptions = SearchParams & {
  * Returns hits of type `VehicleHit` and facets if requested.
  */
 async function search(options: SearchOptions) {
-  const response: SearchResponse<VehicleHit[]> = await client.searchSingleIndex({
-    indexName: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!,
-    searchParams: options,
-  });
+  const response: SearchResponse<VehicleHit[]> = await client.searchSingleIndex(
+    {
+      indexName: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!,
+      searchParams: options,
+    }
+  );
 
   return response;
 }
@@ -43,4 +45,39 @@ function updateFacetFilter(
   return { ...facet, [attribute]: updated };
 }
 
-export { client, search, updateFacetFilter };
+function refinementListToAlgoliaFilters(
+  refList: Record<string, string[]>
+): string {
+  const filterParts: string[] = [];
+  for (const [key, values] of Object.entries(refList)) {
+    if (values.length) {
+      if (
+        key === "make" &&
+        refList.model?.length === 1 &&
+        values.length === 1
+      ) {
+        // special OR logic for single segment
+        filterParts.push(`(make:${values[0]} OR model:${values[0]})`);
+      } else {
+        filterParts.push(values.map((v) => `${key}:${v}`).join(" OR "));
+      }
+    }
+  }
+  return filterParts.join(" AND ");
+}
+
+function refinementToFacetFilters(
+  refinementList: Record<string, string[]>
+): string[][] {
+  return Object.entries(refinementList)
+    .filter(([_, values]) => values.length > 0)
+    .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
+}
+
+export {
+  client,
+  search,
+  refinementListToAlgoliaFilters,
+  refinementToFacetFilters,
+  updateFacetFilter,
+};

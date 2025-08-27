@@ -6,6 +6,7 @@ import { searchClient } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import InfiniteHits from './infinite-hits';
 import { routing } from '@/lib/algolia/custom-routing';
+import { refinementToUrl } from '@/lib/url-formatter';
 
 export default function SearchClient({
     indexName,
@@ -27,12 +28,22 @@ export default function SearchClient({
             instance={searchInstance}
             indexName={indexName}
             searchClient={searchClient}
-            ignoreMultipleHooksWarning={true}
             // initialUiState={initialUiState || { [indexName]: { query } }}
             future={{
                 preserveSharedStateOnUnmount: true,
                 persistHierarchicalRootCount: true,
             }}
+            // onStateChange={({ uiState, setUiState }) => {
+            //     const indexUiState = uiState[indexName] || {};
+            //     const filters = indexUiState.refinementList || {};
+
+            //     const url = refinementToUrl(filters);
+            //     setUiState(uiState);
+
+            //     if (typeof window !== "undefined") {
+            //         window.history.pushState({}, "", url);
+            //     }
+            // }}
             routing={routing}
         >
             <Configure query={query} />

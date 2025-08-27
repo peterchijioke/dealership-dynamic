@@ -1,13 +1,24 @@
+import { makesCode, modelsCode } from "@/configs/facets-code";
 import {
   appendParam,
   orderParams,
   recordToSearchParams,
   searchParamsToCommaSeparatedQuery,
   searchParamsToRecord,
+  searchParamsToRecord2,
   slugify,
+  unslugify,
 } from "./helpers";
 
 type UrlPattern = { pathname: string; params: { [x: string]: string[] } };
+
+function getConditionFromPath(pathname: string): string[] {
+  if (pathname.startsWith("/used-vehicles/certified"))
+    return ["Used", "Certified"];
+  if (pathname.startsWith("/used-vehicles")) return ["Used"];
+  if (pathname.startsWith("/new-vehicles")) return ["New"];
+  return ["New"];
+}
 
 export function getLeadingPathSegment(pathname: string): string {
   const validPaths = [
@@ -73,6 +84,69 @@ export function urlParser(
   return { pathname: newPath, params };
 }
 
+export function urlParser2(
+  pathname: string,
+  params: URLSearchParams
+): { pathname: string; params: Record<string, string[]> } {
+  let queryParams = searchParamsToRecord2(params); // convert ?year=2012,2011 → {year: ['2012','2011']}
+
+  // 1️⃣ Remove condition path from pathname
+  const conditionPaths = [
+    "/new-vehicles/certified/",
+    "/used-vehicles/certified/",
+    "/new-vehicles/",
+    "/used-vehicles/",
+  ];
+
+  let remainingPath = pathname;
+  const matchedCondition =
+    conditionPaths.find((p) => pathname.startsWith(p)) || "/new-vehicles/";
+  remainingPath = remainingPath
+    .replace(matchedCondition, "")
+    .replace(/^\/|\/$/g, "");
+
+  // 2️⃣ Split remaining path into parts
+  const pathParts = remainingPath.split("/").filter(Boolean);
+
+  let make: string[] = [];
+  let model: string[] = [];
+
+  if (pathParts.length > 1) {
+    // If more than 1 segment, treat first as make
+    const makeCode = makesCode[pathParts[0]];
+    // last item is model
+    const modelCode = modelsCode[pathParts[pathParts.length - 1]];
+    make = [makeCode];
+    model = [modelCode];
+  } else if (pathParts.length === 1) {
+    const makeCode = makesCode[pathParts[0]];
+    const modelCode = modelsCode[pathParts[0]];
+    if (makeCode) make = [makeCode];
+    if (modelCode) model = [modelCode];
+  }
+
+  // 3️⃣ Determine condition from matched path
+  let condition: string[] = [];
+  if (matchedCondition.includes("new-vehicles/certified"))
+    condition = ["New", "Certified"];
+  else if (matchedCondition.includes("used-vehicles/certified"))
+    condition = ["Used", "Certified"];
+  else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
+  else if (matchedCondition.includes("used-vehicles")) condition = ["Used"];
+
+  // 4️⃣ Return full refinementList
+  return {
+    pathname,
+    params: {
+      ...queryParams,
+      ...(condition.length ? { condition } : {}),
+      ...(make.length ? { make } : {}),
+      ...(model.length ? { model } : {}),
+    },
+  };
+}
+
+
 export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   if (!condition || condition.length === 0) {
     return { pathname: "/new-vehicles", params: {} }; // default fallback
@@ -97,8 +171,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
 
   // Rule 2: Only Used / Pre-Owned
   if (
-    (last === "used" || last === "pre-owned" || last === "preowned") &&
-    condition.length === 1
+    (last === "used" || last === "pre-owned" || last === "preowned")
   ) {
     return { pathname: "/used-vehicles", params: {} };
   }
@@ -127,7 +200,11 @@ export function getSubUrlPattern(
   attribute: string,
   attrArr: string[]
 ): UrlPattern {
+
+  // console.log("getSubUrlPattern:", attribute, attrArr);
   if (!attrArr || attrArr.length === 0) return { pathname: "", params: {} };
+
+  // console.log("getSubUrlPattern 2:", attribute, attrArr[attrArr.length - 1]);
 
   const lastElement = slugify(attrArr[attrArr.length - 1]);
   if (attrArr.length === 1) return { pathname: `/${lastElement}`, params: {} };
@@ -152,12 +229,46 @@ export function refinementToUrl(filters: Record<string, string[]>): string {
   const queryParams = orderParams(
     recordToSearchParams({
       ...rest,
+      ...(leadingUrl?.params || {}),
+      ...(makeUrl?.params || {}),
+      ...(modelUrl?.params || {}),
+    })
+  );
+
+  const queryParamsString = searchParamsToCommaSeparatedQuery(queryParams);
+  return `${leadingUrl.pathname}${makeUrl.pathname}${modelUrl.pathname}/${queryParamsString ? `?${queryParamsString}` : ""}`;
+}
+
+export function refinementToUrl2(
+  filters: Record<string, string[]>,
+  query?: string
+): string {
+  const { condition, make, model, ...rest } = filters;
+  const conditionFilter = condition || [];
+  const makeFilter = make || [];
+  const modelFilter = model || [];
+
+  const leadingUrl = getLeadingUrlPattern(conditionFilter);
+  const makeUrl = getSubUrlPattern("make", makeFilter);
+  const modelUrl = getSubUrlPattern("model", modelFilter);
+
+  const queryParams = orderParams(
+    recordToSearchParams({
+      ...rest,
       ...(leadingUrl.params || {}),
       ...(makeUrl.params || {}),
       ...(modelUrl.params || {}),
     })
   );
 
+  if (query) {
+    queryParams.set("query", query);
+  }
+
   const queryParamsString = searchParamsToCommaSeparatedQuery(queryParams);
-  return `${leadingUrl.pathname}${makeUrl.pathname}${modelUrl.pathname}?${queryParamsString}`;
+
+  return `${leadingUrl.pathname}${makeUrl.pathname}${modelUrl.pathname}${
+    modelUrl.pathname || makeUrl.pathname || leadingUrl.pathname ? "" : "/"
+  }${queryParamsString ? `?${queryParamsString}` : ""}`;
 }
+

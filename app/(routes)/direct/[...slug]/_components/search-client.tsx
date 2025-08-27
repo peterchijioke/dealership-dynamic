@@ -47,7 +47,7 @@ export default function SearchClient({ initialResults }: Props) {
             const facetFilters: string[][] = Object.entries(selectedFacets)
                 .filter(([_, values]) => values.length > 0)
                 .map(([facet, values]) => values.map(v => `${facet}:${v}`));
-
+            
             const params = new URLSearchParams();
             // if (query) params.append("query", query);
             params.append("hitsPerPage", hitsPerPage.toString());

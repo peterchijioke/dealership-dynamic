@@ -16,7 +16,6 @@ export function useAlgolia() {
   // Update filters in URL
   function setFilter(key: string, value?: string | string[]) {
     const params = new URLSearchParams(searchParams.toString());
-    console.log("Setting filter:", key, value);
 
     // const newUrl = urlParser(pathname, params, key, value);
 
