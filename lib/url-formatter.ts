@@ -88,7 +88,7 @@ export function urlParser2(
   pathname: string,
   params: URLSearchParams
 ): { pathname: string; params: Record<string, string[]> } {
-  let queryParams = searchParamsToRecord2(params); // convert ?year=2012,2011 → {year: ['2012','2011']}
+  const queryParams = searchParamsToRecord2(params); // convert ?year=2012,2011 → {year: ['2012','2011']}
 
   // 1️⃣ Remove condition path from pathname
   const conditionPaths = [
