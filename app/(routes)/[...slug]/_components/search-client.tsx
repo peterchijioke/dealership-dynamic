@@ -1,11 +1,12 @@
 'use client';
 
 import { createInstantSearchNextInstance, InstantSearchNext } from 'react-instantsearch-nextjs';
-import { SearchBox, Configure } from 'react-instantsearch';
-import { searchClient } from '@/configs/config';
+import { SearchBox, Configure, RefinementList } from 'react-instantsearch';
+import { ATTRUBUTES_TO_RETRIEVE, FACETS, searchClient } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import InfiniteHits from './infinite-hits';
 import { routing } from '@/lib/algolia/custom-routing';
+import { refinementToFacetFilters } from '@/lib/algolia';
 
 export default function SearchClient({
     indexName,
@@ -22,20 +23,31 @@ export default function SearchClient({
 }) {
 
     const searchInstance = createInstantSearchNextInstance();
+
+    // Derive facetFilters again on the client from the refinements in uiState
+    const refinementList = initialUiState?.[indexName]?.refinementList || {};
+    const facetFilters = refinementToFacetFilters(refinementList);
+    
     return (
         <InstantSearchNext
             instance={searchInstance}
             indexName={indexName}
             searchClient={searchClient}
             ignoreMultipleHooksWarning={true}
-            // initialUiState={initialUiState || { [indexName]: { query } }}
             future={{
                 preserveSharedStateOnUnmount: true,
                 persistHierarchicalRootCount: true,
             }}
+            // initialUiState={initialUiState}
             routing={routing}
         >
-            <Configure query={query} />
+            <Configure
+                query={query}
+                hitsPerPage={12}
+                facetFilters={facetFilters}
+                // facets={FACETS}
+                // attributesToRetrieve={ATTRUBUTES_TO_RETRIEVE}
+            />
             <div className="flex-1 relative flex flex-col lg:flex-row">
                 <aside className="hidden lg:block lg:w-[280px] lg:flex-shrink-0 pt-4 sticky top-[120px] h-[calc(100vh-120px)] overflow-y-auto">
                     <h2 className="font-bold text-center uppercase">Search Filters</h2>

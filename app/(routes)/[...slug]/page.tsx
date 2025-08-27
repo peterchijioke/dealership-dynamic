@@ -27,15 +27,12 @@ export default async function DynamicSearchPage({ params, searchParams }: PagePr
 
     const rawSearchParams = await searchParams;
     const searchParamsObj = new URLSearchParams(rawSearchParams as any);
-    console.log("DynamicSearchPage:", slug, searchParamsObj);
 
     // Parse the URL into refinementList using your urlParser
     const { params: refinementList } = urlParser2(
         '/' + slug.join('/'),
         searchParamsObj
     );
-
-    console.log("refinementList:", refinementList);
 
     // Use Algolia search with parsed query & filters
     const query = searchParamsObj.get("query") || "";
@@ -47,6 +44,8 @@ export default async function DynamicSearchPage({ params, searchParams }: PagePr
         attributesToRetrieve: ATTRUBUTES_TO_RETRIEVE,
         facetFilters,
     });
+
+    // console.log("results:", results);
 
     // Build initial InstantSearch UI state
     const initialUiState = {

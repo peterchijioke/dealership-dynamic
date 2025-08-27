@@ -9,6 +9,9 @@ export default function InfiniteHits({ serverHits }: { serverHits: Vehicle[] }) 
     const { items: hits, isLastPage, showMore } = useInfiniteHits<Vehicle>();
     const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+    // console.log("serverHits:", serverHits);
+    // console.log("InfiniteHits:", hits);
+
     // IntersectionObserver to trigger loading next page
     useEffect(() => {
         const sentinel = sentinelRef.current;

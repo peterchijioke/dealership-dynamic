@@ -20,6 +20,8 @@ export const routing = {
       // console.log("createURL:", routeState);
       // return typeof routeState === "string" ? routeState : "/";
       return routeState;
+      // const filters = routeState.refinementList || {};
+      // return refinementToUrl(filters);
     },
 
     parseURL({ location }: { location: any }) {
@@ -43,6 +45,11 @@ export const routing = {
       const filters = indexUiState.refinementList || {};
       // console.log("stateToRoute:", filters);
       return refinementToUrl(filters);
+      // console.log("stateToRoute:", indexUiState.refinementList || {});
+      // return {
+      //   query: indexUiState.query || "",
+      //   refinementList: indexUiState.refinementList || {},
+      // };
     },
 
     routeToState(routeState: any) {

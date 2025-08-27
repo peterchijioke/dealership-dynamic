@@ -90,7 +90,7 @@ export function urlParser2(
 ): { pathname: string; params: Record<string, string[]> } {
   const queryParams = searchParamsToRecord2(params); // convert ?year=2012,2011 → {year: ['2012','2011']}
 
-  // 1️⃣ Remove condition path from pathname
+  // Remove condition path from pathname
   const conditionPaths = [
     "/new-vehicles/certified/",
     "/used-vehicles/certified/",
@@ -105,7 +105,7 @@ export function urlParser2(
     .replace(matchedCondition, "")
     .replace(/^\/|\/$/g, "");
 
-  // 2️⃣ Split remaining path into parts
+  // Split remaining path into parts
   const pathParts = remainingPath.split("/").filter(Boolean);
 
   let make: string[] = [];
@@ -125,7 +125,7 @@ export function urlParser2(
     if (modelCode) model = [modelCode];
   }
 
-  // 3️⃣ Determine condition from matched path
+  // Determine condition from matched path
   let condition: string[] = [];
   if (matchedCondition.includes("new-vehicles/certified"))
     condition = ["New", "Certified"];
@@ -134,7 +134,7 @@ export function urlParser2(
   else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
   else if (matchedCondition.includes("used-vehicles")) condition = ["Used"];
 
-  // 4️⃣ Return full refinementList
+  // Return full refinementList
   return {
     pathname,
     params: {
