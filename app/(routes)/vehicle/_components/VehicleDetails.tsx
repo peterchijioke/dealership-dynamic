@@ -18,6 +18,7 @@ export type VehicleDetailsProps = {
   onGoBack?: () => void;
   onPriceDetails?: () => void;
   onAllFeatures?: () => void;
+  inViewRef: React.RefObject<HTMLDivElement | null>;
 };
 
 /**
@@ -28,6 +29,7 @@ export type VehicleDetailsProps = {
  * the content you supplied so it works out of the box.
  */
 export default function VehicleDetails({
+  inViewRef,
   title = "New 2026 Hyundai Palisade",
   trim = "Limited",
   price = "$51,035",
@@ -110,7 +112,11 @@ export default function VehicleDetails({
       <div className="h-[1px] w-full bg-slate-400 my-5 md:hidden" />
 
       {/* Features / Specs */}
-      <VehicleFeatures trim={trim} onAllFeatures={onAllFeatures} />
+      <VehicleFeatures
+        trim={trim}
+        ref={inViewRef}
+        onAllFeatures={onAllFeatures ?? (() => {})}
+      />
 
       <div className="h-[1px] w-full bg-slate-400 my-5" />
 
