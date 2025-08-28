@@ -60,16 +60,14 @@ export default function VdpVehicleCard() {
               className="active:opacity-90 bg-[#103d82] cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full mt-[20px] mb-3"
               aria-haspopup="false"
             >
-              I'm Interested
+              {"I'm Interested"}
             </button>
             <button
               className="active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
               aria-haspopup="false"
             >
               <MapPin className="h-6 w-6 mr-0  " />
-              <div className="w-full text-[0.96rem]">
-                Wyatt Johnson Hyundai Mazda
-              </div>
+              <div className="w-full text-[0.96rem]">2024 Nissan Rogue SV</div>
               {/*  */}
             </button>
           </div>
@@ -79,7 +77,7 @@ export default function VdpVehicleCard() {
             className="hidden md:flex rounded-full py-1 border-black focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 mt-5 mb-5 flex flex-col"
           >
             <span className="text-md text-center font-semibold">
-              Questions? Call 931-536-9898
+              Questions? Call 503-222-2277
             </span>
           </a>
         </div>

@@ -1,4 +1,4 @@
-import { Calendar, Car, Globe } from "lucide-react";
+import { Calendar, Car, Globe, Link } from "lucide-react";
 import React, { Fragment } from "react";
 
 const WarrantyForLife = () => {
@@ -23,13 +23,13 @@ const WarrantyForLife = () => {
           <p className="text-[17px]">Nationwide Coverage</p>
         </div>
       </div>
-      <a
+      <Link
         className="active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-transparent hover:border-primary-500 hover:text-primary-500 text-secondary-500 border-secondary-500 w-full md:w-[384px]"
         href="/warranty-for-life"
         aria-haspopup="false"
       >
         More About Warranty For Life
-      </a>
+      </Link>
     </div>
   );
 };

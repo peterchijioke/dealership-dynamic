@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import VdpVehicleCard from "../_components/VdpVehicleCard";
 import VdpBodySection from "../_components/VdpBodySection";
 import BottomSection from "../_components/BottomSection";
+import AppFooter from "../_components/AppFooter";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -30,12 +31,16 @@ export default async function VehiclePage({ params }: PageProps) {
   const { slug } = await params;
 
   return (
-    <main className="w-full max-w-[1441px] mx-auto  ">
-      <div className="flex flex-row md:gap-x-5 lg:gap-x-20 md:mx-8 lg:mx-20 mb-36">
-        <VdpBodySection />
-        <VdpVehicleCard />
-      </div>
+    <>
+      <main className="w-full max-w-[1441px] mx-auto  ">
+        <div className="flex flex-row md:gap-x-5 lg:gap-x-20 md:mx-8 lg:mx-20 mb-36">
+          <VdpBodySection />
+          <VdpVehicleCard />
+        </div>
+      </main>
+
       <BottomSection />
-    </main>
+      <AppFooter />
+    </>
   );
 }
