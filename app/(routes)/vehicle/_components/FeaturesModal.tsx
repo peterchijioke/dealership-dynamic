@@ -1,0 +1,89 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+import React, { useState, forwardRef } from "react";
+
+// Modal component for displaying all features and specs
+type FeaturesModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export const features = [
+  "14 Speakers",
+  "3rd row seats: split-bench",
+  "4-Wheel Disc Brakes",
+  "ABS brakes",
+  "AM/FM radio: SiriusXM",
+  "Adjustable head restraints: driver and passenger w/tilt",
+  "Air Conditioning",
+  "All-Season Fitted Liners",
+  "Alloy wheels",
+  "Automatic temperature control",
+  "Brake assist",
+  "Bumpers: body-color",
+  "CD player",
+  "Compass",
+  "Delay-off headlights",
+  "Driver door bin",
+  "Driver vanity mirror",
+  "Dual front impact airbags",
+  "Dual front side impact airbags",
+  "Electronic Stability Control",
+  "Emergency communication system",
+  "Fabric Seat Trim",
+  "Four wheel independent suspension",
+  "Front anti-roll bar",
+  "Front bucket seats",
+  "Front center armrest",
+  "Front dual zone A/C",
+  "Front fog lights",
+  "Front reading lights",
+  "Fully automatic headlights",
+  "Heated door mirrors",
+  "Heated front seats",
+  "Illuminated entry",
+  "Knee airbag",
+  "Leather shift knob",
+  "Low tire pressure warning",
+  "Occupant sensing airbag",
+  "Outside temperature display",
+  "Overhead airbag",
+  "Overhead console",
+  "Panic alarm",
+  "Passenger door bin",
+  "Passenger vanity mirror",
+  "Power door mirrors",
+  "Power driver seat",
+  "Power steering",
+];
+export const FeaturesModal = ({ isOpen, onClose }: FeaturesModalProps) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 bg-opacity z-50 flex items-center justify-center p-4">
+      <div className="bg-white md:max-w-3xl rounded-lg  w-full  shadow flex flex-col">
+        <div className="p-6 pb-4">
+          <h2 className="px-2 text-2xl font-bold ">All features and specs</h2>
+        </div>
+
+        <ScrollArea className=" h-[40vh]  px-6">
+          <div className="space-y-1">
+            {features.map((feature, index) => (
+              <p key={index.toString()} className="text-lg py-3 border-b">
+                {feature}
+              </p>
+            ))}
+          </div>
+        </ScrollArea>
+
+        <div className="p-6 pt-4 w-full flex items-center justify-center ">
+          <button
+            onClick={onClose}
+            className=" px-6 cursor-pointer py-2 bg-primary text-white w-fit  rounded-full font-semibold hover:bg-primary transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

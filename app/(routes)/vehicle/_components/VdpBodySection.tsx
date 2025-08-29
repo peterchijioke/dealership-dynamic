@@ -1,32 +1,28 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import "keen-slider/keen-slider.min.css";
 import CarouselComponents from "./CarouselComponents";
-import VehicleFeatures from "./VehicleFeatures";
-import WarrantyForLife from "./WarrantyForLife";
 import VehicleDetails from "./VehicleDetails";
 import { useInView } from "@/hooks/useInView";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 export default function VdpBodySection() {
   const featuresRef = useRef<HTMLDivElement>(null);
-  const [enterCount, setEnterCount] = useState(0);
+  const { setFeatureInView } = useVehicleDetails();
 
   useInView(
     featuresRef,
     {
-      threshold: 0.25, // fire when 25% is visible
+      threshold: 0.25,
       root: null,
-      rootMargin: "0px 0px -10% 0px", // fire a bit before full center
+      rootMargin: "0px 0px -10% 0px",
     },
     {
       onEnter: () => {
-        setEnterCount((n) => n + 1);
-        // do anything here — analytics, events, open sheet, etc.
-        console.log("Features entered view!");
-        // alert(true); // if you really want the alert each time
+        setFeatureInView(true);
       },
       onExit: () => {
-        console.log("Features left view!");
+        setFeatureInView(false);
       },
     }
   );

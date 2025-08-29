@@ -1,18 +1,21 @@
 import React from "react";
 import { MapPin, Phone } from "lucide-react";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 export default function VdpVehicleCard() {
+  const { footerInView } = useVehicleDetails();
+
   return (
     <div className="hidden  md:block md:relative flex-auto">
       <div
         style={{
-          position: "fixed",
+          position: !footerInView ? "fixed" : "sticky",
           minHeight: "auto",
           maxHeight: "calc(-72px + 100vh)",
           bottom: "unset",
           top: "unset",
         }}
-        className="max-h-[calc(100vh-62px)] overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-sm fixed md:mt-40 pb-6x max-w-sm"
+        className="max-h-[calc(100vh-62px)] overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-sm md:mt-40 pb-6x max-w-sm"
       >
         <div>
           <div className="flex flex-row gap-4 justify-between mb-6">
