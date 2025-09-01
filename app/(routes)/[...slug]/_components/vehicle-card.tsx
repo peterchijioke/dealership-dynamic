@@ -77,13 +77,13 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
         </div>
 
         {/* Price Section */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center w-full justify-between mb-6">
           <div className="w-full">
-            <div className="text-base font-medium text-[#000000] overflow-hidden line-clamp-2 text-ellipsis">
+            <div className=" text-[#69707C] overflow-hidden line-clamp-2 text-ellipsis">
               Sale Price
             </div>
             <div className="flex items-center">
-              <span className="text-base font-medium text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
+              <span className="text-base font-semibold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
                 {hit.sale_price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
@@ -95,7 +95,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
 
           {/* Mileage */}
           <div className="text-right">
-            <div className="text-[0.84rem] flex-1 font-semibold text-[#374151]">
+            <div className="text-[0.84rem] font-semibold text-[#374151] whitespace-nowrap">
               {hit.mileage
                 ? `${hit.mileage.toLocaleString()} miles`
                 : "8 miles"}
@@ -104,7 +104,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
         </div>
 
         {/* CTA Button */}
-        <div className=" px-4">
+        <div className=" px-3">
           <Button
             onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
             className="w-full py-6 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-white text-gray-800 border-0"
