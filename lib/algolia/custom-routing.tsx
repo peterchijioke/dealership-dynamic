@@ -11,7 +11,7 @@ export const routing = {
       const indexState = routeState.indexName || {}
 
       if (!indexState.query) {
-        return 'MyWebsite - Results page'
+        return 'Dealership - Results page'
       }
 
       return `Dealership - Results for: ${indexState.query}`

@@ -146,7 +146,6 @@ export function urlParser2(
   };
 }
 
-
 export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   if (!condition || condition.length === 0) {
     return { pathname: "/new-vehicles", params: {} }; // default fallback
@@ -170,9 +169,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   }
 
   // Rule 2: Only Used / Pre-Owned
-  if (
-    (last === "used" || last === "pre-owned" || last === "preowned")
-  ) {
+  if (last === "used" || last === "pre-owned" || last === "preowned") {
     return { pathname: "/used-vehicles", params: {} };
   }
 
@@ -200,16 +197,26 @@ export function getSubUrlPattern(
   attribute: string,
   attrArr: string[]
 ): UrlPattern {
+  try {
+    
   if (!attrArr || attrArr.length === 0) return { pathname: "", params: {} };
 
   const lastElement = slugify(attrArr[attrArr.length - 1]);
   if (attrArr.length === 1) return { pathname: `/${lastElement}`, params: {} };
   const restElements = attrArr.slice(0, -1);
+  // const restElements = "honda";
+
+  const params =
+    restElements.length > 0 ? { [attribute]: restElements.map(slugify) } : {};
 
   return {
     pathname: `/${lastElement}`,
-    params: { [attribute]: restElements.map(slugify) },
-  };
+    params,
+    };
+  } catch (error) {
+    console.error(error);
+    return { pathname: "", params: {} };
+  }
 }
 
 export function refinementToUrl(filters: Record<string, string[]>): string {
@@ -232,7 +239,9 @@ export function refinementToUrl(filters: Record<string, string[]>): string {
   );
 
   const queryParamsString = searchParamsToCommaSeparatedQuery(queryParams);
-  return `${leadingUrl.pathname}${makeUrl.pathname}${modelUrl.pathname}/${queryParamsString ? `?${queryParamsString}` : ""}`;
+  return `${leadingUrl.pathname}${makeUrl.pathname}${modelUrl.pathname}/${
+    queryParamsString ? `?${queryParamsString}` : ""
+      }`;
 }
 
 export function refinementToUrl2(
@@ -267,4 +276,3 @@ export function refinementToUrl2(
     modelUrl.pathname || makeUrl.pathname || leadingUrl.pathname ? "" : "/"
   }${queryParamsString ? `?${queryParamsString}` : ""}`;
 }
-
