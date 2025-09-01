@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import AppFooter from "./AppFooter";
 import BottomSection from "./BottomSection";
 import VdpBodySection from "./VdpBodySection";
@@ -27,6 +27,7 @@ export default function VdpClient() {
       },
     }
   );
+
   return (
     <>
       <main className="w-full max-w-[1441px] mx-auto  ">

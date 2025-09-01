@@ -1,5 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useState, forwardRef } from "react";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 // Modal component for displaying all features and specs
 type FeaturesModalProps = {
@@ -7,56 +8,11 @@ type FeaturesModalProps = {
   onClose: () => void;
 };
 
-export const features = [
-  "14 Speakers",
-  "3rd row seats: split-bench",
-  "4-Wheel Disc Brakes",
-  "ABS brakes",
-  "AM/FM radio: SiriusXM",
-  "Adjustable head restraints: driver and passenger w/tilt",
-  "Air Conditioning",
-  "All-Season Fitted Liners",
-  "Alloy wheels",
-  "Automatic temperature control",
-  "Brake assist",
-  "Bumpers: body-color",
-  "CD player",
-  "Compass",
-  "Delay-off headlights",
-  "Driver door bin",
-  "Driver vanity mirror",
-  "Dual front impact airbags",
-  "Dual front side impact airbags",
-  "Electronic Stability Control",
-  "Emergency communication system",
-  "Fabric Seat Trim",
-  "Four wheel independent suspension",
-  "Front anti-roll bar",
-  "Front bucket seats",
-  "Front center armrest",
-  "Front dual zone A/C",
-  "Front fog lights",
-  "Front reading lights",
-  "Fully automatic headlights",
-  "Heated door mirrors",
-  "Heated front seats",
-  "Illuminated entry",
-  "Knee airbag",
-  "Leather shift knob",
-  "Low tire pressure warning",
-  "Occupant sensing airbag",
-  "Outside temperature display",
-  "Overhead airbag",
-  "Overhead console",
-  "Panic alarm",
-  "Passenger door bin",
-  "Passenger vanity mirror",
-  "Power door mirrors",
-  "Power driver seat",
-  "Power steering",
-];
 export const FeaturesModal = ({ isOpen, onClose }: FeaturesModalProps) => {
   if (!isOpen) return null;
+
+  const { vdpData } = useVehicleDetails();
+  const features = vdpData.features || [];
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity z-50 flex items-center justify-center p-4">

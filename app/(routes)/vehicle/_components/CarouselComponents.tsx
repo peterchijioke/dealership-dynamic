@@ -1,21 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useHits } from "react-instantsearch";
+import { useVehicleDetails } from "./VdpContextProvider";
+import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { vdpData } = useVehicleDetails();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCurrentSlide, setModalCurrentSlide] = useState(0);
 
-  const images = [
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rst41MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rstI1MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rstY1MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rsso1MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rss41MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rssI1MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-    "https://dealertower.app/image/UuPD13gL_j3TIE57InyS-feXQQ0qwBeRqZcbO-axR0KJCK48TuuiEqkbsQvxh06imUP2OScrCRDfHgsyAKcQUlDDFyEZgXX2LUCmgqFSETq5Izr-5VrhtSHdXoomr1rssY1MuJS1yOKl3GtIpU3TMr16Pftfj06AdSt2HHf-3IzB-lV6Zwi7p-WyjQ.avif",
-  ];
+  const images =
+    vdpData?.photos.map((url) => {
+      const encryptedUrl = useEncryptedImageUrl(url || "");
+      return encryptedUrl;
+    }) || [];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % images.length);
@@ -235,4 +235,134 @@ export default function CarouselComponents() {
       )}
     </>
   );
+}
+
+// --- Reusable primitives ---
+export type ISODateString = `${number}-${number}-${number}`; // e.g., "2025-06-23"
+
+export type CTADevice = "mobile" | "desktop" | "both";
+export type CTAType = "form" | "link";
+export type CTALocation = "srp" | "vdp" | "both";
+
+export interface ButtonStyles {
+  bg: string;
+  bg_hover: string;
+  text_color: string;
+  text_hover_color: string;
+}
+
+export interface CTAButton {
+  device: CTADevice;
+  cta_type: CTAType;
+  cta_label: string;
+  btn_styles: ButtonStyles;
+  btn_classes: string[];
+  /**
+   * For "link": a URL (e.g. tel:..., https://...).
+   * For "form": an ID/template reference.
+   */
+  btn_content: string;
+  open_newtab: boolean;
+  cta_location: CTALocation;
+  btn_attributes: Record<string, string | number | boolean>;
+}
+
+export interface PriceBreakdown {
+  total_discounts: number;
+  sale_price_label: string | null;
+  total_additional: number;
+  retail_price_label: string | null;
+  sale_price_formatted: string | null;
+  dealer_discount_label: string | null;
+  dealer_discount_total: number;
+  total_discounts_label: string | null;
+  retail_price_formatted: string | null;
+  total_additional_label: string | null;
+  dealer_additional_label: string | null;
+  dealer_additional_total: number;
+  dealer_discount_details: unknown[];
+  dealer_sale_price_label: string | null;
+  incentive_discount_label: string | null;
+  incentive_discount_total: number;
+  dealer_additional_details: unknown[];
+  total_discounts_formatted: string | null;
+  incentive_additional_label: string | null;
+  incentive_additional_total: number;
+  incentive_discount_details: unknown[];
+  total_additional_formatted: string | null;
+  dealer_sale_price_formatted: string | null;
+  incentive_additional_details: unknown[];
+}
+
+// --- Algolia highlight support (deep & shape-safe) ---
+export type AlgoliaMatchLevel = "none" | "partial" | "full";
+
+export interface AlgoliaHighlight {
+  value: string;
+  matchLevel: AlgoliaMatchLevel;
+  matchedWords: string[];
+}
+
+/**
+ * Maps a data shape T to its Algolia `_highlightResult` equivalent:
+ * - primitives (string | number | boolean) -> AlgoliaHighlight
+ * - arrays -> array of DeepHighlight of the element
+ * - objects -> keyed object of DeepHighlight
+ */
+export type DeepHighlight<T> = T extends string | number | boolean
+  ? AlgoliaHighlight
+  : T extends (infer U)[]
+  ? DeepHighlight<U>[]
+  : T extends object
+  ? { [K in keyof T]?: DeepHighlight<T[K]> }
+  : never;
+
+// --- Main record type for your payload ---
+export interface VDPType {
+  key_features: string[];
+  inventory_date: ISODateString;
+
+  prices: PriceBreakdown;
+
+  cta: CTAButton[];
+
+  // HTML strings per condition
+  disclaimers: {
+    new: string;
+    used: string;
+    certified: string;
+    // keep extensible
+    [k: string]: string;
+  };
+
+  description: string;
+
+  features: string[];
+
+  // Unknown/optional dealer-coordination details; currently null in sample
+  dealer_coordination: Record<string, unknown> | null;
+
+  photos: string[];
+  videos: string[]; // empty in sample but allow future URLs/IDs
+
+  objectID: string;
+
+  // Deeply-typed Algolia highlight results for the fields present above
+  _highlightResult?: DeepHighlight<
+    Pick<
+      VDPType,
+      | "inventory_date"
+      | "prices"
+      | "cta"
+      | "disclaimers"
+      | "description"
+      | "features"
+      | "photos"
+    >
+  > & {
+    // allow other highlight keys Algolia may inject (e.g., extra fields)
+    [key: string]: unknown;
+  };
+
+  __position?: number; // Algolia position within results
 }

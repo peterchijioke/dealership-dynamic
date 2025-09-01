@@ -4,6 +4,7 @@ import React from "react";
 import { ChevronLeft, Calendar, Car, Globe } from "lucide-react";
 import WarrantyForLife from "./WarrantyForLife";
 import VehicleFeatures from "./VehicleFeatures";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 export type VehicleDetailsProps = {
   title?: string; // e.g., "New 2026 Hyundai Palisade"
@@ -47,6 +48,8 @@ export default function VehicleDetails({
   onPriceDetails,
   onAllFeatures,
 }: VehicleDetailsProps) {
+  const { vdpData } = useVehicleDetails();
+
   return (
     <div className="p-5">
       {/* Header (mobile) + Back (desktop) */}
@@ -136,48 +139,16 @@ export default function VehicleDetails({
       <div className="h-[1px] w-full bg-slate-400 my-5" />
       <div className="flex flex-col w-full gap-5 md:p-0 md:py-5">
         <p className="text-xl font-semibold">Vehicle Description</p>
-        <section className="gap-y-3">{data}</section>
+        <section className="gap-y-3">{vdpData?.description || ""}</section>
+      </div>
+
+      <div className="flex flex-col w-full pt-10 gap-5 md:p-0 md:py-5">
+        <p className="text-xl font-semibold">Disclaimer</p>
+        <section
+          dangerouslySetInnerHTML={{ __html: vdpData.disclaimers.new || "" }}
+          className="gap-y-3 leading-8 text-sm  "
+        />
       </div>
     </div>
   );
 }
-const data = `
-2024 Nissan Altima 2.5 SR Gray Sky Pearl 2.5L 4-Cylinder DOHC 16V
-26/36 City/Highway MPG Nissan Certified Certified, CVT with Xtronic,
-2-Way Driver Power Lumbar Support, 20 Color Interior Accent Lighting,
-4-Way Power Passenger Seat, 4-Wheel Disc Brakes, 6 Speakers, ABS brakes,
-Air Conditioning, Alloy wheels, AM/FM radio: SiriusXM, Auto High-beam Headlights,
-Blind Spot Warning, Body-Colored Rear Spoiler, Body-Colored Splash Guards,
-Brake assist, Bumpers: body-color, Clear Bumper Protector,
-Dash Cam - Dual Camera Drive Recorder, Delay-off headlights,
-Driver door bin, Driver vanity mirror, Dual front impact airbags,
-Dual front side impact airbags, Electronic Stability Control,
-External Ground Lighting w/Logo, Four wheel independent suspension,
-Front anti-roll bar, Front Bucket Seats, Front Center Armrest, Front reading lights,
-Fully automatic headlights, Heated Front Seats, Illuminated entry,
-Illuminated Kick Plates, Knee airbag, Leather Shift Knob,
-Leather-Appointed Seat Trim, Low tire pressure warning, NissanConnect,
-NissanConnect featuring Apple CarPlay, Occupant sensing airbag,
-Outside temperature display, Overhead airbag, Overhead console, Panic alarm,
-Passenger door bin, Passenger vanity mirror, Power door mirrors,
-Power driver seat, Power steering, Power windows, Premium Paint - Pearl White,
-Premium Sport Interior Finishers, Radio data system, Radio: AM/FM Audio System,
-Rear anti-roll bar, Rear Parking Sensors, Rear reading lights,
-Rear seat center armrest, Rear side impact airbag, Rear window defroster,
-Remote keyless entry, Security system, Single Panel Moonroof,
-Speed control, Speed-sensing steering, Speed-Sensitive Wipers,
-Split folding rear seat, Sport Seat Trim, SR Floor Mats/Trunk Mat/Hideaway Nets,
-SR Premium Package, Steering wheel mounted audio controls, Tachometer,
-Telescoping steering wheel, Tilt steering wheel, Traction control,
-Trip computer, Trunk Organizer Tray, Unique Sport Seats,
-USB Charging Cable Set - Nissan, Variably intermittent wipers,
-Wheels: 19" Sport Alloy, CVT with Xtronic.
-
-CARFAX One-Owner. Certified. Clean CARFAX.
-Priced below KBB Fair Purchase Price!
-Odometer is 9617 miles below market average!
-
-Our Best Price Up Front, No Games or Gimmicks.
-Our advertised price is for a retail type purchase and may not be available
-for Fleet or Commercial use type purchase; please call us to confirm.
-`;

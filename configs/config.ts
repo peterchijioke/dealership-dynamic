@@ -1,4 +1,4 @@
-import { liteClient as algoliasearch } from 'algoliasearch/lite';
+import { algoliasearch } from 'algoliasearch';
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 
 export const searchClient = algoliasearch(

@@ -126,3 +126,6 @@ export const formatPrice = (price: number | bigint) => {
       maximumFractionDigits: 0,
     }).format(price);
   }
+
+
+ import React from "react";
