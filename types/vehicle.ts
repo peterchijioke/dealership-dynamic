@@ -5,6 +5,9 @@ export interface Vehicle {
   make: string;
   model: string;
   price: number;
+  vin: string;
+  city: string;
+  state: string;
   sale_price: number;
   trim: string;
   retail_price: number | null;

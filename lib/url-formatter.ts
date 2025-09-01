@@ -200,16 +200,12 @@ export function getSubUrlPattern(
   attribute: string,
   attrArr: string[]
 ): UrlPattern {
-
-  // console.log("getSubUrlPattern:", attribute, attrArr);
   if (!attrArr || attrArr.length === 0) return { pathname: "", params: {} };
-
-  // console.log("getSubUrlPattern 2:", attribute, attrArr[attrArr.length - 1]);
 
   const lastElement = slugify(attrArr[attrArr.length - 1]);
   if (attrArr.length === 1) return { pathname: `/${lastElement}`, params: {} };
-
   const restElements = attrArr.slice(0, -1);
+
   return {
     pathname: `/${lastElement}`,
     params: { [attribute]: restElements.map(slugify) },
