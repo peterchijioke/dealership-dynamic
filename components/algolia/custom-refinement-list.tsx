@@ -11,7 +11,14 @@ type Props = {
 };
 
 export default function CustomRefinementList({ attribute, searchable, className, serverFacets }: Props) {
-    const { items, refine, searchForItems } = useRefinementList({ attribute }/*, { skipSuspense: true }*/);
+    const {
+        items,
+        refine,
+        canToggleShowMore,
+        isShowingMore,
+        toggleShowMore,
+        searchForItems
+    } = useRefinementList({ attribute, limit: 10, showMoreLimit: 20 }/*, { skipSuspense: true }*/);
 
     // Fallback: use server facets if client items are not ready
     const displayItems = items.length > 0
@@ -54,6 +61,16 @@ export default function CustomRefinementList({ attribute, searchable, className,
                     </li>
                 ))}
             </ul>
+
+            {/* Show More / Show Less */}
+            {canToggleShowMore && (
+                <button
+                    onClick={toggleShowMore}
+                    className="mt-2 text-sm text-blue-600 hover:underline"
+                >
+                    {isShowingMore ? "Show less" : "Show more"}
+                </button>
+            )}
         </div>
     );
 }

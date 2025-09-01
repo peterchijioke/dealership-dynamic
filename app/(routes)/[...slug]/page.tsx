@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 import { ATTRUBUTES_TO_RETRIEVE, FACETS, srpIndex } from '@/configs/config';
 import SearchClient from './_components/search-client';
-import { refinementListToAlgoliaFilters, refinementToFacetFilters, search } from "@/lib/algolia";
-import { urlParser, urlParser2 } from "@/lib/url-formatter";
-import { searchParamsToRecord2 } from "@/lib/helpers";
+import { refinementToFacetFilters, search } from "@/lib/algolia";
+import { urlParser2 } from "@/lib/url-formatter";
 
 interface PageProps {
     params: Promise<{ slug: string[] }>;

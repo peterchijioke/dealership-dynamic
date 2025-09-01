@@ -14,14 +14,14 @@ export const routing = {
         return 'MyWebsite - Results page'
       }
 
-      return `MyWebsite - Results for: ${indexState.query}`
+      return `Dealership - Results for: ${indexState.query}`
     },
     createURL({ routeState, location }: { routeState: any, location: any }) {
       // console.log("createURL:", routeState);
       // return typeof routeState === "string" ? routeState : "/";
-      return routeState;
-      // const filters = routeState.refinementList || {};
-      // return refinementToUrl(filters);
+      // return `${process.env.NEXT_PUBLIC_BASE_URL}${routeState}`;
+      const filters = routeState.refinementList || {};
+      return refinementToUrl(filters);
     },
 
     parseURL({ location }: { location: any }) {
@@ -30,7 +30,7 @@ export const routing = {
 
       const { params } = urlParser2(pathname, searchParams);
 
-      // console.log("parseURL:", location, params);
+      console.log("parseURL:", params);
       return {
         refinementList: params,
         query: searchParams.get("query") || "",
@@ -42,14 +42,14 @@ export const routing = {
     stateToRoute(uiState: any) {
       const indexUiState = uiState[srpIndex] || {};
 
-      const filters = indexUiState.refinementList || {};
-      // console.log("stateToRoute:", filters);
-      return refinementToUrl(filters);
-      // console.log("stateToRoute:", indexUiState.refinementList || {});
-      // return {
-      //   query: indexUiState.query || "",
-      //   refinementList: indexUiState.refinementList || {},
-      // };
+      // const filters = indexUiState.refinementList || {};
+      // console.log("stateToRoute:", refinementToUrl(filters));
+      // return refinementToUrl(filters);
+      console.log("stateToRoute:", indexUiState.refinementList || {});
+      return {
+        query: indexUiState.query || "",
+        refinementList: indexUiState.refinementList || {},
+      };
     },
 
     routeToState(routeState: any) {

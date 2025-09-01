@@ -17,7 +17,6 @@ export default async function PageWrapper({
       <div className={sticky ? "fixed top-0 z-50 w-full" : ""}>
         <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} />
       </div>
-      {/* <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} /> */}
 
       <div className="w-full">{children}</div>
     </>
