@@ -8,6 +8,8 @@ import { Heart, Circle } from "lucide-react";
 import type { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/helpers";
+import Link from "next/link";
 
 interface VehicleCardProps {
     hit: Vehicle;
@@ -17,6 +19,12 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     const BLUR_PLACEHOLDER =
         "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
     const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
+
+    // Construct VDP slug
+    const vdpUrl = `/vehicle/${slugify(
+        `${hit.condition} ${hit.year} ${hit.make} ${hit.model} ${hit.trim} ${hit.body} ${hit.city} ${hit.state}`
+    )}-${hit.vin}/`;
+    
     return (
         <Card className={cn(
             "overflow-hidden rounded-2xl shadow-md flex flex-col w-full pt-0 pb-1",
@@ -31,22 +39,24 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
             )}
 
             {/* Vehicle Image */}
-            <div className="relative w-full aspect-[4/3]">
-                <Image
-                    src={encryptedUrl ?? "https://placehold.co/600x400"}
-                    alt={hit.year + " " + hit.make + " " + hit.model}
-                    fill
-                    // priority={true}
-                    fetchPriority={hit.__position <= 3 ? "high" : "auto"}
-                    loading={"lazy"}
-                    // loading="eager"
-                    quality={50}
-                    placeholder="blur"
-                    className="object-cover transition-transform duration-300 md:hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    blurDataURL={BLUR_PLACEHOLDER}
-                />
-            </div>
+            <Link href={vdpUrl}>
+                <div className="relative w-full aspect-[4/3]">
+                    <Image
+                        src={encryptedUrl ?? "https://placehold.co/600x400"}
+                        alt={hit.year + " " + hit.make + " " + hit.model}
+                        fill
+                        // priority={true}
+                        fetchPriority={hit.__position <= 3 ? "high" : "auto"}
+                        loading={"lazy"}
+                        // loading="eager"
+                        quality={50}
+                        placeholder="blur"
+                        className="object-cover transition-transform duration-300 md:hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        blurDataURL={BLUR_PLACEHOLDER}
+                    />
+                </div>
+            </Link>
 
             {/* Vehicle Content */}
             <div className="px-4 flex flex-col flex-1">

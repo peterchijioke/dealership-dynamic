@@ -25,7 +25,7 @@ export default async function VehiclePage({ params }: PageProps) {
     const { slug } = await params;
 
     return (
-        <div>
+        <div className="container mx-auto mt-28">
             <h1>Vehicle Details</h1>
             <p>Slug: {slug}</p>
         </div>
