@@ -17,8 +17,8 @@ export default function VehicleGrid() {
       {(status === "loading" || status === "stalled") && (
         <div
           className={
-            styles.VehicleGrid +
-            " w-full gap-4 px-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4"
+            styles.VehicleGrid
+            // " w-full gap-4 px-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4"
           }
         >
           {Array.from({ length: 8 }).map((_, i) => (

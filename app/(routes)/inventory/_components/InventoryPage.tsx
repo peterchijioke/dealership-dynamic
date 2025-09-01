@@ -11,7 +11,7 @@ import { SearchInventory } from "../../../../components/inventory/search-invento
 import CarouselBanner from "../../../../components/inventory/CarouselBanner";
 import { Configure } from "react-instantsearch";
 import { usePathname } from "next/navigation";
-import { nextRouter, customStateMapping } from '@/lib/algolia/customRouting';
+import { nextRouter, customStateMapping } from "@/lib/algolia/customRouting";
 
 export default function InventoryPage() {
   const pathname = usePathname();
