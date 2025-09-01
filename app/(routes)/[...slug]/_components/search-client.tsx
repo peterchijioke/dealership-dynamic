@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { createInstantSearchNextInstance, InstantSearchNext } from 'react-instantsearch-nextjs';
-import { SearchBox, Configure, CurrentRefinements, ClearRefinements, RefinementList } from 'react-instantsearch';
+import { SearchBox, Configure, CurrentRefinements, ClearRefinements } from 'react-instantsearch';
 import { searchClient } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import InfiniteHits from './infinite-hits';
@@ -73,9 +73,9 @@ export default function SearchClient({
                             root: "flex gap-2 flex-wrap",
                             list: "flex gap-2 flex-wrap",
                             item: "bg-gray-200 rounded-full px-3 py-1 text-sm flex items-center",
-                            label: "hidden", // 👈 hide parent key (e.g. 'year:')
+                            label: "hidden",
                             category: "flex items-center",
-                            categoryLabel: "mr-1", // refinement label
+                            categoryLabel: "mr-1",
                             delete: "ml-2 text-red-500 hover:text-red-700 cursor-pointer",
                         }}
                         transformItems={(items) =>
@@ -85,10 +85,10 @@ export default function SearchClient({
                                     refinements: [
                                         {
                                             ...refinement,
-                                            label: String(refinement.value), // 👈 ensure label = value only
+                                            label: String(refinement.value),
                                         },
                                     ],
-                                    label: String(refinement.value), // 👈 override parent too
+                                    label: String(refinement.value),
                                     attribute: item.attribute,
                                     key: `${item.attribute}-${refinement.value}`,
                                 }))
