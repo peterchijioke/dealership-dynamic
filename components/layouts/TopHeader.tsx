@@ -3,6 +3,7 @@ import { Calendar, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
+// import GlobalSearchAutocomplete from "./GlobalSearchAutocomplete";
 
 interface HeaderData {
   phone_numbers?: { label: string; value: string }[];
@@ -58,6 +59,8 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                 quality={90} // Slightly reduce quality for faster loading
               />
             </Link>
+
+            {/* <GlobalSearchAutocomplete /> */}
           </div>
 
           {/* Right section - desktop only */}
