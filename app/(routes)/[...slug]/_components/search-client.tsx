@@ -12,7 +12,7 @@ import {
 } from "react-instantsearch";
 import { searchClient } from "@/configs/config";
 import SidebarFilters from "./sidebar-filters";
-import InfiniteHits from "./infinite-hits";
+import InfiniteHits from "@/components/algolia/infinite-hits";
 import { routing } from "@/lib/algolia/custom-routing";
 import { refinementToFacetFilters } from "@/lib/algolia";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';

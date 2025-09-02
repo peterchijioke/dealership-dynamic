@@ -4,7 +4,7 @@ import { createInstantSearchNextInstance, InstantSearchNext } from 'react-instan
 import { SearchBox, Configure } from 'react-instantsearch';
 import { searchClient } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
-import InfiniteHits from './infinite-hits';
+import InfiniteHits from "@/components/algolia/infinite-hits";
 import { routing } from '@/lib/algolia/custom-routing';
 import { refinementToUrl } from '@/lib/url-formatter';
 

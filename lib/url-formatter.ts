@@ -91,14 +91,14 @@ export function urlParser2(
 
   // Remove condition path from pathname
   const conditionPaths = [
-    "/new-vehicles/certified/",
-    "/used-vehicles/certified/",
-    "/new-vehicles/",
-    "/used-vehicles/",
+    "/new-vehicles/certified",
+    "/used-vehicles/certified",
+    "/new-vehicles",
+    "/used-vehicles",
   ];
 
   let remainingPath = pathname;
-  // console.log("urlParser2", pathname, params);
+  console.log("urlParser2", pathname, params);
   const matchedCondition =
     conditionPaths.find((p) => pathname.startsWith(p)) || "/new-vehicles/";
   remainingPath = remainingPath
