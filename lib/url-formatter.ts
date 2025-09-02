@@ -7,7 +7,6 @@ import {
   searchParamsToRecord,
   searchParamsToRecord2,
   slugify,
-  unslugify,
 } from "./helpers";
 
 type UrlPattern = { pathname: string; params: { [x: string]: string[] } };
@@ -99,6 +98,7 @@ export function urlParser2(
   ];
 
   let remainingPath = pathname;
+  // console.log("urlParser2", pathname, params);
   const matchedCondition =
     conditionPaths.find((p) => pathname.startsWith(p)) || "/new-vehicles/";
   remainingPath = remainingPath
@@ -115,7 +115,7 @@ export function urlParser2(
     // If more than 1 segment, treat first as make
     const makeCode = makesCode[pathParts[0]];
     // last item is model
-    const modelCode = modelsCode[pathParts[pathParts.length - 1]];
+    const modelCode = modelsCode[pathParts[1]];
     make = [makeCode];
     model = [modelCode];
   } else if (pathParts.length === 1) {
@@ -228,6 +228,7 @@ export function refinementToUrl(filters: Record<string, string[]>): string {
   const leadingUrl = getLeadingUrlPattern(conditionFilter);
   const makeUrl = getSubUrlPattern("make", makeFilter);
   const modelUrl = getSubUrlPattern("model", modelFilter);
+
 
   const queryParams = orderParams(
     recordToSearchParams({

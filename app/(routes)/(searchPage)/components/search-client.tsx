@@ -2,18 +2,21 @@
 
 import { usePathname } from "next/navigation";
 import { createInstantSearchNextInstance, InstantSearchNext } from 'react-instantsearch-nextjs';
-import { SearchBox, Configure, CurrentRefinements, ClearRefinements, Hits } from 'react-instantsearch';
+import { SearchBox, Configure, CurrentRefinements, ClearRefinements } from 'react-instantsearch';
 import { searchClient, srpIndex } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import { routing } from '@/lib/algolia/custom-routing';
-import VehicleCard from "./vehicle-card";
+import InfiniteHits from "../../../../components/algolia/infinite-hits";
+import { refinementToUrl } from "@/lib/url-formatter";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';
 
 const searchInstance = createInstantSearchNextInstance();
 
 export default function SearchClient({
+    children,
     facetFilters
 }: {
+    children: React.ReactNode;
     facetFilters: any;
 }) {
     const pathname = usePathname();
@@ -29,7 +32,6 @@ export default function SearchClient({
                 preserveSharedStateOnUnmount: true,
                 persistHierarchicalRootCount: true,
             }}
-            // initialUiState={initialUiState}
             routing={routing}
         >
             <Configure
@@ -97,13 +99,7 @@ export default function SearchClient({
                     <SidebarFilters serverFacets={{}} />
                 </aside>
                 <main className="flex-1 space-y-2 bg-gray-100 p-4">
-                    <Hits
-                        hitComponent={VehicleCard}
-                        classNames={{
-                            list: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3",
-                            item: "flex"
-                        }}
-                    />
+                    {children}
                 </main>
             </div>
         </InstantSearchNext>

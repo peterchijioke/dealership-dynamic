@@ -32,8 +32,8 @@ export const routing = {
 
       console.log("parseURL:", params);
       return {
-        refinementList: params,
         query: searchParams.get("query") || "",
+        refinementList: params,
       };
     },
   },
