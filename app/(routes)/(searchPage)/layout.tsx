@@ -16,7 +16,7 @@ export default async function SearchLayout({ children }: { children: React.React
     // Use Algolia search with parsed query & filters
     // const query = searchParamsObj.get("query") || "";
     const facetFilters = refinementToFacetFilters(refinementList);
-    console.log("facetFilters:", facetFilters);
+    // console.log("facetFilters:", facetFilters);
 
     return (
         <SearchClient facetFilters={facetFilters}>

@@ -6,8 +6,6 @@ import { SearchBox, Configure, CurrentRefinements, ClearRefinements } from 'reac
 import { searchClient, srpIndex } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import { routing } from '@/lib/algolia/custom-routing';
-import InfiniteHits from "../../../../components/algolia/infinite-hits";
-import { refinementToUrl } from "@/lib/url-formatter";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';
 
 const searchInstance = createInstantSearchNextInstance();
