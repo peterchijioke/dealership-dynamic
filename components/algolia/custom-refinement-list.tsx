@@ -8,9 +8,10 @@ type Props = {
     searchable?: boolean;
     className?: string;
     serverFacets?: Record<string, any>;
+    skipSuspense?: boolean;
 };
 
-export default function CustomRefinementList({ attribute, searchable, className, serverFacets }: Props) {
+export default function CustomRefinementList({ attribute, searchable, className, serverFacets, skipSuspense=false }: Props) {
     const {
         items,
         refine,
@@ -18,7 +19,7 @@ export default function CustomRefinementList({ attribute, searchable, className,
         isShowingMore,
         toggleShowMore,
         searchForItems
-    } = useRefinementList({ attribute, limit: 10, showMoreLimit: 20 }/*, { skipSuspense: true }*/);
+    } = useRefinementList({ attribute, limit: 10, showMoreLimit: 20 }, { skipSuspense });
 
     // Fallback: use server facets if client items are not ready
     const displayItems = items.length > 0

@@ -20,46 +20,46 @@ export default function SidebarFilters({ serverFacets }: Props) {
             />
             <Accordion>
                 <RefinementAccordionItem attribute="condition" title="Condition">
-                    <CustomRefinementList attribute="condition" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="condition" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="price" title="Price">
                     <CustomRangeInput attribute="price" className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="year" title="Year">
-                    <CustomRefinementList attribute="year" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="year" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="make" title="Make">
-                    <CustomRefinementList attribute="make" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="make" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="model" title="Model & Trim">
-                    <CustomRefinementList attribute="model" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="model" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="body" title="Body Style">
-                    <CustomRefinementList attribute="body" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="body" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="fuel_type" title="Fuel Type">
-                    <CustomRefinementList attribute="fuel_type" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="fuel_type" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="ext_color" title="Exterior Color">
-                    <CustomRefinementList attribute="ext_color" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="ext_color" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="int_color" title="Interior Color">
-                    <CustomRefinementList attribute="int_color" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="int_color" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="drive_train" title="Drive Train">
-                    <CustomRefinementList attribute="drive_train" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="drive_train" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="transmission" title="Transmission">
-                    <CustomRefinementList attribute="transmission" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="transmission" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="engine" title="Engine">
-                    <CustomRefinementList attribute="engine" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="engine" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="doors" title="Doors">
-                    <CustomRefinementList attribute="doors" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="doors" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="key_features" title="Key Features">
-                    <CustomRefinementList attribute="key_features" serverFacets={serverFacets} className="px-2 pb-3" />
+                    <CustomRefinementList attribute="key_features" serverFacets={serverFacets} skipSuspense={true} className="px-2 pb-3" />
                 </RefinementAccordionItem>
                 <RefinementAccordionItem attribute="mileage" title="Mileage">
                     <CustomRefinementList attribute="mileage" serverFacets={serverFacets} className="px-2 pb-3" />

@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const headers = new Headers(request.headers);
+  headers.set("x-full-url", request.url);
 
   // Skip .well-known and any API/system routes
   if (
@@ -14,7 +16,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  return NextResponse.next();
+  return NextResponse.next({ headers });
 }
 
 // Only run middleware on routes we care about

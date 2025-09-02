@@ -52,11 +52,16 @@ export default function SearchClient({ initialResults }: Props) {
             // if (query) params.append("query", query);
             params.append("hitsPerPage", hitsPerPage.toString());
             params.append("page", currentPage.toString());
-            params.append("facets", JSON.stringify(FACETS));
+            params.append("facets", JSON.stringify(["*"]));
             params.append(
                 "attributesToRetrieve",
-                JSON.stringify(ATTRUBUTES_TO_RETRIEVE)
+                JSON.stringify(["*"])
             );
+            // params.append("facets", JSON.stringify(FACETS));
+            // params.append(
+            //     "attributesToRetrieve",
+            //     JSON.stringify(ATTRUBUTES_TO_RETRIEVE)
+            // );
 
             if (facetFilters.length) {
                 params.append(

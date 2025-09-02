@@ -31,7 +31,7 @@ export default function SearchClient({
   serverFacets: any;
   initialUiState: any;
 }) {
-  const pathname = usePathname();
+    const pathname = usePathname();
 
   // Derive facetFilters again on the client from the refinements in uiState
   const refinementList = initialUiState?.[indexName]?.refinementList || {};
