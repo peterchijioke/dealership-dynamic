@@ -42,23 +42,23 @@ export const routing = {
     stateToRoute(uiState: any) {
       const indexUiState = uiState[srpIndex] || {};
 
-      // const filters = indexUiState.refinementList || {};
-      // console.log("stateToRoute:", refinementToUrl(filters));
-      // return refinementToUrl(filters);
-      console.log("stateToRoute:", indexUiState.refinementList || {});
-      return {
-        query: indexUiState.query || "",
-        refinementList: indexUiState.refinementList || {},
-      };
+      const filters = indexUiState.refinementList || {};
+      console.log("stateToRoute:", refinementToUrl(filters));
+      return refinementToUrl(filters);
+      // console.log("stateToRoute:", indexUiState.refinementList || {});
+      // return {
+      //   query: indexUiState.query || "",
+      //   refinementList: indexUiState.refinementList || {},
+      // };
     },
 
     routeToState(routeState: any) {
       // Map back into Algolia’s uiState shape
-      console.log("routeToState:", routeState.refinementList || {}, srpIndex);
+      // console.log("routeToState:", routeState.refinementList || {});
       return {
         [srpIndex]: {
           query: routeState.query || "",
-          refinementList: routeState.refinementList || {},
+          // refinementList: routeState.refinementList || {},
         },
       };
     },

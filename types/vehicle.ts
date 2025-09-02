@@ -121,6 +121,7 @@ export interface VehicleHit {
   page: number;
   nbPages?: number;
   facets?: Record<string, Record<string, number>>;
+  objectID?: string;
 }
 
 export interface VehicleFacet {
