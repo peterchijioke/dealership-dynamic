@@ -9,6 +9,7 @@ import type { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { redirect, useRouter } from "next/navigation";
+import { Http2ServerResponse } from "node:http2";
 
 interface VehicleCardProps {
   hit: Vehicle;
@@ -19,138 +20,99 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
   const route = useRouter();
+  console.log("==========hit.condition==========================");
+  console.log(hit.condition);
+  console.log("===========hit.condition=========================");
   return (
     <Card
       className={cn(
-        "overflow-hidden rounded-2xl shadow-md flex flex-col w-full pt-0 pb-1",
-        "transition-transform duration-300 ease-in-out",
-        "hover:scale-[1.02] hover:shadow-xl"
+        "overflow-hidden grid rounded-3xl shadow-xs  w-full bg-white",
+        "transition-all duration-300 ease-in-out py-0 overflow-hidden pb-6"
       )}
     >
-      {/* Banner */}
-      {hit.is_special && (
-        <div className="bg-green-700 text-white text-sm font-semibold text-center py-1">
-          Eligible for $5k Oregon Charge Ahead Rebate
-        </div>
-      )}
-
       {/* Vehicle Image */}
-      <div
-        onClick={() => route.push(`/vehicle/${hit?.id}`)}
-        className="relative w-full aspect-[4/3]  cursor-pointer"
-      >
+      <div className="relative   w-full h-72 cursor-pointer">
         <Image
           src={encryptedUrl ?? "https://placehold.co/600x400"}
           alt={hit.year + " " + hit.make + " " + hit.model}
           fill
-          // priority={true}
           fetchPriority={hit.__position <= 3 ? "high" : "auto"}
           loading={"lazy"}
-          // loading="eager"
-          quality={50}
+          quality={80}
           placeholder="blur"
-          className="object-cover transition-transform duration-300 md:hover:scale-105"
+          className="object-cover w-full h-full rounded-t-3xl"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           blurDataURL={BLUR_PLACEHOLDER}
         />
       </div>
+      <div className="flex items-center justify-between px-3 ">
+        <div
+          className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
+          data-target="srp-card-mileage"
+        >
+          {hit.condition}
+        </div>
+        <p
+          className="text-[0.84rem] font-normal text-[#000000]"
+          data-target="srp-card-price-ask"
+        >
+          #{hit.stock_number}
+        </p>
+      </div>
 
       {/* Vehicle Content */}
-      <div className="px-4 flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-          <div>
-            <span className="font-semibold text-green-800 uppercase">
-              {hit.condition}
-            </span>
-            <span> | #{hit.stock_number} | VIN</span>
-          </div>
-          <div className="flex gap-2 items-center">
-            {/* Example color swatches */}
-            <Circle className="w-4 h-4 text-black" />
-            <Circle className="w-4 h-4 text-blue-400" />
-            <Heart className="w-4 h-4 text-gray-500 cursor-pointer" />
-          </div>
+      <div className="px-3 flex flex-col">
+        <div className=" w-full pb-3">
+          <h2
+            data-target="srp-card-title"
+            className="text-base font-medium text-[#000000] overflow-hidden line-clamp-2 text-ellipsis"
+          >
+            {hit.title}
+          </h2>
+
+          {/* Subtitle */}
+          <p className=" text-[#72777E] text-xs line-clamp-2 text-ellipsis mb-1.5">
+            {hit.body} {hit.drive_train}
+          </p>
         </div>
 
-        {/* Title */}
-        <h3 className="font-bold text-lg leading-snug">
-          {hit.year} {hit.make} {hit.model} {hit.trim}
-        </h3>
-        <p className="text-sm text-gray-600 mb-2">
-          {hit.body} {hit.drive_train}
-        </p>
-
-        {/* Pricing */}
-        <div className="text-sm">
-          {/* Retail/MSRP */}
-          {hit.prices.retail_price_formatted && (
-            <div className="flex justify-between">
-              <span>MSRP</span>
-              <span className="line-through">
-                {hit.prices.retail_price_formatted}
-              </span>
+        {/* Price Section */}
+        <div className="flex items-center w-full justify-between mb-6">
+          <div className="w-full">
+            <div className=" text-[#69707C] overflow-hidden line-clamp-2 text-ellipsis">
+              Sale Price
             </div>
-          )}
-
-          {/* Dealer Discount */}
-          {hit.prices.dealer_discount_total > 0 && (
-            <div className="flex justify-between">
-              <span>
-                {hit.prices.dealer_discount_label || "Dealership Discount"}
-              </span>
-              <span>
-                - ${hit.prices.dealer_discount_total.toLocaleString()}
-              </span>
-            </div>
-          )}
-
-          {/* Sale Price */}
-          {hit.prices.dealer_sale_price_formatted && (
-            <div className="flex justify-between">
-              <span>{hit.prices.sale_price_label || "Sale Price"}</span>
-              <span>{hit.prices.dealer_sale_price_formatted}</span>
-            </div>
-          )}
-
-          {/* Incentives */}
-          {hit.prices.incentive_discount_total > 0 && (
-            <div className="flex justify-between">
-              <span>{hit.prices.incentive_discount_label || "Incentives"}</span>
-              <span>
-                - ${hit.prices.incentive_discount_total.toLocaleString()}
-              </span>
-            </div>
-          )}
-
-          {/* Final Price */}
-          {hit.sale_price && (
-            <div className="flex justify-between font-bold text-lg mt-2">
-              <span>AFTER ALL REBATES</span>
-              <span className="text-red-600">
-                {hit.sale_price.toLocaleString("en-US", {
+            <div className="flex items-center">
+              <span className="text-base font-semibold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
+                {hit.sale_price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
-                })}
+                }) || hit.prices.dealer_sale_price_formatted}
               </span>
+              <span className="ml-2 text-gray-600">▼</span>
             </div>
-          )}
+          </div>
+
+          {/* Mileage */}
+          <div className="text-right">
+            <div className="text-[0.84rem] font-semibold text-[#374151] whitespace-nowrap">
+              {hit.mileage
+                ? `${hit.mileage.toLocaleString()} miles`
+                : "8 miles"}
+            </div>
+          </div>
         </div>
 
-        {/* CTA */}
-        <div className="mt-auto">
-          {hit.cta.length > 0 && (
-            <Button
-              className="mt-4 w-full"
-              style={{
-                backgroundColor: hit.cta[0].btn_styles.bg,
-                color: hit.cta[0].btn_styles.text_color,
-              }}
-            >
-              {hit.cta[0].cta_label || "Confirm Availability"}
-            </Button>
-          )}
+        {/* CTA Button */}
+        <div className=" px-3">
+          <Button
+            onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
+            className="w-full py-6 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-white text-gray-800 border-0"
+          >
+            View Details
+          </Button>
         </div>
+        {/* Closing tag for the div started at line 64 */}
       </div>
     </Card>
   );
