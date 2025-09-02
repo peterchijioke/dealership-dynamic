@@ -2,12 +2,14 @@ import {
   AppleIcon,
   MoreHorizontal,
   MoreVertical,
+  PhoneIcon,
   Smartphone,
   Sun,
 } from "lucide-react";
 import { FeaturesModal } from "./FeaturesModal";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 type FeatureCardProps = {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -25,7 +27,8 @@ const FeatureCard = ({ icon: Icon, title }: FeatureCardProps) => (
 
 const NissanFeatures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { vdpData } = useVehicleDetails();
+  const key_features = vdpData?.key_features || [];
   const handleAllFeatures = () => {
     setIsModalOpen(true);
   };
@@ -34,14 +37,26 @@ const NissanFeatures = () => {
     setIsModalOpen(false);
   };
 
-  const features = [
-    { icon: AppleIcon, title: "Apple CarPlay" },
-    { icon: Sun, title: "Sunroof Moonroof" },
-  ];
+  const features = key_features
+    .filter(
+      (feature) => feature === "Android Auto" || feature === "Apple CarPlay"
+    )
+    .map((feature) => ({
+      icon:
+        feature === "Android Auto"
+          ? PhoneIcon
+          : feature === "Apple CarPlay"
+          ? AppleIcon
+          : Smartphone,
+      title: feature,
+    }));
+
   return (
     <>
       <div className=" w-full">
-        <h2 className=" font-bold  mb-6">Reasons to love this Nissan 2.5 SR</h2>
+        <h2 className=" font-bold  mb-6">
+          Reasons to love this {vdpData?.title}
+        </h2>
 
         <div className={cn("md:flex flex-row items-center gap-6 hidden")}>
           {features.map(({ icon, title }) => (
