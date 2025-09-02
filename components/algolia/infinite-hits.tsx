@@ -2,10 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { useInfiniteHits } from "react-instantsearch";
-import VehicleCard from "../../app/(routes)/(searchPage)/components/vehicle-card";
+import VehicleCard from "@/components/vehicle-card";
 import type { Vehicle } from "@/types/vehicle";
 
-export default function InfiniteHits({ serverHits }: { serverHits: Vehicle[] }) {
+export default function InfiniteHits({
+    serverHits,
+}: {
+    serverHits: Vehicle[];
+}) {
     const { items: hits, isLastPage, showMore } = useInfiniteHits<Vehicle>();
     const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,10 +40,12 @@ export default function InfiniteHits({ serverHits }: { serverHits: Vehicle[] }) 
     return (
         <div className="space-y-6">
             {/* Grid of hits */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
                 {hits.length > 0
                     ? hits.map((hit) => <VehicleCard key={hit.objectID} hit={hit} />)
-                    : serverHits.map((hit) => <VehicleCard key={hit.objectID} hit={hit} />)}
+                    : serverHits.map((hit) => (
+                        <VehicleCard key={hit.objectID} hit={hit} />
+                    ))}
             </div>
 
             {/* Sentinel div for infinite scroll */}
