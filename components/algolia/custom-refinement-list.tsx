@@ -22,16 +22,20 @@ export default function CustomRefinementList({ attribute, searchable, className,
     } = useRefinementList({ attribute, limit: 10, showMoreLimit: 20 }, { skipSuspense });
 
     // Fallback: use server facets if client items are not ready
-    const displayItems = items.length > 0
-        ? items
-        : (serverFacets?.[attribute]
-            ? Object.entries(serverFacets[attribute]).map(([label, count]) => ({
-                label,
-                value: label,
-                count,
-                isRefined: false,
-            }))
-            : []);
+    const displayItems =
+        items.length > 0
+            ? items
+            : serverFacets?.[attribute]
+                ? Object.entries(serverFacets[attribute]).map(([label, count]) => {
+                    const refined = items.find((i) => i.label === label)?.isRefined ?? false;
+                    return {
+                        label,
+                        value: label,
+                        count,
+                        isRefined: refined,
+                    };
+                })
+                : [];
     
     return (
         <div className={cn("w-full", className)}>
@@ -47,7 +51,7 @@ export default function CustomRefinementList({ attribute, searchable, className,
 
             {/* Custom list UI */}
             <ul className="space-y-1 max-h-60 overflow-y-auto">
-                {displayItems.map((item) => (
+                {items.map((item) => (
                     <li key={item.label} className="flex items-center justify-between">
                         <label className="flex items-center gap-2">
                             <input

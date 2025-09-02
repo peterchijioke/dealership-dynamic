@@ -1,22 +1,29 @@
 'use client';
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { createInstantSearchNextInstance, InstantSearchNext } from 'react-instantsearch-nextjs';
 import { SearchBox, Configure, CurrentRefinements, ClearRefinements } from 'react-instantsearch';
-import { searchClient, srpIndex } from '@/configs/config';
+import { FACETS, searchClient, srpIndex } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import { routing } from '@/lib/algolia/custom-routing';
 import InfiniteHits from "@/components/algolia/infinite-hits";
+import { useMemo } from "react";
+import { refinementToUrl, urlParser2 } from "@/lib/url-formatter";
+import { refinementToFacetFilters, refinementToFacetFilters2 } from "@/lib/algolia";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';
 
 const searchInstance = createInstantSearchNextInstance();
 
-export default function SearchClient({
-    facetFilters
-}: {
-    facetFilters: any;
-}) {
+export default function SearchClient() {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const facetFilters = useMemo(() => {
+        const { params } = urlParser2(pathname, new URLSearchParams(searchParams));
+        return refinementToFacetFilters2(params);
+    }, [pathname, searchParams]);
+
+    console.log("facetFilters:", facetFilters, srpIndex);
 
     return (
         <InstantSearchNext
@@ -31,10 +38,7 @@ export default function SearchClient({
             }}
             routing={routing}
         >
-            <Configure
-                hitsPerPage={12}
-                facetFilters={facetFilters}
-            />
+            <Configure hitsPerPage={12} facets={["*"]} attributesToRetrieve={["*"]} />
             <div className="mt-28 py-1">
                 {/* <CarouselBanner /> */}
             </div>

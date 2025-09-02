@@ -3,11 +3,16 @@ import {
   type SearchParams,
   type SearchResponse,
 } from "algoliasearch";
+import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
+  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!,
+  {
+    responsesCache: createInMemoryCache(),
+    requestsCache: createInMemoryCache(),
+  }
 );
 
 type SearchOptions = SearchParams & {
@@ -31,6 +36,52 @@ async function search(options: SearchOptions) {
   );
 
   return response;
+}
+
+async function searchWithMultipleQueries(options: SearchOptions) {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!;
+
+  const mainQuery = {
+    indexName,
+    params: {
+      ...options,
+      facets: ["*"], // request facets with filtered counts
+    },
+  };
+
+  const facetQuery = {
+    indexName,
+    params: {
+      ...options,
+      hitsPerPage: 0, // only facet counts
+      facets: [
+        "condition",
+        "make",
+        "model",
+        "year",
+        "body",
+        "fuel_type",
+        "ext_color",
+        "int_color",
+        "drive_train",
+        "transmission",
+      ],
+      facetFilters: [], // global facet counts
+    },
+  };
+
+  const response = await client.search<VehicleHit>([mainQuery, facetQuery]);
+
+  // ✅ now this will exist
+  const [hitsResult, facetsResult] = response.results as [
+    SearchResponse<VehicleHit>,
+    SearchResponse<VehicleHit>
+  ];
+
+  return {
+    ...hitsResult,
+    facets: facetsResult.facets,
+  };
 }
 
 function updateFacetFilter(
@@ -74,10 +125,25 @@ function refinementToFacetFilters(
     .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
 }
 
+function refinementToFacetFilters2(
+  refinementList: Record<string, string[]>
+): (string | string[])[] {
+  return Object.entries(refinementList)
+    .filter(([_, values]) => values.length > 0)
+    .map(
+      ([facet, values]) =>
+        values.length > 1
+          ? values.map((v) => `${facet}:${v}`) // OR group
+          : `${facet}:${values[0]}` // single value
+    );
+}
+
 export {
   client,
   search,
+  searchWithMultipleQueries,
   refinementListToAlgoliaFilters,
   refinementToFacetFilters,
+  refinementToFacetFilters2,
   updateFacetFilter,
 };
