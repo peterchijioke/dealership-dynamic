@@ -1,6 +1,5 @@
 "use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useEffect, useRef, useState } from "react";
 import { useVehicleDetails } from "./VdpContextProvider";
 import AvailabilityForm from "./AvailabilityForm";
@@ -22,6 +21,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
   const [action, setAction] = useState<Action>("confirmAvailability");
   const sheetRef = useRef<HTMLDivElement>(null);
 
+  const { featureInView } = useVehicleDetails();
   // Lock body scroll while sheet is open
   useEffect(() => {
     const original = document.body.style.overflow;
@@ -42,8 +42,6 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
     if (e.target === e.currentTarget) setOpen(false);
   };
 
-  const { featureInView } = useVehicleDetails();
-
   return (
     <div ref={footerRef}>
       {/* Bottom gradient under the pill (mobile only) */}
@@ -56,7 +54,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
               type="button"
               onClick={() => setOpen(true)}
               className="w-full py-3 rounded-full font-semibold text-white
-                       bg-primary hover:bg-primary active:scale-[.99]
+                       bg-rose-700 hover:bg-rose-800 active:scale-[.99]
                        shadow-lg transition"
             >
               I&apos;m Interested
@@ -67,7 +65,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
               type="button"
               onClick={() => setOpen(true)}
               className="w-full py-3 rounded-full font-semibold text-white
-                       bg-primary hover:bg-primary active:scale-[.99]
+                       bg-rose-700 hover:bg-rose-800 active:scale-[.99]
                        shadow-lg transition"
             >
               All features
@@ -114,7 +112,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
               type="button"
               onClick={() => setOpen(false)}
               className=" w-fit px-6  border-primary h-12 rounded-full font-semibold
-                           border-2 border-primary-600 text-primary-700
+                           border-2 border-rose-600 text-rose-700
                            bg-white active:scale-[.99]"
             >
               Close
@@ -130,8 +128,8 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
                 setOpen(false);
               }}
               className="f flex-1 py-3 rounded-full font-semibold 
-                           bg-primary-600 hover:bg-primary active:scale-[.99]
-                           shadow-md bg-primary   outline-primary text-white"
+                           bg-rose-600 hover:bg-rose-700 active:scale-[.99]
+                           shadow-md bg-rose-700 outline-rose-700 text-white"
             >
               Continue
             </button>

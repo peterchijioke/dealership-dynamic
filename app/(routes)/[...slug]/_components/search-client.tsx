@@ -16,6 +16,7 @@ import InfiniteHits from "./infinite-hits";
 import { routing } from "@/lib/algolia/custom-routing";
 import { refinementToFacetFilters } from "@/lib/algolia";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';
+const searchInstance = createInstantSearchNextInstance();
 
 export default function SearchClient({
   indexName,
@@ -31,7 +32,6 @@ export default function SearchClient({
   initialUiState: any;
 }) {
   const pathname = usePathname();
-  const searchInstance = createInstantSearchNextInstance();
 
   // Derive facetFilters again on the client from the refinements in uiState
   const refinementList = initialUiState?.[indexName]?.refinementList || {};

@@ -1,35 +1,70 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useState, useEffect, useMemo } from "react";
-import { useHits } from "react-instantsearch";
+import React, { useState, useEffect } from "react";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
-import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
+import { encryptObject } from "@/utils/utils";
+import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const { vdpData } = useVehicleDetails();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCurrentSlide, setModalCurrentSlide] = useState(0);
 
-  const images =
-    vdpData?.photos.map((url) => {
-      const encryptedUrl = useEncryptedImageUrl(url || "");
-      return encryptedUrl;
-    }) || [];
+  const images = (vdpData?.photos || []).map((url) => {
+    const cacheKey = JSON.stringify({
+      url,
+      width: 400,
+      quality: 65,
+      cache: 1,
+    });
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % images.length);
-  };
+    if (urlCache.has(cacheKey)) {
+      return urlCache.get(cacheKey)!;
+    }
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
-  };
+    const isCancelled = false;
 
-  interface OpenModalFn {
-    (index: number): void;
-  }
+    encryptObject(
+      {
+        url,
+        width: 400,
+        quality: 65,
+        cache: 1,
+      },
+      key!
+    )
+      .then((str) => {
+        const finalUrl = `https://dealertower.app/image/${str}.avif`;
+        urlCache.set(cacheKey, finalUrl);
+        if (!isCancelled) return finalUrl;
+      })
+      .catch(() => {
+        if (!isCancelled) return undefined;
+      });
+    return undefined;
+  });
 
-  const openModal: OpenModalFn = (index) => {
+  // Main carousel slider
+  const [sliderRef, instanceRef] = useKeenSlider({
+    initial: 0,
+    loop: false,
+    slides: {
+      perView: 1,
+      spacing: 0,
+    },
+    slideChanged(slider) {
+      setCurrentSlide(slider.track.details.rel);
+    },
+    created() {
+      setLoaded(true);
+    },
+  });
+
+  const openModal = (index: number) => {
     setModalCurrentSlide(index);
     setIsModalOpen(true);
   };
@@ -38,30 +73,12 @@ export default function CarouselComponents() {
     setIsModalOpen(false);
   };
 
-  const nextModalSlide = () => {
-    setModalCurrentSlide((prev) => (prev + 1) % images.length);
-  };
-
-  const prevModalSlide = () => {
-    setModalCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
-  };
-
   // Handle keyboard navigation for modal
   useEffect(() => {
-    interface KeyboardEventHandler {
-      (e: KeyboardEvent): void;
-    }
-
-    const handleKeyDown: KeyboardEventHandler = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!isModalOpen) return;
 
       switch (e.key) {
-        case "ArrowLeft":
-          prevModalSlide();
-          break;
-        case "ArrowRight":
-          nextModalSlide();
-          break;
         case "Escape":
           closeModal();
           break;
@@ -85,6 +102,26 @@ export default function CarouselComponents() {
     };
   }, [isModalOpen]);
 
+  // Add scroll tracking for photo counter
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const scrollTop = target.scrollTop;
+      const windowHeight = window.innerHeight;
+      const currentIndex = Math.round(scrollTop / windowHeight);
+      setModalCurrentSlide(Math.min(currentIndex, images.length - 1));
+    };
+
+    const modalContainer = document.querySelector(".modal-scroll-container");
+    modalContainer?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      modalContainer?.removeEventListener("scroll", handleScroll);
+    };
+  }, [isModalOpen, images.length]);
+
   return (
     <>
       {/* Main Carousel */}
@@ -92,142 +129,127 @@ export default function CarouselComponents() {
         className="relative cursor-zoom-in max-w-4xl mx-auto"
         data-label="vdp-carousel"
       >
-        <div className="md:rounded-3xl overflow-hidden">
-          <div
-            className="flex transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-          >
+        <div className="md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
+          <div ref={sliderRef} className="keen-slider">
             {images.map((item, index) => (
               <div
-                onClick={() => openModal(index)}
                 key={index}
-                className="w-full flex-shrink-0 cursor-zoom-in"
+                className="keen-slider__slide cursor-zoom-in"
+                onClick={() => openModal(index)}
               >
-                <div className="w-full relative overflow-hidden aspect-[1.33]">
+                <div className="w-full relative overflow-hidden aspect-[1.5]">
                   <img
                     loading="eager"
                     alt={`Car preview ${index + 1}`}
                     src={item}
-                    className="absolute top-0 left-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
                   />
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Photo counter for main carousel */}
+          <div className="absolute top-5 left-4 z-10 rounded-full px-3 py-1 bg-white/80 backdrop-blur-sm">
+            <p className="text-sm font-medium text-gray-900">
+              Photo {currentSlide + 1} / {images.length}
+            </p>
+          </div>
         </div>
 
         {/* Navigation buttons */}
-        <div className="hidden md:block">
-          <Button
-            onClick={prevSlide}
-            variant={"ghost"}
-            size={"icon"}
-            id="left-arrow"
-            aria-label="Previous"
-            disabled={currentSlide === 0}
-            className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-[#103d82] focus:ring-2 focus:ring-[#103d82] focus:ring-offset-1 left-4 transition-opacity ${
-              currentSlide === 0
-                ? "opacity-30 cursor-not-allowed"
-                : "opacity-100"
-            }`}
-          >
-            <ChevronLeft className="size-5 m-auto text-[#103d82]" />
-          </Button>
+        {loaded && instanceRef.current && (
+          <div className="hidden md:block">
+            <Button
+              onClick={() => instanceRef.current?.prev()}
+              variant={"ghost"}
+              size={"icon"}
+              id="left-arrow"
+              aria-label="Previous"
+              disabled={currentSlide === 0}
+              className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 left-4 transition-opacity ${
+                currentSlide === 0
+                  ? "opacity-30 cursor-not-allowed"
+                  : "opacity-100"
+              }`}
+            >
+              <ChevronLeft className="size-5 m-auto text-rose-700" />
+            </Button>
 
-          <Button
-            onClick={nextSlide}
-            variant={"ghost"}
-            size={"icon"}
-            id="right-arrow"
-            aria-label="Next"
-            disabled={currentSlide === images.length - 1}
-            className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-[#103d82] focus:ring-2 focus:ring-[#103d82] focus:ring-offset-1 right-4 transition-opacity ${
-              currentSlide === images.length - 1
-                ? "opacity-30 cursor-not-allowed"
-                : "opacity-100"
-            }`}
-          >
-            <ChevronRight className="size-5 m-auto text-[#103d82]" />
-          </Button>
-        </div>
+            <Button
+              onClick={() => instanceRef.current?.next()}
+              variant={"ghost"}
+              size={"icon"}
+              id="right-arrow"
+              aria-label="Next"
+              disabled={currentSlide === images.length - 1}
+              className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 right-4 transition-opacity ${
+                currentSlide === images.length - 1
+                  ? "opacity-30 cursor-not-allowed"
+                  : "opacity-100"
+              }`}
+            >
+              <ChevronRight className="size-5 m-auto text-rose-700" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-          {/* Close Button */}
+        <div className="fixed inset-0 z-50 bg-[#808080]">
+          {/* Photo counter - positioned absolutely */}
+          <span className="absolute top-6 left-6 z-20 bg-[#a6a6a6] text-white px-4 py-2 rounded-full backdrop-blur-sm">
+            Photo {modalCurrentSlide + 1}/{images.length}
+          </span>
+
+          {/* Close Button - positioned absolutely */}
           <Button
             onClick={closeModal}
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-60 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
+            className="absolute cursor-pointer top-6 right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-10 w-10"
             aria-label="Close gallery"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 text-white" />
           </Button>
 
-          {/* Modal Content */}
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            {/* Main Image */}
-            <div className="relative max-w-6xl max-h-full">
-              <img
-                src={images[modalCurrentSlide]}
-                alt={`Car image ${modalCurrentSlide + 1}`}
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
-
-            {/* Navigation Buttons */}
-            <Button
-              onClick={prevModalSlide}
-              variant="ghost"
-              size="icon"
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full h-12 w-12"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-
-            <Button
-              onClick={nextModalSlide}
-              variant="ghost"
-              size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full h-12 w-12"
-              aria-label="Next image"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-
-            {/* Image Counter */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
-              {modalCurrentSlide + 1} of {images.length}
-            </div>
-
-            {/* Thumbnail Strip */}
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-full overflow-x-auto px-4">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setModalCurrentSlide(index)}
-                  className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-all ${
-                    index === modalCurrentSlide
-                      ? "border-white scale-110"
-                      : "border-transparent opacity-70 hover:opacity-100"
-                  }`}
-                >
+          {/* Main scrollable container */}
+          <div
+            className="modal-scroll-container w-full h-full overflow-y-auto scroll-smooth snap-y snap-mandatory"
+            style={{
+              width: "100vw",
+              height: "100vh",
+            }}
+          >
+            {images.map((image, index) => (
+              <div
+                key={index}
+                className="snap-start flex items-center justify-center"
+                style={{
+                  minHeight: "100vh",
+                  width: "100vw",
+                }}
+              >
+                <div className="relative w-full h-full flex items-center justify-center p-4">
                   <img
                     src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    alt={`Car image ${index + 1}`}
+                    className="w-full h-full object-contain"
+                    loading="eager"
+                    style={{
+                      maxWidth: "95vw",
+                      maxHeight: "90vh",
+                    }}
                   />
-                </button>
-              ))}
-            </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Click overlay to close */}
           <div
-            className="absolute inset-0 -z-10"
+            className="absolute inset-0 -z-10 pointer-events-none"
             onClick={closeModal}
             aria-label="Close gallery"
           />

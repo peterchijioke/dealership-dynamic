@@ -139,14 +139,16 @@ export default function VehicleDetails({
       <div className="h-[1px] w-full bg-slate-400 my-5" />
       <div className="flex flex-col w-full gap-5 md:p-0 md:py-5">
         <p className="text-xl font-semibold">Vehicle Description</p>
-        <section className="gap-y-3">{vdpData?.description || ""}</section>
+        <section className="gap-y-3 leading-8 ">
+          {vdpData?.description || ""}
+        </section>
       </div>
 
       <div className="flex flex-col w-full pt-10 gap-5 md:p-0 md:py-5">
         <p className="text-xl font-semibold">Disclaimer</p>
         <section
           dangerouslySetInnerHTML={{ __html: vdpData.disclaimers.new || "" }}
-          className="gap-y-3 leading-8 text-sm  "
+          className="gap-y-3 leading-8 italic   "
         />
       </div>
     </div>

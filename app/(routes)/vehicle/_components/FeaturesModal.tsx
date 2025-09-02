@@ -9,10 +9,10 @@ type FeaturesModalProps = {
 };
 
 export const FeaturesModal = ({ isOpen, onClose }: FeaturesModalProps) => {
-  if (!isOpen) return null;
-
   const { vdpData } = useVehicleDetails();
   const features = vdpData.features || [];
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity z-50 flex items-center justify-center p-4">

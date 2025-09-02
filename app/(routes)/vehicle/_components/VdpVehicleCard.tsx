@@ -19,10 +19,10 @@ export default function VdpVehicleCard() {
         className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-40 pb-6x max-w-sm"
       >
         <div>
-          <div className="flex flex-row gap-4 justify-between mb-6">
+          <div className="flex flex-row gap-1 justify-between mb-6">
             <div className="flex flex-col">
               <div className="font-bold text-xl inline-block !text-[20px] ">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                <h1 className="text-xl font-bold text-gray-900 mb-1">
                   {vdpData?.title}
                 </h1>
               </div>
@@ -30,8 +30,8 @@ export default function VdpVehicleCard() {
                 <h2></h2>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className=" font-bold text-lg">
+            <div className="flex flex-col items-end ">
+              <div className=" text-rose-700  animate-bounce font-bold text-2xl">
                 <h2>{vdpData?.prices.sale_price_formatted}</h2>
               </div>
               <div className="flex flex-row min-w-max">
@@ -59,21 +59,13 @@ export default function VdpVehicleCard() {
             </div>
           </div>
 
-          <div className=" hidden md:block">
+          <div className=" hidden md:block py-2">
             {vdpData.cta.map((ctaItem, index) => (
-              <div
-                key={index}
-                className="flex items-center w-full gap-2 mb-2 py-2"
-              >
+              <div key={index} className="flex items-center  w-full py-1">
                 {getButtonType({ ...ctaItem })}
               </div>
             ))}
-            {/* <button
-              className="active:opacity-90 bg-[#103d82] cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full mt-[20px] mb-3"
-              aria-haspopup="false"
-            >
-              {"I'm Interested"}
-            </button> */}
+
             <button
               className="active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
               aria-haspopup="false"
@@ -104,7 +96,7 @@ export default function VdpVehicleCard() {
             )}
           </div>
 
-          <a
+          {/* <a
             href="tel:+5032222277"
             className="hidden md:flex rounded-full py-1 border-black focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 mt-5 mb-5 flex flex-col"
           >
@@ -117,7 +109,7 @@ export default function VdpVehicleCard() {
                 )?.btn_content
               }
             </span>
-          </a>
+          </a> */}
         </div>
       </div>
     </div>
@@ -145,37 +137,17 @@ export const getButtonType = (data: any) => {
     btn_attributes = {},
   } = data;
 
-  // Extract styles from btn_styles
-  const {
-    bg = "#323232",
-    bg_hover = "#cc0000",
-    text_color = "#ffffff",
-    text_hover_color = "#ffffff",
-  } = btn_styles || {};
-
-  // Common hover and focus styles
-  const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.backgroundColor = bg_hover;
-    e.currentTarget.style.color = text_hover_color;
-  };
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.backgroundColor = bg;
-    e.currentTarget.style.color = text_color;
-  };
+  // Base button classes with bottom margin removed
+  const baseButtonClasses =
+    "active:opacity-90 bg-rose-700 cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full ";
 
   // Handle HTML content type
   if (cta_type === "html" && btn_content) {
     return (
       <div
         dangerouslySetInnerHTML={{ __html: btn_content }}
-        className={`w-full rounded-md ${btn_classes.join(" ")}`}
-        style={{
-          backgroundColor: bg,
-          color: text_color,
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+        aria-haspopup="false"
         {...btn_attributes}
       />
     );
@@ -186,15 +158,10 @@ export const getButtonType = (data: any) => {
     return (
       <a
         href={btn_content}
-        className={`w-full py-3 rounded-md ${btn_classes.join(" ")}`}
-        style={{
-          backgroundColor: bg,
-          color: text_color,
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
         target={open_newtab ? "_blank" : "_self"}
         rel={open_newtab ? "noopener noreferrer" : undefined}
+        aria-haspopup="false"
         {...btn_attributes}
       >
         {cta_label}
@@ -207,14 +174,9 @@ export const getButtonType = (data: any) => {
     return (
       <button
         type="submit"
-        className={`w-full rounded-md ${btn_classes.join(" ")}`}
-        style={{
-          backgroundColor: bg,
-          color: text_color,
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
         data-form-id={btn_content}
+        aria-haspopup="false"
         {...btn_attributes}
       >
         {cta_label}
@@ -226,13 +188,8 @@ export const getButtonType = (data: any) => {
   return (
     <button
       type="button"
-      className={`w-full rounded-md ${btn_classes.join(" ")}`}
-      style={{
-        backgroundColor: bg,
-        color: text_color,
-      }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+      aria-haspopup="false"
       {...btn_attributes}
     >
       {cta_label}
