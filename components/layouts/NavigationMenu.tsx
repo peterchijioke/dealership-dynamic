@@ -76,33 +76,36 @@ const NavigationMenuComponent = ({
                               <div className="text-black font-extrabold text-lg mb-4 uppercase tracking-wide">
                                 {group.title}
                               </div>
-                              <div className="grid grid-cols-3 gap-x-12 gap-y-8">
+                              <div className="grid grid-cols-3 gap-x-8 gap-y-6">
                                 {group.models.map(
                                   (model: ThemeData["models"][0]) => (
-                                    <div
+                                    <Link
                                       key={model.model}
-                                      className="flex flex-col items-center min-w-[140px]"
+                                      href={`${model.url.replace("https://www.tonkinwilsonvillenissan.com", "")}`}
+                                      className="flex items-center space-x-2 min-w-[150px] hover:bg-gray-200 rounded-md px-2 py-1"
                                     >
                                       {model.image_url ? (
-                                        <Image
-                                          fetchPriority="high"
-                                          loading="lazy"
-                                          src={model.image_url as string}
-                                          alt={model.model}
-                                          className="w-32 h-20 object-contain mb-2"
-                                          width={128}
-                                          height={80}
-                                        />
+                                        <div className="relativex w-fullx h-72x aspect-[4/3]x">
+                                          <Image
+                                            fetchPriority="high"
+                                            loading="lazy"
+                                            src={model.image_url as string}
+                                            alt={model.model}
+                                            className="w-32 h-20 object-contain mb-2"
+                                            width={128}
+                                            height={80}
+                                          />
+                                        </div>
                                       ) : null}
-                                      <div className="flex flex-col items-center">
-                                        <span className="font-extrabold text-base tracking-wide uppercase text-black">
+                                      <div className="flex flex-col items-center text-center">
+                                        <span className="font-extrabold text-sm tracking-wide uppercase text-black">
                                           {model.model}
                                         </span>
                                         <span className="font-bold text-xs text-black mt-1 tracking-wide">
                                           {model.counts} IN STOCK
                                         </span>
                                       </div>
-                                    </div>
+                                    </Link>
                                   )
                                 )}
                               </div>

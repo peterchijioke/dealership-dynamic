@@ -6,8 +6,7 @@ import { SearchBox, Configure, CurrentRefinements, ClearRefinements } from 'reac
 import { searchClient, srpIndex } from '@/configs/config';
 import SidebarFilters from './sidebar-filters';
 import { routing } from '@/lib/algolia/custom-routing';
-import InfiniteHits from "./infinite-hits";
-import { refinementToUrl } from "@/lib/url-formatter";
+import InfiniteHits from "@/components/algolia/infinite-hits";
 // import CarouselBanner from '@/components/inventory/CarouselBanner';
 
 const searchInstance = createInstantSearchNextInstance();
@@ -31,15 +30,10 @@ export default function SearchClient({
                 persistHierarchicalRootCount: true,
             }}
             routing={routing}
-            initialUiState={{
-                [srpIndex]: {
-                    query: "",
-                    refinementList: facetFilters ?? {},
-                },
-            }}
         >
             <Configure
                 hitsPerPage={12}
+                facetFilters={facetFilters}
             />
             <div className="mt-28 py-1">
                 {/* <CarouselBanner /> */}

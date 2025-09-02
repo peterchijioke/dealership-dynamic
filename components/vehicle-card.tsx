@@ -27,7 +27,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
       )}
     >
       {/* Vehicle Image */}
-      <div className="relative   w-full h-72x aspect-[4/3] cursor-pointer">
+      <div className="relative w-full h-72x aspect-[4/3] cursor-pointer">
         <Image
           src={encryptedUrl ?? "https://placehold.co/600x400"}
           alt={hit.year + " " + hit.make + " " + hit.model}
