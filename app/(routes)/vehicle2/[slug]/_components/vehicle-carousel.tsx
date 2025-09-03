@@ -16,11 +16,12 @@ import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { encryptObject } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
+import VehicleModalGallery from "./vehicle-modal-gallery";
 
 const BLUR_PLACEHOLDER =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
 
-  export default function VehicleCarousel({ photos }: { photos: string[] }) {
+export default function VehicleCarousel({ photos }: { photos: string[] }) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [images, setImages] = useState<string[]>([]);
   const [current, setCurrent] = React.useState(0)
@@ -28,12 +29,22 @@ const BLUR_PLACEHOLDER =
   const [modalCurrentSlide, setModalCurrentSlide] = useState(0);
 
   useEffect(() => {
-    Promise.all(
-      (photos || []).map(async (url) => {
-        const str = await encryptObject({ url, width: 400, quality: 65, cache: 1 }, key!);
-        return `https://dealertower.app/image/${str}.avif`;
-      })
-    ).then(setImages);
+    if (!photos?.length) return;
+
+    // Encrypt first image immediately for LCP
+    encryptObject({ url: photos[0], width: 1200, quality: 80, cache: 1 }, key!)
+      .then(str => setImages([`https://dealertower.app/image/${str}.avif`]));
+
+    // Encrypt the rest lazily
+    (async () => {
+      const rest = await Promise.all(
+        photos.slice(1).map(async (url) => {
+          const str = await encryptObject({ url, width: 400, quality: 65, cache: 1 }, key!);
+          return `https://dealertower.app/image/${str}.avif`;
+        })
+      );
+      setImages(prev => [...prev, ...rest]);
+    })();
   }, [photos]);
 
 
@@ -120,25 +131,19 @@ const BLUR_PLACEHOLDER =
               />
             ) : (
               images.map((image, index) => (
-                <CarouselItem key={index}>
+                <CarouselItem key={index} onClick={() => openModal(index)}>
                   <div className="w-full relative overflow-hidden aspect-[1.5]">
                     <Image
                       src={image || "https://placehold.co/600x400"}
                       alt={`Car image ${index + 1}`}
                       className="object-cover w-full h-full rounded-3xl"
-                      loading="lazy"
                       fill
                       quality={80}
                       placeholder="blur"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       blurDataURL={BLUR_PLACEHOLDER}
-                      style={{
-                        position: "absolute",
-                        height: "100%",
-                        width: "100%",
-                        inset: "0px",
-                        color: "transparent",
-                      }}
+                      sizes="100vw"
+                      priority={index === 0}
+                      fetchPriority={index === 0 ? "high" : "auto"}
                     />
                   </div>
                 </CarouselItem>
@@ -155,63 +160,14 @@ const BLUR_PLACEHOLDER =
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#808080]">
-          {/* Photo counter - positioned absolutely */}
-          <span className="absolute top-6 left-6 z-20 bg-[#a6a6a6] text-white px-4 py-2 rounded-full backdrop-blur-sm">
-            Photo {modalCurrentSlide + 1}/{images.length}
-          </span>
-
-          {/* Close Button - positioned absolutely */}
-          <Button
-            onClick={closeModal}
-            variant="ghost"
-            size="icon"
-            className="absolute cursor-pointer top-6 right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-10 w-10"
-            aria-label="Close gallery"
-          >
-            <X className="h-5 w-5 text-white" />
-          </Button>
-
-          {/* Main scrollable container */}
-          <div
-            className="modal-scroll-container w-full h-full overflow-y-auto scroll-smooth snap-y snap-mandatory"
-            style={{
-              width: "100vw",
-              height: "100vh",
-            }}
-          >
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className="snap-start flex items-center justify-center"
-                style={{
-                  minHeight: "100vh",
-                  width: "100vw",
-                }}
-              >
-                <div className="relative w-full h-full flex items-center justify-center p-4">
-                  <img
-                    src={image}
-                    alt={`Car image ${index + 1}`}
-                    className="w-full h-full object-contain"
-                    loading="eager"
-                    style={{
-                      maxWidth: "95vw",
-                      maxHeight: "90vh",
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Click overlay to close */}
-          <div
-            className="absolute inset-0 -z-10 pointer-events-none"
-            onClick={closeModal}
-            aria-label="Close gallery"
+        <React.Suspense fallback={<div>Loading gallery…</div>}>
+          <VehicleModalGallery
+            images={images}
+            modalCurrentSlide={modalCurrentSlide}
+            closeModal={closeModal}
           />
-        </div>
+        </React.Suspense>
+
       )}
     </>
   );
