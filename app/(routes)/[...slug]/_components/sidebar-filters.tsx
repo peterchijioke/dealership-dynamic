@@ -37,7 +37,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                 className="justify-between px-2 pb-3"
             />
             <Accordion>
-                <AccordionItem title="Condition" count={facets?.condition?.length || 0}>
+                <AccordionItem
+                    title="Condition"
+                    count={currentRefinements?.condition?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="condition"
                         values={facets?.condition || {}}
@@ -49,7 +52,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                 {/* <AccordionItem count={0} title="Price">
                     <CustomRangeInput attribute="price" className="px-2 pb-3" />
                 </AccordionItem> */}
-                <AccordionItem title="Year" count={facets?.year?.length || 0}>
+                <AccordionItem
+                    title="Year"
+                    count={currentRefinements?.year?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="year"
                         values={facets?.year || {}}
@@ -59,7 +65,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Make" count={0}>
+                <AccordionItem
+                    title="Make"
+                    count={currentRefinements?.make?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="make"
                         values={facets?.make || {}}
@@ -69,7 +78,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Model & Trim" count={0}>
+                <AccordionItem
+                    title="Model & Trim"
+                    count={currentRefinements?.model?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="model"
                         values={facets?.model || {}}
@@ -79,7 +91,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Body Style" count={0}>
+                <AccordionItem
+                    title="Body Style"
+                    count={currentRefinements?.body?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="body"
                         values={facets?.body || {}}
@@ -89,7 +104,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Fuel Type">
+                <AccordionItem
+                    title="Fuel Type"
+                    count={currentRefinements?.fuel_type?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="fuel_type"
                         values={facets?.fuel_type || {}}
@@ -99,7 +117,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Exterior Color" count={0}>
+                <AccordionItem
+                    title="Exterior Color"
+                    count={currentRefinements?.ext_color?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="ext_color"
                         values={facets?.ext_color || {}}
@@ -109,7 +130,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Interior Color" count={0}>
+                <AccordionItem
+                    title="Interior Color"
+                    count={currentRefinements?.int_color?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="int_color"
                         values={facets?.int_color || {}}
@@ -119,7 +143,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Drive Train" count={0}>
+                <AccordionItem
+                    title="Drive Train"
+                    count={currentRefinements?.drive_train?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="drive_train"
                         values={facets?.drive_train || {}}
@@ -129,7 +156,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Transmission" count={0}>
+                <AccordionItem
+                    title="Transmission"
+                    count={currentRefinements?.transmission?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="transmission"
                         values={facets?.transform || {}}
@@ -139,7 +169,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Engine" count={0}>
+                <AccordionItem
+                    title="Engine"
+                    count={currentRefinements?.engine?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="engine"
                         values={facets?.engine || {}}
@@ -149,7 +182,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Doors" count={0}>
+                <AccordionItem
+                    title="Doors"
+                    count={currentRefinements?.doors?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="doors"
                         values={facets?.doors || {}}
@@ -159,7 +195,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Key Features" count={0}>
+                <AccordionItem
+                    title="Key Features"
+                    count={currentRefinements?.key_features?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="key_features"
                         values={facets?.key_features || {}}
@@ -169,7 +208,10 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                         className="px-2 pb-3"
                     />
                 </AccordionItem>
-                <AccordionItem title="Mileage" count={0}>
+                <AccordionItem
+                    title="Mileage"
+                    count={currentRefinements?.mileage?.length ?? 0}
+                >
                     <CustomRefinementList
                         attribute="mileage"
                         values={facets?.mileage || {}}
