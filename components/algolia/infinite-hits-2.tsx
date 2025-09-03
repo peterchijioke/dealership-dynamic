@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import VehicleCard from "@/components/vehicle-card";
 import type { VehicleHit } from "@/types/vehicle";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
+import { Filter } from "lucide-react";
 
 export default function InfiniteHits({
   serverHits,
@@ -40,13 +41,17 @@ export default function InfiniteHits({
   }, [isLastPage, showMore]);
 
   return (
-    <div className="space-y-6">
-      <div className="vehicle-grid vehicle-grid--container w-full gap-4 px-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4 styles_VehicleGrid__phGR8">
+    <div className=" w-full">
+      {/* 🔹 Search + Filter Row */}
+
+      {/* 🔹 Vehicle Grid */}
+      <div className="vehicle-grid grid md:grid-cols-4 grid-cols-1   styles_VehicleGrid__phGR8">
         {hits.map((hit) => (
           <VehicleCard key={hit.objectID} hit={hit as any} />
         ))}
       </div>
 
+      {/* 🔹 Infinite Scroll Sentinel */}
       <div ref={sentinelRef} className="h-12 flex justify-center items-center">
         {loading && (
           <span className="text-gray-500 text-sm">Loading more...</span>
