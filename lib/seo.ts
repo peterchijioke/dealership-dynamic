@@ -1,4 +1,3 @@
-import { Vehicle } from "@/types/vehicle";
 import { urlParser2 } from "./url-formatter";
 
 export function generateSeoMeta(
