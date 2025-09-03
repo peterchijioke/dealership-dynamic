@@ -3,6 +3,7 @@ import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algol
 import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
+import { buildJsonLd, generateSeoMeta } from "@/lib/seo";
 
 const ALLOWED_PREFIXES = [
     "new-vehicles",
@@ -15,32 +16,15 @@ interface PageProps {
 }
 
 /**
- * ✅ SEO: Generate canonical for each slug, ignoring query params
+ * SEO: Generate canonical for each slug, ignoring query params
+ * ${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}
  */
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
     const { slug = [] } = await params;
     const rawSearchParams = await searchParams;
-
     if (!slug || slug.length === 0) return {};
 
-    const canonicalBase = `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}`;
-
-    // If query params like "page" or "sort" are present → add noindex
-    const hasQueryParams =
-        rawSearchParams &&
-        Object.keys(rawSearchParams).some((key) =>
-            ["page", "sort"].includes(key.toLowerCase())
-        );
-
-    return {
-        alternates: {
-            canonical: canonicalBase,
-        },
-        robots: {
-            index: !hasQueryParams, // index only clean pages
-            follow: true, // always follow links
-        },
-    };
+    return generateSeoMeta(slug, rawSearchParams);
 }
 
 export default async function CatchAllPage({ params, searchParams }: PageProps) {
@@ -76,8 +60,16 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
 
     // console.log("Initial search results:", initialResults);
 
+    // Build JSON-LD structured data
+    const jsonLd = buildJsonLd(slug, initialResults.hits);
+
     return (
         <div className="h-screen flex flex-col relative">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            
             <SearchClient
                 initialResults={initialResults}
                 refinements={refinementList}
