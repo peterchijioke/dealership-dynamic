@@ -45,7 +45,7 @@ export default function InfiniteHits({
       {/* 🔹 Search + Filter Row */}
 
       {/* 🔹 Vehicle Grid */}
-      <div className="vehicle-grid grid md:grid-cols-4 grid-cols-1   styles_VehicleGrid__phGR8">
+      <div className="vehicle-grid styles_VehicleGrid__phGR8">
         {hits.map((hit) => (
           <VehicleCard key={hit.objectID} hit={hit as any} />
         ))}
