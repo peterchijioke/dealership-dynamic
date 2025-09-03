@@ -43,7 +43,7 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
             </Button>
 
             {/* Logo with optimizations */}
-            <Link
+            {/* <Link
               href="/"
               className="flex cursor-pointer"
               aria-label="Go to homepage"
@@ -58,8 +58,33 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                 sizes="(max-width: 768px) 180px, 240px" // Responsive sizing
                 quality={90} // Slightly reduce quality for faster loading
               />
-            </Link>
-
+            </Link> */}
+            <div className="header-theme3-logo-container flex items-center">
+              <div className="flex items-center header-theme3-logo">
+                <Link aria-label="logo" href="/">
+                  <div style={{ width: 240, height: 60 }} className="relative">
+                    <img
+                      alt="logo"
+                      loading="eager"
+                      decoding="async"
+                      data-nimg="fill"
+                      style={{
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        objectFit: "contain",
+                        color: "transparent",
+                      }}
+                      src={headerData?.logo_url ?? "/logoLink.svg"}
+                    />
+                  </div>
+                </Link>
+              </div>
+            </div>
             {/* <GlobalSearchAutocomplete /> */}
           </div>
 
