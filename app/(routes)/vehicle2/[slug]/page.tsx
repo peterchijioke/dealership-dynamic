@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const vehicle = await getVehicleById(slug);
     if (!vehicle) return {};
 
-    return generateVdpSeoMeta(vehicle);
+    return generateVdpSeoMeta(vehicle.srpData);
 }
 
 // 2. Page component with JSON-LD
@@ -25,7 +25,7 @@ export default async function VehiclePage({ params }: PageProps) {
     const vehicle = await getVehicleById(slug);
     if (!vehicle) return notFound();
 
-    const jsonLd = buildVdpJsonLd(vehicle);
+    const jsonLd = buildVdpJsonLd(vehicle.srpData);
 
     return (
         <>
@@ -36,7 +36,10 @@ export default async function VehiclePage({ params }: PageProps) {
             />
 
             {/* Vehicle detail UI */}
-            <VehicleDetail vehicle={vehicle} />
+            <VehicleDetail
+                srpData={vehicle.srpData}
+                vdpData={vehicle.vdpData}
+            />
         </>
     );
 }

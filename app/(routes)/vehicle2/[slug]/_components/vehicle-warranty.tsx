@@ -14,30 +14,23 @@ type FeatureCardProps = {
     title: string;
 };
 
-export default function VehicleWarranty({ title, keyFeatures }: { title: string, keyFeatures: string[] }) {
+export default function VehicleWarranty({ title, keyFeatures, detailedFeatures }: { title: string, keyFeatures: string[], detailedFeatures: string[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const featureIconMap: Record<string, React.ComponentType<any>> = {
+        "Android Auto": PhoneIcon,
+        "Apple CarPlay": AppleIcon,
+    };
+
     const features = keyFeatures
-        .filter(
-            (feature) => feature === "Android Auto" || feature === "Apple CarPlay"
-        )
+        .filter((feature) => featureIconMap[feature])
         .map((feature) => ({
-            icon:
-                feature === "Android Auto"
-                    ? PhoneIcon
-                    : feature === "Apple CarPlay"
-                        ? AppleIcon
-                        : Smartphone,
+            icon: featureIconMap[feature] || Smartphone,
             title: feature,
         }));
 
-    const handleAllFeatures = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
+    const handleAllFeatures = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
 
     return (
         <>
@@ -64,7 +57,7 @@ export default function VehicleWarranty({ title, keyFeatures }: { title: string,
                 </div>
             </div>
             <WarrantyModal
-                features={keyFeatures}
+                features={detailedFeatures}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
             />

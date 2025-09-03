@@ -1,10 +1,15 @@
-import React from 'react'
+"use client"
 
-export default function VehicleDisclaimer({ disclaimer }: { disclaimer?: string | null }) {
+import React from 'react'
+import parse from 'html-react-parser';
+
+export default function VehicleDisclaimer({ disclaimer }: { disclaimer?: string }) {
+    if (!disclaimer) return null;
+    
     return (
-        <div className="bg-transparent rounded-2xl shadow p-6 text-justify">
+        <div className="bg-transparent rounded-2xl shadow p-6 text-justify" suppressHydrationWarning>
             <h2 className="text-xl font-semibold mb-3">Disclaimer</h2>
-            <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: disclaimer || "" }} />
+            <div className="text-gray-600 italic">{parse(disclaimer)}</div>
         </div>
     )
 }

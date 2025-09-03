@@ -36,8 +36,8 @@ export function generateSrpSeoMeta(
 
     const dynamicTitle =
       titleParts.length > 0
-        ? `${titleParts.join(" ")} Vehicles for Sale | Your Brand`
-        : `Browse Vehicles | Your Brand`;
+        ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
+        : `Browse Vehicles | Your Dealership`;
 
     const description =
       titleParts.length > 0

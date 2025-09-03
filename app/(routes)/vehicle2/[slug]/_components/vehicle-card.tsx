@@ -1,8 +1,8 @@
 import React from "react";
 import { MapPin } from "lucide-react";
-import type { Vehicle } from "@/types/vehicle";
+import type { VDPType, Vehicle } from "@/types/vehicle";
 
-export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
+export default function VehicleCard({ srpData, vdpData }: { srpData: Vehicle, vdpData: VDPType }) {
 
   return (
     <div
@@ -13,7 +13,7 @@ export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
           <div className="flex flex-col">
             <div className="font-bold text-xl inline-block !text-[20px] ">
               <h1 className="text-xl font-bold text-gray-900 mb-1">
-                {vehicle.title}
+                {srpData.title}
               </h1>
             </div>
             <div className="inline-block text-lg">
@@ -22,7 +22,7 @@ export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
           </div>
           <div className="flex flex-col items-end ">
             <div className=" text-rose-700  animate-bounce font-bold text-2xl">
-              <h2>{vehicle?.prices.sale_price_formatted}</h2>
+              <h2>{vdpData?.prices.sale_price_formatted}</h2>
             </div>
             <div className="flex flex-row min-w-max">
               <button className="hidden md:block rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
@@ -35,22 +35,22 @@ export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
         <div className="hidden md:flex flex-col gap-y-3 mb-6">
           <div className="flex flex-row justify-between">
             <span className="font-semibold">Mileage</span>
-            <span>{vehicle?.mileage} mi</span>
+            <span>{srpData?.mileage} mi</span>
           </div>
 
           <div className="flex justify-between">
             <span className=" font-semibold ">VIN #</span>
-            <span>{vehicle?.vin_number}</span>
+            <span>{srpData?.vin_number}</span>
           </div>
 
           <div className="flex justify-between">
             <span className="font-semibold ">Stock #</span>
-            <span>{vehicle?.stock_number}</span>
+            <span>{srpData?.stock_number}</span>
           </div>
         </div>
 
         <div className=" hidden md:block py-2">
-          {vehicle.cta.map((ctaItem, index) => (
+          {vdpData.cta.map((ctaItem, index) => (
             <div key={index} className="flex items-center  w-full py-1">
               {getButtonType({ ...ctaItem })}
             </div>
@@ -62,24 +62,24 @@ export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
           >
             <MapPin className="h-6 w-6 mr-0  " />
             <div className="w-full text-[0.96rem]">
-              {vehicle?.dealer_city}, {vehicle?.dealer_state}{" "}
-              {vehicle?.dealer_zip_code}
+              {srpData?.dealer_city}, {srpData?.dealer_state}{" "}
+              {srpData?.dealer_zip_code}
             </div>
             {/*  */}
           </button>
         </div>
 
         <div className=" flex-row flex items-center">
-          {vehicle?.carfax_url && (
+          {srpData?.carfax_url && (
             <a
               className=" w-full "
-              href={vehicle?.carfax_url}
+              href={srpData?.carfax_url}
               target="_blank"
               rel="noopener noreferrer"
             >
               <img
                 className=" aspect-square size-20"
-                src={vehicle?.carfax_icon_url || ""}
+                src={srpData?.carfax_icon_url || ""}
                 alt="carfax"
               />
             </a>
@@ -104,17 +104,7 @@ export default function VehicleCard({vehicle}: {vehicle: Vehicle}) {
     </div>
   );
 }
-interface ButtonData {
-  btn_content: string;
-  btn_styles: React.CSSProperties;
-  cta_label: string;
-  cta_type: "html" | "button" | "link" | "form";
-  open_newtab?: boolean;
-  btn_classes?: string[];
-  btn_attributes?: Record<string, any>;
-}
 
-// Option 1: Improved version with better typing and functionality
 export const getButtonType = (data: any) => {
   const {
     btn_content,
@@ -145,16 +135,16 @@ export const getButtonType = (data: any) => {
   // Handle link type
   if (cta_type === "link" && btn_content) {
     return (
-      <a
-        href={btn_content}
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
-        target={open_newtab ? "_blank" : "_self"}
-        rel={open_newtab ? "noopener noreferrer" : undefined}
-        aria-haspopup="false"
-        {...btn_attributes}
-      >
-        {cta_label}
-      </a>
+        <a
+          href={btn_content}
+          className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+          target={open_newtab ? "_blank" : "_self"}
+          rel={open_newtab ? "noopener noreferrer" : undefined}
+          aria-haspopup="false"
+          {...btn_attributes}
+        >
+          {cta_label}
+        </a>
     );
   }
 
