@@ -1,6 +1,7 @@
+import type { Vehicle } from "@/types/vehicle";
 import { urlParser2 } from "./url-formatter";
 
-export function generateSeoMeta(
+export function generateSrpSeoMeta(
   slug: string[],
   rawSearchParams: { [key: string]: string | string[] | undefined }
 ) {
@@ -58,7 +59,41 @@ export function generateSeoMeta(
     };
 }
 
-export function buildJsonLd(slug: string[], hits: any) {
+export function generateVdpSeoMeta(vehicle: Vehicle) {
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${
+    vehicle.trim || ""
+  } for Sale | Your Dealership`;
+  const description = `Find this ${vehicle.year} ${vehicle.make} ${
+    vehicle.model
+  } ${vehicle.trim || ""} in ${
+    vehicle.ext_color
+  }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at Your Dealership.`;
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/vehicle/${vehicle.objectID}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "product",
+      images: vehicle.photo ? [{ url: vehicle.photo }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: vehicle.photo ? [vehicle.photo] : undefined,
+    },
+  };
+
+}
+
+export function buildSrpJsonLd(slug: string[], hits: any) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -92,5 +127,69 @@ export function buildJsonLd(slug: string[], hits: any) {
         }`,
       },
     })),
+  };
+}
+
+export function buildVdpJsonLd(vehicle: Vehicle) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Vehicle",
+    name: `${vehicle.year} ${vehicle.make} ${vehicle.model} ${
+      vehicle.trim || ""
+    }`.trim(),
+    brand: {
+      "@type": "Brand",
+      name: vehicle.make,
+    },
+    model: vehicle.model,
+    vehicleModelDate: vehicle.year,
+    bodyType: vehicle.body,
+    fuelType: vehicle.fuel_type,
+    color: vehicle.ext_color,
+    mileageFromOdometer: vehicle.mileage
+      ? {
+          "@type": "QuantitativeValue",
+          value: vehicle.mileage,
+          unitCode: "KMT", // or "SMI" for miles
+        }
+      : undefined,
+    vehicleTransmission: vehicle.transmission,
+    driveWheelConfiguration: vehicle.drive_train,
+    numberOfDoors: vehicle.doors,
+    vehicleEngine: vehicle.engine
+      ? {
+          "@type": "EngineSpecification",
+          name: vehicle.engine,
+        }
+      : undefined,
+    offers: {
+      "@type": "Offer",
+      price: vehicle.price,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: `https://yourdomain.com/vehicle/${vehicle.objectID}`,
+      seller: {
+        "@type": "Organization",
+        name: "Your Dealership Name",
+        url: "https://yourdomain.com",
+        telephone: "+1-800-123-4567",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "123 Main St",
+          addressLocality: "City",
+          addressRegion: "CA",
+          postalCode: "90001",
+          addressCountry: "US",
+        },
+      },
+    },
+    // Optional: Reviews / Ratings
+    // aggregateRating: vehicle.rating
+    //   ? {
+    //       "@type": "AggregateRating",
+    //       ratingValue: vehicle.rating,
+    //       reviewCount: vehicle.reviewCount || 1,
+    //     }
+    //   : undefined,
   };
 }
