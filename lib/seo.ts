@@ -80,7 +80,7 @@ export function generateVdpSeoMeta(vehicle: Vehicle) {
       title,
       description,
       url,
-      type: "product",
+      type: "website",
       images: vehicle.photo ? [{ url: vehicle.photo }] : undefined,
     },
     twitter: {
