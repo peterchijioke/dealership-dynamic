@@ -42,18 +42,18 @@ export default function InfiniteHits({
   return (
     <div className="space-y-6">
       <div className="vehicle-grid vehicle-grid--container w-full gap-4 px-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4 styles_VehicleGrid__phGR8">
-        {/* {hits.map((hit) => (
+        {hits.map((hit) => (
           <VehicleCard key={hit.objectID} hit={hit as any} />
-        ))} */}
+        ))}
       </div>
 
       <div ref={sentinelRef} className="h-12 flex justify-center items-center">
         {loading && (
           <span className="text-gray-500 text-sm">Loading more...</span>
         )}
-        {/* {isLastPage && (
-                    <span className="text-gray-400 text-sm">No more results</span>
-                )} */}
+        {isLastPage && (
+          <span className="text-gray-400 text-sm">No more results</span>
+        )}
       </div>
     </div>
   );
