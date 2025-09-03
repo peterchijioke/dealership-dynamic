@@ -92,6 +92,13 @@ export interface Vehicle {
   is_new_arrival: boolean;
   transmission: string;
   engine: string;
+  disclaimers: {
+    new: string;
+    used: string;
+    certified: string;
+    // keep extensible
+    [k: string]: string;
+  };
   objectID: string;
   _highlightResult: {
     year: HighlightResult;

@@ -5,7 +5,6 @@ import {
 } from "algoliasearch";
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
-import { FACETS } from "@/configs/config";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -15,6 +14,8 @@ const client = algoliasearch(
     requestsCache: createInMemoryCache(),
   }
 );
+
+const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!;
 
 type SearchOptions = SearchParams & {
   query?: string;
@@ -31,7 +32,7 @@ type SearchOptions = SearchParams & {
 async function search(options: SearchOptions) {
   const response: SearchResponse<VehicleHit[]> = await client.searchSingleIndex(
     {
-      indexName: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!,
+      indexName,
       searchParams: options,
     }
   );
@@ -40,8 +41,6 @@ async function search(options: SearchOptions) {
 }
 
 async function searchWithMultipleQueries(options: SearchOptions) {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!;
-
   const mainQuery = {
     indexName,
     params: {
@@ -49,7 +48,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
       facets: ["*"], // request facets with filtered counts
     },
   };
-  
+
   const facetQuery = {
     indexName,
     params: {
@@ -88,6 +87,22 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     ...hitsResult,
     facets: facetsResult.facets,
   };
+}
+
+/**
+ * Fetch a single vehicle by objectID from Algolia
+ */
+export async function getVehicleById(objectID: string): Promise<any> {
+  try {
+    const vehicle = await client.getObject({ indexName, objectID });
+    return vehicle;
+  } catch (error: any) {
+    if (error.status === 404) {
+      return null;
+    }
+    console.error("Error fetching vehicle:", error);
+    return null;
+  }
 }
 
 function updateFacetFilter(
