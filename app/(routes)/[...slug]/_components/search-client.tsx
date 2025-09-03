@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import type { VehicleHit } from "@/types/vehicle";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { searchWithMultipleQueries } from "@/lib/algolia";
 
 interface Props {
@@ -17,12 +16,6 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
     const [selectedFacets, setSelectedFacets] = useState<Record<string, string[]>>(
         refinements
     );
-
-    // Infinite hits hook
-    const { hits, isLastPage, showMore, loading } = useInfiniteAlgoliaHits({
-        initialHits: initialResults.hits as VehicleHit[],
-        refinements: selectedFacets,
-    });
 
     // Facets state (keeps sidebar counts up to date)
     const [facets, setFacets] = useState(initialResults.facets);
@@ -79,11 +72,8 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
 
                 <main className="flex-1 space-y-2 bg-gray-100 p-4">
                     <InfiniteHits
-                        serverHits={hits}
+                        serverHits={initialResults.hits}
                         refinements={selectedFacets}
-                        isLastPage={isLastPage}
-                        showMore={showMore}
-                        loading={loading}
                     />
                 </main>
             </div>

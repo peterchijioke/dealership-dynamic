@@ -71,9 +71,11 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     },
   };
 
-  const { results } = await client.search<VehicleHit>([mainQuery, facetQuery]);
+  const response = await client.search([mainQuery, facetQuery]);
 
+  const results = response.results;
   if (!results || results.length < 2) {
+    console.error("Algolia unexpected response:", response);
     throw new Error("Algolia response missing results");
   }
 

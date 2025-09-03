@@ -65,7 +65,7 @@ export default function SearchClient({ initialResults, facetFilters }: Props) {
             const results = await searchWithMultipleQueries({
                 hitsPerPage,
                 page: currentPage,
-                facetFilters,
+                // facetFilters,
                 facets: ["*"],
                 attributesToRetrieve: ["*"],
             });
