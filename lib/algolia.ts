@@ -5,6 +5,7 @@ import {
 } from "algoliasearch";
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
+import { FACETS } from "@/configs/config";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -48,7 +49,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
       facets: ["*"], // request facets with filtered counts
     },
   };
-
+  
   const facetQuery = {
     indexName,
     params: {
@@ -70,10 +71,15 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     },
   };
 
-  const response = await client.search<VehicleHit>([mainQuery, facetQuery]);
+  const response = await client.search([mainQuery, facetQuery]);
 
-  // ✅ now this will exist
-  const [hitsResult, facetsResult] = response.results as [
+  const results = response.results;
+  if (!results || results.length < 2) {
+    console.error("Algolia unexpected response:", response);
+    throw new Error("Algolia response missing results");
+  }
+
+  const [hitsResult, facetsResult] = results as [
     SearchResponse<VehicleHit>,
     SearchResponse<VehicleHit>
   ];
