@@ -7,6 +7,7 @@ import InfiniteHits from "@/components/algolia/infinite-hits-2";
 import { searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   initialResults: any; // from server (SearchResponse<VehicleHit>)
@@ -86,9 +87,9 @@ export default function SearchClient({
           <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
               <div className="w-full flex justify-end md:flex-row gap-2">
-                <button className="bg-rose-700 hover:bg-rose-800 p-3 rounded-lg cursor-pointer shrink-0">
+                <Button className="bg-rose-700 hover:bg-rose-800 p-3 rounded-lg cursor-pointer shrink-0">
                   <Filter className="size-4 text-white" />
-                </button>
+                </Button>
               </div>
 
               <InfiniteHits
