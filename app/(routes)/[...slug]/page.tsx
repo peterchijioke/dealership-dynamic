@@ -3,7 +3,7 @@ import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algol
 import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
-import { buildJsonLd, generateSeoMeta } from "@/lib/seo";
+import { buildSrpJsonLd, generateSrpSeoMeta } from "@/lib/seo";
 
 const ALLOWED_PREFIXES = [
     "new-vehicles",
@@ -24,7 +24,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     const rawSearchParams = await searchParams;
     if (!slug || slug.length === 0) return {};
 
-    return generateSeoMeta(slug, rawSearchParams);
+    return generateSrpSeoMeta(slug, rawSearchParams);
 }
 
 export default async function CatchAllPage({ params, searchParams }: PageProps) {
@@ -61,7 +61,7 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
     // console.log("Initial search results:", initialResults);
 
     // Build JSON-LD structured data
-    const jsonLd = buildJsonLd(slug, initialResults.hits);
+    const jsonLd = buildSrpJsonLd(slug, initialResults.hits);
 
     return (
         <div className="h-screen flex flex-col relative">
@@ -69,7 +69,7 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            
+
             <SearchClient
                 initialResults={initialResults}
                 refinements={refinementList}
