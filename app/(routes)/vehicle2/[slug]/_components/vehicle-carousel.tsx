@@ -21,31 +21,31 @@ import VehicleModalGallery from "./vehicle-modal-gallery";
 const BLUR_PLACEHOLDER =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
 
-  export default function VehicleCarousel({ photos }: { photos: string[] }) {
+export default function VehicleCarousel({ photos }: { photos: string[] }) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [images, setImages] = useState<string[]>([]);
   const [current, setCurrent] = React.useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCurrentSlide, setModalCurrentSlide] = useState(0);
 
-    useEffect(() => {
-      if (!photos?.length) return;
+  useEffect(() => {
+    if (!photos?.length) return;
 
-      // Encrypt first image immediately for LCP
-      encryptObject({ url: photos[0], width: 1200, quality: 80, cache: 1 }, key!)
-        .then(str => setImages([`https://dealertower.app/image/${str}.avif`]));
+    // Encrypt first image immediately for LCP
+    encryptObject({ url: photos[0], width: 1200, quality: 80, cache: 1 }, key!)
+      .then(str => setImages([`https://dealertower.app/image/${str}.avif`]));
 
-      // Encrypt the rest lazily
-      (async () => {
-        const rest = await Promise.all(
-          photos.slice(1).map(async (url) => {
-            const str = await encryptObject({ url, width: 400, quality: 65, cache: 1 }, key!);
-            return `https://dealertower.app/image/${str}.avif`;
-          })
-        );
-        setImages(prev => [...prev, ...rest]);
-      })();
-    }, [photos]);
+    // Encrypt the rest lazily
+    (async () => {
+      const rest = await Promise.all(
+        photos.slice(1).map(async (url) => {
+          const str = await encryptObject({ url, width: 400, quality: 65, cache: 1 }, key!);
+          return `https://dealertower.app/image/${str}.avif`;
+        })
+      );
+      setImages(prev => [...prev, ...rest]);
+    })();
+  }, [photos]);
 
 
   useEffect(() => {
@@ -160,11 +160,14 @@ const BLUR_PLACEHOLDER =
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <VehicleModalGallery
-          images={images}
-          modalCurrentSlide={modalCurrentSlide}
-          closeModal={closeModal}
-        />
+        <React.Suspense fallback={<div>Loading gallery…</div>}>
+          <VehicleModalGallery
+            images={images}
+            modalCurrentSlide={modalCurrentSlide}
+            closeModal={closeModal}
+          />
+        </React.Suspense>
+
       )}
     </>
   );
