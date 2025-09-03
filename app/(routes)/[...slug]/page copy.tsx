@@ -49,7 +49,7 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
 
     return (
         <div className="h-screen flex flex-col relative">
-            <SearchClient initialResults={initialResults} facetFilters={facetFilters} />
+            {/* <SearchClient initialResults={initialResults} facetFilters={facetFilters} /> */}
         </div>
     );
 }
