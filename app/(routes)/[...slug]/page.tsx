@@ -1,8 +1,8 @@
+import type { Metadata } from "next";
 import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
-import { ATTRUBUTES_TO_RETRIEVE, FACETS } from "@/configs/config";
 
 const ALLOWED_PREFIXES = [
     "new-vehicles",
@@ -12,6 +12,35 @@ const ALLOWED_PREFIXES = [
 interface PageProps {
     params: Promise<{ slug: string[] }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+/**
+ * ✅ SEO: Generate canonical for each slug, ignoring query params
+ */
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
+    const { slug = [] } = await params;
+    const rawSearchParams = await searchParams;
+
+    if (!slug || slug.length === 0) return {};
+
+    const canonicalBase = `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}`;
+
+    // If query params like "page" or "sort" are present → add noindex
+    const hasQueryParams =
+        rawSearchParams &&
+        Object.keys(rawSearchParams).some((key) =>
+            ["page", "sort"].includes(key.toLowerCase())
+        );
+
+    return {
+        alternates: {
+            canonical: canonicalBase,
+        },
+        robots: {
+            index: !hasQueryParams, // index only clean pages
+            follow: true, // always follow links
+        },
+    };
 }
 
 export default async function CatchAllPage({ params, searchParams }: PageProps) {
