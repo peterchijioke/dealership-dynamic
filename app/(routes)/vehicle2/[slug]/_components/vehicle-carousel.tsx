@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
@@ -12,11 +10,15 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel"
-import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { encryptObject } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
-import VehicleModalGallery from "./vehicle-modal-gallery";
+
+import dynamic from "next/dynamic";
+const VehicleModalGallery = dynamic(() => import("./vehicle-modal-gallery"), {
+  ssr: false,
+  loading: () => <div>Loading gallery…</div>,
+});
 
 const BLUR_PLACEHOLDER =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
@@ -160,13 +162,11 @@ export default function VehicleCarousel({ photos }: { photos: string[] }) {
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <React.Suspense fallback={<div>Loading gallery…</div>}>
-          <VehicleModalGallery
-            images={images}
-            modalCurrentSlide={modalCurrentSlide}
-            closeModal={closeModal}
-          />
-        </React.Suspense>
+        <VehicleModalGallery
+          images={images}
+          modalCurrentSlide={modalCurrentSlide}
+          closeModal={closeModal}
+        />
 
       )}
     </>
