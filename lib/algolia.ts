@@ -5,6 +5,7 @@ import {
 } from "algoliasearch";
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
+import { srpIndex, vdpIndex } from "@/configs/config";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -14,8 +15,6 @@ const client = algoliasearch(
     requestsCache: createInMemoryCache(),
   }
 );
-
-const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!;
 
 type SearchOptions = SearchParams & {
   query?: string;
@@ -32,7 +31,7 @@ type SearchOptions = SearchParams & {
 async function search(options: SearchOptions) {
   const response: SearchResponse<VehicleHit[]> = await client.searchSingleIndex(
     {
-      indexName,
+      indexName: srpIndex,
       searchParams: options,
     }
   );
@@ -42,7 +41,7 @@ async function search(options: SearchOptions) {
 
 async function searchWithMultipleQueries(options: SearchOptions) {
   const mainQuery = {
-    indexName,
+    indexName: srpIndex,
     params: {
       ...options,
       facets: ["*"], // request facets with filtered counts
@@ -50,7 +49,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
   };
 
   const facetQuery = {
-    indexName,
+    indexName: srpIndex,
     params: {
       ...options,
       hitsPerPage: 0, // only facet counts
@@ -94,8 +93,15 @@ async function searchWithMultipleQueries(options: SearchOptions) {
  */
 export async function getVehicleById(objectID: string): Promise<any> {
   try {
-    const vehicle = await client.getObject({ indexName, objectID });
-    return vehicle;
+    const srpData = await client.getObject({
+      indexName: srpIndex,
+      objectID,
+    });
+    const vdpData = await client.getObject({
+      indexName: vdpIndex,
+      objectID,
+    });
+    return { srpData, vdpData };
   } catch (error: any) {
     if (error.status === 404) {
       return null;
