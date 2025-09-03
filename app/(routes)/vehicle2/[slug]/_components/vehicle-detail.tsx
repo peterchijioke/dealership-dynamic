@@ -1,3 +1,5 @@
+"use client"
+
 import type { VDPType, Vehicle } from '@/types/vehicle'
 import React from 'react'
 import VehicleDescription from './vehicle-description'
@@ -10,10 +12,9 @@ import VehicleCarousel from './vehicle-carousel'
 
 export default function VehicleDetail({ srpData, vdpData }: { srpData: Vehicle, vdpData: VDPType }) {
     const disclaimer = vdpData?.disclaimers?.[srpData.condition.toLowerCase()] ?? ""
-    console.log("Vehicle: ", srpData, vdpData)
 
     return (
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-10 mt-16">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-10 md:mt-16 lg:mt-16">
             {/* Main Content */}
             <section className="flex-1 space-y-6">
                 <VehicleCarousel photos={vdpData.photos} />
