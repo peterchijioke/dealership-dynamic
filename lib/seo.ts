@@ -28,7 +28,7 @@ export function generateSeoMeta(
     const condition = refinementList.condition?.[0] || "";
     const year = refinementList.year?.[0] || "";
 
-    let titleParts: string[] = [];
+    const titleParts: string[] = [];
     if (year) titleParts.push(year);
     if (condition) titleParts.push(condition);
     if (make) titleParts.push(make);
