@@ -1,11 +1,14 @@
 "use client";
 
-import { refinementToUrl, urlParser } from "@/lib/url-formatter";
-import { useSearchParams, usePathname } from "next/navigation";
+import { parsePathRefinements } from "@/lib/algolia";
+import { refinementToUrl } from "@/lib/url-formatter";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+
 
 export function useAlgolia() {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   // Read filters from URL (split on commas if needed)
   const filters: Record<string, string[]> = {};
@@ -40,4 +43,67 @@ export function useAlgolia() {
   function routeToState() {/* TO DO */}
 
   return { filters, setFilter, stateToRoute, routeToState };
+}
+
+export function useRefinementsFromUrl() {
+  const params = useSearchParams();
+  const refinements: Record<string, string[]> = {};
+
+  params.forEach((value, key) => {
+    refinements[key] = value.split(",").filter(Boolean);
+  });
+
+  return refinements;
+}
+
+export function updateUrlWithFacets(
+  pathname: string,
+  pathRefinements: Record<string, string[]>,
+  queryRefinements: Record<string, string[]>,
+  router: any
+) {
+  const params = new URLSearchParams();
+
+  Object.entries(queryRefinements).forEach(([facet, values]) => {
+    if (values.length > 0) {
+      params.set(facet, values.join(","));
+    }
+  });
+
+  const queryString = params.toString();
+  const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+  router.replace(newUrl, { scroll: false });
+}
+
+export function useAllRefinements() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const pathRefinements = useMemo(
+    () => parsePathRefinements(pathname),
+    [pathname]
+  );
+
+  const queryRefinements: Record<string, string[]> = {};
+  searchParams.forEach((val, key) => {
+    queryRefinements[key] = val.split(",").filter(Boolean);
+  });
+
+  const refinements = { ...pathRefinements, ...queryRefinements };
+
+  const updateRefinements = (newQueryRefinements: Record<string, string[]>) => {
+    const params = new URLSearchParams();
+    Object.entries(newQueryRefinements).forEach(([facet, values]) => {
+      if (values.length > 0) params.set(facet, values.join(","));
+    });
+
+    const qs = params.toString();
+    const newUrl = qs ? `${pathname}?${qs}` : pathname;
+
+    router.push(newUrl, { scroll: false });
+  };
+
+  return { pathRefinements, queryRefinements, refinements, updateRefinements };
 }

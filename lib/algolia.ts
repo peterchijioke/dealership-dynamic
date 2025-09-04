@@ -40,6 +40,71 @@ async function search(options: SearchOptions) {
 }
 
 async function searchWithMultipleQueries(options: SearchOptions) {
+  const facetsList = [
+    "condition",
+    "make",
+    "model",
+    "year",
+    "body",
+    "fuel_type",
+    "ext_color",
+    "int_color",
+    "drive_train",
+    "transmission",
+  ];
+
+  const mainQuery = {
+    indexName: srpIndex,
+    params: {
+      ...options,
+      facets: ["*"], // hits with their own facets (for current facet display)
+    },
+  };
+
+  // Generate one facet query per facet (adaptive behavior)
+  const facetQueries = facetsList.map((facet) => {
+    // Exclude this facet’s refinements from its facet query
+    const otherFacetFilters = (options.facetFilters || []).filter(
+      (filter) =>
+        !(Array.isArray(filter)
+          ? filter.some((f) => f.startsWith(`${facet}:`))
+          : (filter as string).startsWith(`${facet}:`))
+    );
+
+    return {
+      indexName: srpIndex,
+      params: {
+        ...options,
+        hitsPerPage: 0,
+        facets: [facet],
+        facetFilters: otherFacetFilters,
+      },
+    };
+  });
+
+  const response = await client.search([mainQuery, ...facetQueries]);
+
+  const [hitsResult, ...facetResults] = response.results as [
+    SearchResponse<VehicleHit>,
+    ...SearchResponse<VehicleHit>[]
+  ];
+
+  // Merge facets into a single object
+  const mergedFacets = facetResults.reduce<Record<string, any>>(
+    (acc, result) => {
+      return { ...acc, ...result.facets };
+    },
+    {}
+  );
+
+  return {
+    ...hitsResult,
+    facets: mergedFacets,
+  };
+}
+
+
+async function searchWithMultipleQueriesOld(options: SearchOptions) {
   const mainQuery = {
     indexName: srpIndex,
     params: {
@@ -65,7 +130,8 @@ async function searchWithMultipleQueries(options: SearchOptions) {
         "drive_train",
         "transmission",
       ],
-      facetFilters: [], // global facet counts
+      // filters: options.filters,
+      facetFilters: options.facetFilters,
     },
   };
 
@@ -165,6 +231,28 @@ function refinementToFacetFilters2(
     );
 }
 
+function parsePathRefinements(pathname: string) {
+  const segments = pathname.split("/").filter(Boolean);
+
+  const refinements: Record<string, string[]> = {};
+
+  // Example: /new-vehicles → condition = ["new"]
+  if (segments[0] === "new-vehicles") refinements["condition"] = ["new"];
+  if (segments[0] === "used-vehicles") refinements["condition"] = ["used"];
+
+  // If we have /condition/make
+  if (segments[1]) {
+    refinements["make"] = [decodeURIComponent(segments[1])];
+  }
+
+  // If we have /condition/make/model
+  if (segments[2]) {
+    refinements["model"] = [decodeURIComponent(segments[2])];
+  }
+
+  return refinements;
+}
+
 export {
   client,
   search,
@@ -173,4 +261,5 @@ export {
   refinementToFacetFilters,
   refinementToFacetFilters2,
   updateFacetFilter,
+  parsePathRefinements,
 };

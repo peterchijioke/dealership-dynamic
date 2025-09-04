@@ -48,7 +48,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
             loading={"lazy"}
             quality={80}
             placeholder="blur"
-            className="object-cover w-full h-full rounded-t-3xl"
+            className="object-cover w-full h-full rounded-t-2xl"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             blurDataURL={BLUR_PLACEHOLDER}
           />
