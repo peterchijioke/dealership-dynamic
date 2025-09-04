@@ -97,7 +97,7 @@ export default function SearchClient({
                 <main className="flex-1 bg-gray-100">
                     <ScrollArea className="h-full">
                         <div className="p-4 space-y-4">
-                            <div className="w-full flex justify-between md:flex-row gap-2">
+                            <div className="w-full flex justify-end md:flex-row gap-2">
                                 {/* <ActiveFiltersBar
                                     refinements={filterRefinements}
                                     onRemove={handleRemoveFilter}
