@@ -56,9 +56,9 @@ export default function InfiniteHits({
         {loading && (
           <span className="text-gray-500 text-sm">Loading more...</span>
         )}
-        {isLastPage && (
+        {/* {isLastPage && (
           <span className="text-gray-400 text-sm">No more results</span>
-        )}
+        )} */}
       </div>
     </div>
   );
