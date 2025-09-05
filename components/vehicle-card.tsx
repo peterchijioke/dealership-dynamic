@@ -8,12 +8,14 @@ import type { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 interface VehicleCardProps {
   hit: Vehicle;
 }
 
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
+  const [isPriceOpen, setIsPriceOpen] = React.useState(false);
   const BLUR_PLACEHOLDER =
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
@@ -26,11 +28,11 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex h-full min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px]"
         )}
       >
-        {/* {hit.is_special && (
+        {hit.is_special && (
           <div className="bg-green-700 text-white text-sm font-semibold text-center py-1">
             {hit.sale_price || "Eligible for $5k Oregon Charge Ahead Rebate"}
           </div>
-        )} */}
+        )}
         {/* Vehicle Image */}
         <div className="relative !my-0 aspect-[3/2]">
           <Image
@@ -83,13 +85,10 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               {hit.body} {hit.drive_train}
             </p>
           </div>
-
           {/* Price Section */}
-          <div className="flex items-center w-full justify-between mb-6">
+          <div className="flex  w-full justify-between mb-6">
             <div className="w-full">
-              <div className=" text-[#69707C] overflow-hidden line-clamp-2 text-ellipsis">
-                Sale Price
-              </div>
+              <span className=" text-[#69707C]">After all rebates</span>
               <div className="flex items-center">
                 <span className="text-base font-bold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
                   {hit.sale_price?.toLocaleString("en-US", {
@@ -97,7 +96,23 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                     currency: "USD",
                   }) || hit.prices.dealer_sale_price_formatted}
                 </span>
-                <span className="ml-2 text-gray-600">▼</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsPriceOpen(!isPriceOpen);
+                  }}
+                  className="ml-2 shadow px-4 py-2 bg-white cursor-pointer rounded-full hover:bg-gray-50 transition-colors"
+                >
+                  <ChevronDown
+                    color="black"
+                    className={cn(
+                      "size-4 transition-transform",
+                      isPriceOpen && "rotate-180"
+                    )}
+                  />
+                </button>
               </div>
             </div>
 
@@ -110,9 +125,86 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               </div>
             </div>
           </div>
+          {isPriceOpen && (
+            <div className=" text-gray-800 p-3 w-full  py-2">
+              {hit.prices.retail_price_label &&
+                hit.prices.retail_price_formatted && (
+                  <div className="w-full capitalize flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="font-medium">MSRP</span>
+                    <span className="font-semibold">
+                      {hit.prices.retail_price_formatted}
+                    </span>
+                  </div>
+                )}
 
+              {hit.prices.dealer_discount_label &&
+                hit.prices.dealer_discount_total > 0 && (
+                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="font-medium">
+                      {hit.prices.dealer_discount_label}
+                    </span>
+                    <span className="font-semibold text-green-600">
+                      -${hit.prices.dealer_discount_total.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+              {hit.prices.dealer_sale_price_formatted && (
+                <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                  <span className="font-medium">Sale Price</span>
+                  <span className="font-semibold">
+                    {hit.prices.dealer_sale_price_formatted}
+                  </span>
+                </div>
+              )}
+
+              {hit.prices.incentive_discount_label &&
+                hit.prices.incentive_discount_total > 0 && (
+                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="font-medium">
+                      {hit.prices.incentive_discount_label}
+                    </span>
+                    <span className="font-semibold text-green-600">
+                      -${hit.prices.incentive_discount_total.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+              {hit.prices.incentive_additional_label &&
+                hit.prices.incentive_additional_total > 0 && (
+                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="font-medium">
+                      {hit.prices.incentive_additional_label}
+                    </span>
+                    <span className="font-semibold text-green-600">
+                      -${hit.prices.incentive_additional_total.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+              {hit.prices.total_discounts_formatted &&
+                hit.prices.total_discounts > 0 && (
+                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="font-medium">Total Savings</span>
+                    <span className="font-semibold text-green-600">
+                      {hit.prices.total_discounts_formatted}
+                    </span>
+                  </div>
+                )}
+
+              <div className="w-full flex items-center justify-between py-2 pt-3">
+                <span className="font-bold text-lg">Final Price</span>
+                <span className="font-bold text-lg text-rose-700">
+                  {hit.sale_price?.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }) || hit.prices.dealer_sale_price_formatted}
+                </span>
+              </div>
+            </div>
+          )}{" "}
           {/* CTA Button */}
-          <div className=" px-3">
+          <div className="">
             <Button
               onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
               className="w-full py-6 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800 border-0"
