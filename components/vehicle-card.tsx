@@ -38,7 +38,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
         )}
         {/* Vehicle Image */}
         <div className="relative !my-0 aspect-[3/2]">
-          <Image
+          <img
             style={{
               position: "absolute",
               height: "100%",
@@ -48,14 +48,10 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
             }}
             src={encryptedUrl ?? "https://placehold.co/600x400"}
             alt={hit.year + " " + hit.make + " " + hit.model}
-            fill
             fetchPriority={hit.__position <= 3 ? "high" : "auto"}
             loading={"lazy"}
-            quality={80}
-            placeholder="blur"
             className="object-cover w-full h-full rounded-t-2xl"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            blurDataURL={BLUR_PLACEHOLDER}
           />
         </div>
         <div className="flex items-center justify-between px-3 ">

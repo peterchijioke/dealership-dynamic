@@ -1,10 +1,7 @@
 import { Metadata } from "next";
 import { VdpContextProvider } from "../_components/VdpContextProvider";
-import VdpClient from "../_components/VdpClient";
 import { notFound } from "next/navigation";
 import { searchClient, srpIndex, vdpIndex } from "@/configs/config";
-import instantsearch from "instantsearch.js";
-import { getVehicleData } from "@/app/actions/vdp.action";
 import VDPSearchClient from "../_components/VDPSearchClient";
 import { VDPType } from "../_components/CarouselComponents";
 import { getVehicleById } from "@/lib/algolia";
