@@ -8,6 +8,10 @@ import { encryptObject } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
 import Image from "next/image";
 
+// Optimized blur placeholder for better LCP
+const BLUR_PLACEHOLDER =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
+
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -123,8 +127,42 @@ export default function CarouselComponents() {
     };
   }, [isModalOpen, images.length]);
 
-  const BLUR_PLACEHOLDER =
-    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
+  // Preload critical images for better perceived performance
+  useEffect(() => {
+    // Preload first 2 images immediately for faster LCP
+    const preloadImages = images.slice(0, 2).filter(Boolean);
+    preloadImages.forEach((src) => {
+      if (src) {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = src;
+        document.head.appendChild(link);
+      }
+    });
+
+    return () => {
+      // Cleanup preload links
+      const preloadLinks = document.querySelectorAll(
+        'link[rel="preload"][as="image"]'
+      );
+      preloadLinks.forEach((link) => {
+        if (preloadImages.some((src) => link.getAttribute("href") === src)) {
+          document.head.removeChild(link);
+        }
+      });
+    };
+  }, [images]);
+
+  // Preload next image for smooth navigation
+  useEffect(() => {
+    const nextIndex = currentSlide + 1;
+    if (nextIndex < images.length && images[nextIndex]) {
+      const img = document.createElement("img");
+      img.src = images[nextIndex];
+    }
+  }, [currentSlide, images]);
+
   return (
     <>
       {/* Main Carousel */}
@@ -142,17 +180,28 @@ export default function CarouselComponents() {
               >
                 <div className="w-full relative overflow-hidden aspect-[1.5]">
                   <Image
+                    priority={index === 0}
                     loading={index === 0 ? "eager" : "lazy"}
                     alt={`Car preview ${index + 1}`}
                     src={item || "https://placehold.co/600x400"}
-                    width={400}
-                    fetchPriority="high"
-                    height={267}
-                    quality={65}
+                    width={600}
+                    height={400}
+                    quality={75}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
                     blurDataURL={BLUR_PLACEHOLDER}
                     placeholder="blur"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
-                    decoding={index === 0 ? "sync" : "async"}
+                    onLoadingComplete={() => {
+                      if (index === 0) {
+                        // Mark LCP image as loaded
+                        const lcpEntry = performance.getEntriesByType(
+                          "largest-contentful-paint"
+                        )[0];
+                        if (lcpEntry) {
+                          console.log("LCP:", lcpEntry.startTime);
+                        }
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -242,14 +291,18 @@ export default function CarouselComponents() {
                 }}
               >
                 <div className="relative w-full h-full flex items-center justify-center p-4">
-                  <img
-                    src={image}
+                  <Image
+                    src={image || "https://placehold.co/1200x800"}
                     alt={`Car image ${index + 1}`}
-                    className="w-full h-full object-contain"
+                    width={1200}
+                    height={800}
+                    quality={85}
+                    priority={index === modalCurrentSlide}
                     loading={index <= modalCurrentSlide + 1 ? "eager" : "lazy"}
-                    width={800}
-                    height={533}
-                    decoding={index === modalCurrentSlide ? "sync" : "async"}
+                    sizes="95vw"
+                    blurDataURL={BLUR_PLACEHOLDER}
+                    placeholder="blur"
+                    className="w-full h-full object-contain"
                     style={{
                       maxWidth: "95vw",
                       maxHeight: "90vh",
