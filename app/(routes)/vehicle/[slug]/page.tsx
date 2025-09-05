@@ -7,6 +7,9 @@ import instantsearch from "instantsearch.js";
 import { getVehicleData } from "@/app/actions/vdp.action";
 import VDPSearchClient from "../_components/VDPSearchClient";
 import { VDPType } from "../_components/CarouselComponents";
+import { getVehicleById } from "@/lib/algolia";
+import { encryptObject } from "@/utils/utils";
+import { generateVdpSeoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -14,123 +17,39 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// Helper function to get vehicle data for metadata
-async function getVehicleForMetadata(slug: string) {
-  try {
-    const [vdpData, srpData] = await Promise.all([
-      searchClient
-        .getObject({ indexName: vdpIndex!, objectID: slug })
-        .catch(() => null),
-      searchClient
-        .getObject({ indexName: srpIndex!, objectID: slug })
-        .catch(() => null),
-    ]);
-    return { vdpData, srpData };
-  } catch (error) {
-    return { vdpData: null, srpData: null };
-  }
-}
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const pathname = `/vehicle/${slug}`;
+  const vehicle = await getVehicleById(slug);
+  if (!vehicle) return {};
 
-  // Get vehicle data for dynamic metadata
-  const { srpData, vdpData } = await getVehicleForMetadata(slug);
-  const vehicleData = srpData as unknown as VehicleRecord;
+  const key = process.env.NEXT_PUBLIC_IMG_KEY!;
+  const firstPhoto = vehicle.vdpData.photos?.[0];
+  let encryptedHero: string | null = null;
 
-  if (!vehicleData) {
-    return {
-      title: "Vehicle Not Found",
-      description: "The requested vehicle could not be found.",
-      robots: { index: false, follow: false },
-    };
+  if (firstPhoto) {
+    const str = await encryptObject(
+      { url: firstPhoto, width: 1200, quality: 80, cache: 1 },
+      key
+    );
+    encryptedHero = `https://dealertower.app/image/${str}.avif`;
   }
 
-  // Create SEO-friendly title and description
-  const vehicleTitle = `${vehicleData.year} ${vehicleData.make} ${
-    vehicleData.model
-  } ${vehicleData.trim || ""}`.trim();
-  const priceText = vehicleData.sale_price
-    ? `$${vehicleData.sale_price.toLocaleString()}`
-    : vehicleData.prices?.sale_price_formatted || "Contact for Price";
-
-  const title = `${vehicleTitle} for Sale | ${vehicleData.condition} | ${priceText}`;
-  const description =
-    `Shop this ${vehicleData.condition?.toLowerCase()} ${vehicleTitle} with ${
-      vehicleData.mileage?.toLocaleString() || "low"
-    } miles. ${vehicleData.body || ""} ${vehicleData.drive_train || ""} ${
-      vehicleData.fuel_type || ""
-    }. Stock #${vehicleData.stock_number}. Located in ${
-      vehicleData.dealer_city
-    }, ${vehicleData.dealer_state}.`.trim();
-
   return {
-    title,
-    description,
-    alternates: { canonical: pathname },
-    openGraph: {
-      url: pathname,
-      title,
-      description,
-      type: "website",
-      images: vehicleData.photo
-        ? [
+    ...generateVdpSeoMeta(vehicle.srpData),
+    ...(encryptedHero
+      ? {
+          icons: [],
+          link: [
             {
-              url: vehicleData.photo,
-              width: 1200,
-              height: 800,
-              alt: `${vehicleTitle} - ${vehicleData.condition}`,
+              rel: "preload",
+              href: encryptedHero,
+              as: "image",
             },
-          ]
-        : [],
-      siteName: "Your Dealership Name", // Replace with your actual dealership name
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: vehicleData.photo ? [vehicleData.photo] : [],
-    },
-    keywords: [
-      vehicleData.year,
-      vehicleData.make,
-      vehicleData.model,
-      vehicleData.trim,
-      vehicleData.condition,
-      vehicleData.body,
-      vehicleData.fuel_type,
-      vehicleData.drive_train,
-      "for sale",
-      "car dealership",
-      vehicleData.dealer_city,
-      vehicleData.dealer_state,
-    ]
-      .filter(Boolean)
-      .join(", "),
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
-    other: {
-      "vehicle:year": vehicleData.year,
-      "vehicle:make": vehicleData.make,
-      "vehicle:model": vehicleData.model,
-      "vehicle:trim": vehicleData.trim || "",
-      "vehicle:condition": vehicleData.condition,
-      "vehicle:price": vehicleData.sale_price?.toString() || "",
-      "vehicle:mileage": vehicleData.mileage?.toString() || "",
-      "vehicle:stock_number": vehicleData.stock_number,
-      "vehicle:vin": vehicleData.vin_number || "",
-    },
+          ],
+        }
+      : {}),
   };
 }
 
