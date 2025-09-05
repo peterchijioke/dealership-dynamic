@@ -16,6 +16,9 @@ interface VehicleCardProps {
 
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
+  console.log("=============price=======================");
+  console.log(JSON.stringify(hit.prices, null, 2));
+  console.log("====================================");
   const BLUR_PLACEHOLDER =
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
@@ -25,7 +28,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     <div className="vehicle-grid__card-wrapper">
       <Card
         className={cn(
-          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex h-full min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px]"
+          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px]"
         )}
       >
         {hit.is_special && (
@@ -127,84 +130,20 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </div>
           {isPriceOpen && (
             <div className=" text-gray-800 p-3 w-full  py-2">
-              {hit.prices.retail_price_label &&
-                hit.prices.retail_price_formatted && (
-                  <div className="w-full capitalize flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium">MSRP</span>
-                    <span className="font-semibold">
-                      {hit.prices.retail_price_formatted}
-                    </span>
+              {hit.prices &&
+                Object.entries(hit.prices).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="w-full capitalize flex items-center justify-between py-2 border-b border-gray-200"
+                  >
+                    <span className="font-medium">{key}</span>
+                    {/* <span className="font-semibold">{value}</span> */}
                   </div>
-                )}
-
-              {hit.prices.dealer_discount_label &&
-                hit.prices.dealer_discount_total > 0 && (
-                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium">
-                      {hit.prices.dealer_discount_label}
-                    </span>
-                    <span className="font-semibold text-green-600">
-                      -${hit.prices.dealer_discount_total.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-
-              {hit.prices.dealer_sale_price_formatted && (
-                <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                  <span className="font-medium">Sale Price</span>
-                  <span className="font-semibold">
-                    {hit.prices.dealer_sale_price_formatted}
-                  </span>
-                </div>
-              )}
-
-              {hit.prices.incentive_discount_label &&
-                hit.prices.incentive_discount_total > 0 && (
-                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium">
-                      {hit.prices.incentive_discount_label}
-                    </span>
-                    <span className="font-semibold text-green-600">
-                      -${hit.prices.incentive_discount_total.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-
-              {hit.prices.incentive_additional_label &&
-                hit.prices.incentive_additional_total > 0 && (
-                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium">
-                      {hit.prices.incentive_additional_label}
-                    </span>
-                    <span className="font-semibold text-green-600">
-                      -${hit.prices.incentive_additional_total.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-
-              {hit.prices.total_discounts_formatted &&
-                hit.prices.total_discounts > 0 && (
-                  <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium">Total Savings</span>
-                    <span className="font-semibold text-green-600">
-                      {hit.prices.total_discounts_formatted}
-                    </span>
-                  </div>
-                )}
-
-              <div className="w-full flex items-center justify-between py-2 pt-3">
-                <span className="font-bold text-lg">Final Price</span>
-                <span className="font-bold text-lg text-rose-700">
-                  {hit.sale_price?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }) || hit.prices.dealer_sale_price_formatted}
-                </span>
-              </div>
+                ))}
             </div>
           )}{" "}
           {/* CTA Button */}
-          <div className="">
+          <div className="w-full">
             <Button
               onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
               className="w-full py-6 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800 border-0"

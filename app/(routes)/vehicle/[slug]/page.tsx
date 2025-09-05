@@ -13,23 +13,111 @@ export const dynamic = "force-dynamic";
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+// Helper function to get vehicle data for metadata
+async function getVehicleForMetadata(slug: string) {
+  try {
+    const [vdpData, srpData] = await Promise.all([
+      searchClient
+        .getObject({ indexName: vdpIndex!, objectID: slug })
+        .catch(() => null),
+      searchClient
+        .getObject({ indexName: srpIndex!, objectID: slug })
+        .catch(() => null),
+    ]);
+    return { vdpData, srpData };
+  } catch (error) {
+    return { vdpData: null, srpData: null };
+  }
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const pathname = `/vehicle/${slug}`;
+  
+  // Get vehicle data for dynamic metadata
+  const { srpData, vdpData } = await getVehicleForMetadata(slug);
+  const vehicleData = srpData as unknown as VehicleRecord;
+  
+  if (!vehicleData) {
+    return {
+      title: "Vehicle Not Found",
+      description: "The requested vehicle could not be found.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  // Create SEO-friendly title and description
+  const vehicleTitle = `${vehicleData.year} ${vehicleData.make} ${vehicleData.model} ${vehicleData.trim || ''}`.trim();
+  const priceText = vehicleData.sale_price 
+    ? `$${vehicleData.sale_price.toLocaleString()}`
+    : vehicleData.prices?.sale_price_formatted || 'Contact for Price';
+  
+  const title = `${vehicleTitle} for Sale | ${vehicleData.condition} | ${priceText}`;
+  const description = `Shop this ${vehicleData.condition?.toLowerCase()} ${vehicleTitle} with ${vehicleData.mileage?.toLocaleString() || 'low'} miles. ${vehicleData.body || ''} ${vehicleData.drive_train || ''} ${vehicleData.fuel_type || ''}. Stock #${vehicleData.stock_number}. Located in ${vehicleData.dealer_city}, ${vehicleData.dealer_state}.`.trim();
 
   return {
-    title: "Vehicle Details",
-    description: "View details of the selected vehicle.",
+    title,
+    description,
     alternates: { canonical: pathname },
     openGraph: {
       url: pathname,
-      title: "Vehicle Details",
-      description: "Explore the details of this vehicle.",
+      title,
+      description,
       type: "website",
+      images: vehicleData.photo ? [
+        {
+          url: vehicleData.photo,
+          width: 1200,
+          height: 800,
+          alt: `${vehicleTitle} - ${vehicleData.condition}`,
+        }
+      ] : [],
+      siteName: "Your Dealership Name", // Replace with your actual dealership name
     },
-    robots: { index: true, follow: true },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: vehicleData.photo ? [vehicleData.photo] : [],
+    },
+    keywords: [
+      vehicleData.year,
+      vehicleData.make,
+      vehicleData.model,
+      vehicleData.trim,
+      vehicleData.condition,
+      vehicleData.body,
+      vehicleData.fuel_type,
+      vehicleData.drive_train,
+      "for sale",
+      "car dealership",
+      vehicleData.dealer_city,
+      vehicleData.dealer_state,
+    ].filter(Boolean).join(", "),
+    robots: { 
+      index: true, 
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      }
+    },
+    other: {
+      "vehicle:year": vehicleData.year,
+      "vehicle:make": vehicleData.make,
+      "vehicle:model": vehicleData.model,
+      "vehicle:trim": vehicleData.trim || "",
+      "vehicle:condition": vehicleData.condition,
+      "vehicle:price": vehicleData.sale_price?.toString() || "",
+      "vehicle:mileage": vehicleData.mileage?.toString() || "",
+      "vehicle:stock_number": vehicleData.stock_number,
+      "vehicle:vin": vehicleData.vin_number || "",
+    },
   };
 }
 
@@ -46,14 +134,81 @@ export default async function VehiclePage({ params }: PageProps) {
       .catch(() => null),
   ]);
 
+  // If vehicle data is not found, return 404
+  if (!srpData && !vdpData) {
+    return notFound();
+  }
+
+  const vehicleData = srpData as unknown as VehicleRecord;
+
+  // Generate structured data for SEO
+  const structuredData = vehicleData ? {
+    "@context": "https://schema.org",
+    "@type": "Vehicle",
+    "name": `${vehicleData.year} ${vehicleData.make} ${vehicleData.model} ${vehicleData.trim || ''}`.trim(),
+    "brand": {
+      "@type": "Brand",
+      "name": vehicleData.make
+    },
+    "model": vehicleData.model,
+    "vehicleConfiguration": vehicleData.trim,
+    "productionDate": vehicleData.year,
+    "vehicleModelDate": vehicleData.year,
+    "mileageFromOdometer": {
+      "@type": "QuantitativeValue",
+      "value": vehicleData.mileage,
+      "unitCode": "SMI"
+    },
+    "vehicleTransmission": vehicleData.transmission,
+    "vehicleEngine": vehicleData.engine,
+    "fuelType": vehicleData.fuel_type,
+    "driveWheelConfiguration": vehicleData.drive_train,
+    "bodyType": vehicleData.body,
+    "color": vehicleData.ext_color,
+    "vehicleInteriorColor": vehicleData.int_color,
+    "vehicleIdentificationNumber": vehicleData.vin_number,
+    "image": vehicleData.photo,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdealership.com'}/vehicle/${slug}`,
+    "offers": {
+      "@type": "Offer",
+      "price": vehicleData.sale_price || vehicleData.price,
+      "priceCurrency": "USD",
+      "availability": vehicleData.is_sale_pending ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock",
+      "itemCondition": vehicleData.condition === "New" ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
+      "seller": {
+        "@type": "AutoDealer",
+        "name": vehicleData.dealer_name,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": vehicleData.dealer_address,
+          "addressLocality": vehicleData.dealer_city,
+          "addressRegion": vehicleData.dealer_state,
+          "postalCode": vehicleData.dealer_zip_code
+        }
+      }
+    }
+  } : null;
+
   return (
-    <VdpContextProvider
-      srpData={srpData as unknown as VehicleRecord}
-      slug={slug}
-      vdpData={vdpData as unknown as VDPType}
-    >
-      <VDPSearchClient />
-    </VdpContextProvider>
+    <>
+      {/* Structured Data for SEO */}
+      {structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData)
+          }}
+        />
+      )}
+      
+      <VdpContextProvider
+        srpData={srpData as unknown as VehicleRecord}
+        slug={slug}
+        vdpData={vdpData as unknown as VDPType}
+      >
+        <VDPSearchClient />
+      </VdpContextProvider>
+    </>
   );
 }
 
