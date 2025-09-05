@@ -39,6 +39,11 @@ const ITEMS: Item[] = [
 export default function MobileDock() {
   const pathname = usePathname();
 
+  // Hide MobileDock on vehicle detail pages
+  if (pathname.startsWith("/vehicle/")) {
+    return null;
+  }
+
   return (
     <nav
       className={cn(

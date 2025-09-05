@@ -52,9 +52,11 @@ export default function CarouselComponents() {
   const [sliderRef, instanceRef] = useKeenSlider({
     initial: 0,
     loop: false,
+    mode: "snap",
     slides: {
       perView: 1,
       spacing: 0,
+      origin: "center",
     },
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel);
@@ -126,18 +128,19 @@ export default function CarouselComponents() {
     <>
       {/* Main Carousel */}
       <div
-        className="relative cursor-zoom-in max-w-4xl mx-auto"
+        className="relative cursor-zoom-in w-full max-w-4xl mx-auto px-4 md:px-0"
         data-label="vdp-carousel"
       >
-        <div className="md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
-          <div ref={sliderRef} className="keen-slider">
+        <div className="rounded-lg md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
+          <div ref={sliderRef} className="keen-slider w-full">
             {images.map((item, index) => (
               <div
                 key={index}
-                className="keen-slider__slide cursor-zoom-in"
+                className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
                 onClick={() => openModal(index)}
+                style={{ width: "100%", minWidth: "100%" }}
               >
-                <div className="w-full relative overflow-hidden aspect-[1.5]">
+                <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                   <img
                     loading="eager"
                     alt={`Car preview ${index + 1}`}
@@ -150,8 +153,8 @@ export default function CarouselComponents() {
           </div>
 
           {/* Photo counter for main carousel */}
-          <div className="absolute top-5 left-4 z-10 rounded-full px-3 py-1 bg-white/80 backdrop-blur-sm">
-            <p className="text-sm font-medium text-gray-900">
+          <div className="absolute top-3 left-3 md:top-5 md:left-4 z-10 rounded-full px-2 py-1 md:px-3 md:py-1 bg-white/80 backdrop-blur-sm">
+            <p className="text-xs md:text-sm font-medium text-gray-900">
               Photo {currentSlide + 1} / {images.length}
             </p>
           </div>
@@ -159,7 +162,7 @@ export default function CarouselComponents() {
 
         {/* Navigation buttons */}
         {loaded && instanceRef.current && (
-          <div className="hidden md:block">
+          <>
             <Button
               onClick={() => instanceRef.current?.prev()}
               variant={"ghost"}
@@ -167,13 +170,13 @@ export default function CarouselComponents() {
               id="left-arrow"
               aria-label="Previous"
               disabled={currentSlide === 0}
-              className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 left-4 transition-opacity ${
+              className={`bg-white p-1 md:p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-8 w-8 md:h-10 md:w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 left-2 md:left-4 transition-opacity ${
                 currentSlide === 0
                   ? "opacity-30 cursor-not-allowed"
                   : "opacity-100"
               }`}
             >
-              <ChevronLeft className="size-5 m-auto text-rose-700" />
+              <ChevronLeft className="size-4 md:size-5 m-auto text-rose-700" />
             </Button>
 
             <Button
@@ -183,15 +186,15 @@ export default function CarouselComponents() {
               id="right-arrow"
               aria-label="Next"
               disabled={currentSlide === images.length - 1}
-              className={`bg-white p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-10 w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 right-4 transition-opacity ${
+              className={`bg-white p-1 md:p-2 hover:shadow-xl hover:scale-105 active:scale-95 shadow-md rounded-full h-8 w-8 md:h-10 md:w-10 absolute top-1/2 -translate-y-1/2 focus:outline-none hover:ring-2 hover:ring-rose-700 focus:ring-2 focus:ring-rose-700 focus:ring-offset-1 right-2 md:right-4 transition-opacity ${
                 currentSlide === images.length - 1
                   ? "opacity-30 cursor-not-allowed"
                   : "opacity-100"
               }`}
             >
-              <ChevronRight className="size-5 m-auto text-rose-700" />
+              <ChevronRight className="size-4 md:size-5 m-auto text-rose-700" />
             </Button>
-          </div>
+          </>
         )}
       </div>
 
