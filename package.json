@@ -22,6 +22,8 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
+    "html-react-parser": "^5.2.6",
     "instantsearch.js": "^4.79.2",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.539.0",

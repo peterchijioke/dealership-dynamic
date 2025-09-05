@@ -32,7 +32,12 @@ export default function VdpVehicleCard() {
             </div>
             <div className="flex flex-col items-end ">
               <div className=" text-rose-700  animate-bounce font-bold text-2xl">
-                <h2>{vdpData?.prices.sale_price_formatted}</h2>
+                <h2>
+                  {vdpData.sale_price?.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }) || vdpData.prices.dealer_sale_price_formatted}
+                </h2>
               </div>
               <div className="flex flex-row min-w-max">
                 <button className="hidden md:block rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
