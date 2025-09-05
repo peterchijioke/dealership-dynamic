@@ -131,23 +131,39 @@ export default function CarouselComponents() {
       >
         <div className="rounded-lg md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
           <div ref={sliderRef} className="keen-slider w-full">
-            {images.map((item, index) => (
+            {images.length === 0 ? (
               <div
-                key={index}
                 className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
-                onClick={() => openModal(index)}
                 style={{ width: "100%", minWidth: "100%" }}
               >
                 <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                   <img
                     loading="eager"
-                    alt={`Car preview ${index + 1}`}
-                    src={item}
+                    alt={`Car preview }`}
+                    src="https://placehold.co/600x400?text=Coming+Soon"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
                   />
                 </div>
               </div>
-            ))}
+            ) : (
+              images.map((item, index) => (
+                <div
+                  key={index}
+                  className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
+                  onClick={() => openModal(index)}
+                  style={{ width: "100%", minWidth: "100%" }}
+                >
+                  <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
+                    <img
+                      loading="eager"
+                      alt={`Car preview ${index + 1}`}
+                      src={item}
+                      className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Photo counter for main carousel */}
