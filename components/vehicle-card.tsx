@@ -78,7 +78,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           <div className=" w-full pb-3">
             <h2
               data-target="srp-card-title"
-              className="text-base font-medium text-[#000000] overflow-hidden line-clamp-2 text-ellipsis"
+              className="text-base font-medium  text-[#000000] overflow-hidden line-clamp-1 text-ellipsis"
             >
               {hit.title}
             </h2>

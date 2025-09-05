@@ -25,9 +25,7 @@ export default function CarouselComponents() {
     if (urlCache.has(cacheKey)) {
       return urlCache.get(cacheKey)!;
     }
-
     const isCancelled = false;
-
     encryptObject(
       {
         url,
