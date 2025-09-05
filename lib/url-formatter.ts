@@ -162,6 +162,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
     normalized.includes("pre-owned") ||
     normalized.includes("preowned");
   const hasCertified = normalized.includes("certified");
+  const hasNewAndUsed = normalized.includes("new") && hasUsed;
 
   // Rule 1: Only New
   if (last === "new" && condition.length === 1) {
@@ -174,7 +175,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   }
 
   // Rule 3: New + Used/Pre-Owned together → certified
-  if (last === "new" && hasUsed) {
+  if (hasNewAndUsed) {
     return {
       pathname: "/used-vehicles/certified",
       params: { condition: ["new"] },
