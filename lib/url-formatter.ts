@@ -164,17 +164,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   const hasCertified = normalized.includes("certified");
   const hasNewAndUsed = normalized.includes("new") && hasUsed;
 
-  // Rule 1: Only New
-  if (last === "new" && condition.length === 1) {
-    return { pathname: "/new-vehicles", params: {} };
-  }
-
-  // Rule 2: Only Used / Pre-Owned
-  if (last === "used" || last === "pre-owned" || last === "preowned") {
-    return { pathname: "/used-vehicles", params: {} };
-  }
-
-  // Rule 3: New + Used/Pre-Owned together → certified
+  // Rule 1: New + Used/Pre-Owned together → certified
   if (hasNewAndUsed) {
     return {
       pathname: "/used-vehicles/certified",
@@ -182,12 +172,22 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
     };
   }
 
-  // Rule 4: Used + Certified together → certified
+  // Rule 2: Used + Certified together → certified
   if (
     (last === "used" || last === "pre-owned" || last === "preowned") &&
     hasCertified
   ) {
     return { pathname: "/used-vehicles/certified", params: {} };
+  }
+
+  // Rule 3: Only New
+  if (last === "new" && condition.length === 1) {
+    return { pathname: "/new-vehicles", params: {} };
+  }
+
+  // Rule 4: Only Used / Pre-Owned
+  if (last === "used" || last === "pre-owned" || last === "preowned") {
+    return { pathname: "/used-vehicles", params: {} };
   }
 
   // Default fallback
