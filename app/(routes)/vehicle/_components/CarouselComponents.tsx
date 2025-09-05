@@ -6,6 +6,7 @@ import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { encryptObject } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
+import Image from "next/image";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -122,6 +123,8 @@ export default function CarouselComponents() {
     };
   }, [isModalOpen, images.length]);
 
+  const BLUR_PLACEHOLDER =
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   return (
     <>
       {/* Main Carousel */}
@@ -138,11 +141,18 @@ export default function CarouselComponents() {
                 onClick={() => openModal(index)}
               >
                 <div className="w-full relative overflow-hidden aspect-[1.5]">
-                  <img
-                    loading="eager"
+                  <Image
+                    loading={index === 0 ? "eager" : "lazy"}
                     alt={`Car preview ${index + 1}`}
-                    src={item}
+                    src={item || "https://placehold.co/600x400"}
+                    width={400}
+                    fetchPriority="high"
+                    height={267}
+                    quality={65}
+                    blurDataURL={BLUR_PLACEHOLDER}
+                    placeholder="blur"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
+                    decoding={index === 0 ? "sync" : "async"}
                   />
                 </div>
               </div>
@@ -236,7 +246,10 @@ export default function CarouselComponents() {
                     src={image}
                     alt={`Car image ${index + 1}`}
                     className="w-full h-full object-contain"
-                    loading="eager"
+                    loading={index <= modalCurrentSlide + 1 ? "eager" : "lazy"}
+                    width={800}
+                    height={533}
+                    decoding={index === modalCurrentSlide ? "sync" : "async"}
                     style={{
                       maxWidth: "95vw",
                       maxHeight: "90vh",
