@@ -4,8 +4,6 @@ import { useEffect, useRef } from "react";
 import VehicleCard from "@/components/vehicle-card";
 import type { VehicleHit } from "@/types/vehicle";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
-import { Button } from "../ui/button";
-import { Filter } from "lucide-react";
 
 export default function InfiniteHits({
   serverHits,
@@ -58,7 +56,7 @@ export default function InfiniteHits({
           <Filter className="size-4 text-white" />
         </button> */}
       </div>
-      <div className="vehicle-grid vehicle-grid--container w-full gap-4 py-1 lg:gap-2 xl:py-4 2xl:gap-4 styles_VehicleGrid__phGR8">
+      <div className="vehicle-grid w-full min-h-[400px] grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {hits.map((hit) => (
           <VehicleCard key={hit.objectID} hit={hit as any} />
         ))}
@@ -68,9 +66,9 @@ export default function InfiniteHits({
         {loading && (
           <span className="text-gray-500 text-sm">Loading more...</span>
         )}
-        {isLastPage && (
+        {/* {isLastPage && (
           <span className="text-gray-400 text-sm">No more results</span>
-        )}
+        )} */}
       </div>
     </div>
   );
