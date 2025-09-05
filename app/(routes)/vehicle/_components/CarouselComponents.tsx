@@ -146,6 +146,7 @@ export default function CarouselComponents() {
                     alt={`Car preview ${index + 1}`}
                     src={item || "https://placehold.co/600x400"}
                     width={400}
+                    fetchPriority="high"
                     height={267}
                     quality={65}
                     blurDataURL={BLUR_PLACEHOLDER}
