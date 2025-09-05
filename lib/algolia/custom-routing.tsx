@@ -11,7 +11,7 @@ export const routing = {
       const indexState = routeState.indexName || {}
 
       if (!indexState.query) {
-        return 'MyWebsite - Results page'
+        return 'Dealership - Results page'
       }
 
       return `Dealership - Results for: ${indexState.query}`
@@ -32,8 +32,8 @@ export const routing = {
 
       console.log("parseURL:", params);
       return {
-        refinementList: params,
         query: searchParams.get("query") || "",
+        refinementList: params,
       };
     },
   },
@@ -54,7 +54,7 @@ export const routing = {
 
     routeToState(routeState: any) {
       // Map back into Algolia’s uiState shape
-      // console.log("routeToState:", routeState.refinementList || {});
+      console.log("routeToState:", routeState.refinementList || {}, srpIndex);
       return {
         [srpIndex]: {
           query: routeState.query || "",

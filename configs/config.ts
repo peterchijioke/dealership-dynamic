@@ -1,5 +1,7 @@
-import { liteClient as algoliasearch } from 'algoliasearch/lite';
+import { algoliasearch } from 'algoliasearch';
 import { createInMemoryCache } from "@algolia/cache-in-memory";
+
+export const responsesCache = createInMemoryCache();
 
 export const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -9,7 +11,7 @@ export const searchClient = algoliasearch(
     requestsCache: createInMemoryCache(),
   }
 );
-export const vdpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP
+export const vdpIndex = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP ?? "";
 export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON ?? ""
 export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST ?? ""
 export const baseUrl=process.env.NEXT_PUBLIC_API_BASE_URL!

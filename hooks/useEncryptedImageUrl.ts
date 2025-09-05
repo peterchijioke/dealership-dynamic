@@ -2,11 +2,11 @@
 import { encryptObject } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 
-const urlCache = new Map<string, string>();
+export const urlCache = new Map<string, string>();
+export const key = process.env.NEXT_PUBLIC_IMG_KEY;
 
 function useEncryptedImageUrl(photo: string) {
 	const [encryptedUrl, setEncryptedUrl] = useState<string>();
-	const key = process.env.NEXT_PUBLIC_IMG_KEY;
 
 	useEffect(() => {
 		if (!key || !photo) return;

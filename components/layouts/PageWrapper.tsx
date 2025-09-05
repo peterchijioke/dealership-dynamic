@@ -18,7 +18,7 @@ export default async function PageWrapper({
         <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} />
       </div>
 
-      <div className="w-full">{children}</div>
+      <div className="grid bg-[#FAF9F7]">{children}</div>
     </>
   );
 }
