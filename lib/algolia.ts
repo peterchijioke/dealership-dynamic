@@ -51,6 +51,10 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     "int_color",
     "drive_train",
     "transmission",
+    "engine",
+    "doors",
+    "key_features",
+    "mileage",
   ];
 
   const mainQuery = {
