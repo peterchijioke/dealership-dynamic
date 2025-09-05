@@ -17,8 +17,8 @@ export default function CarouselComponents() {
   const images = (vdpData?.photos || []).map((url) => {
     const cacheKey = JSON.stringify({
       url,
-      width: 400,
-      quality: 65,
+      width: 800,
+      quality: 80,
       cache: 1,
     });
 
@@ -31,8 +31,8 @@ export default function CarouselComponents() {
     encryptObject(
       {
         url,
-        width: 400,
-        quality: 65,
+        width: 800,
+        quality: 80,
         cache: 1,
       },
       key!
@@ -142,10 +142,15 @@ export default function CarouselComponents() {
               >
                 <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                   <img
-                    loading="eager"
+                    loading={index === 0 ? "eager" : "lazy"}
                     alt={`Car preview ${index + 1}`}
                     src={item}
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
+                    width="400"
+                    height="250"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    decoding="async"
+                    fetchPriority={index === 0 ? "high" : "low"}
                   />
                 </div>
               </div>
@@ -239,7 +244,10 @@ export default function CarouselComponents() {
                     src={image}
                     alt={`Car image ${index + 1}`}
                     className="w-full h-full object-contain"
-                    loading="eager"
+                    loading={index <= modalCurrentSlide + 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchPriority={index === modalCurrentSlide ? "high" : "low"}
+                    sizes="95vw"
                     style={{
                       maxWidth: "95vw",
                       maxHeight: "90vh",
