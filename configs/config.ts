@@ -92,3 +92,16 @@ export const ATTRUBUTES_TO_RETRIEVE = [
   "cta",
   "is_special",
 ];
+
+export const CATEGORICAL_FACETS = [
+  "condition",
+  "make",
+  "model",
+  "year",
+  "body",
+  "fuel_type",
+  "ext_color",
+  "int_color",
+  "drive_train",
+  "transmission",
+];

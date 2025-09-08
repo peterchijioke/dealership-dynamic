@@ -31,7 +31,7 @@ export default function ActiveFiltersBar({
                         <button
                             type="button"
                             onClick={() => onRemove(facet, value)}
-                            className="ml-1 hover:text-rose-900"
+                            className="ml-1 hover:text-rose-900 cursor-pointer"
                             aria-label={`Remove filter ${facet}: ${value}`}
                         >
                             <X className="w-3 h-3" />
@@ -45,7 +45,7 @@ export default function ActiveFiltersBar({
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="text-sm text-gray-600 hover:text-rose-700"
+                    className="text-sm text-gray-600 hover:text-rose-700 cursor-pointer"
                     onClick={onClearAll}
                 >
                     Clear All

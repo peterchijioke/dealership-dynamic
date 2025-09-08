@@ -36,10 +36,11 @@ export function useAlgolia() {
   }
 
   function stateToRoute(filters: Record<string, string[]>) {
-    const url = refinementToUrl(filters);
+    const url = filters ? refinementToUrl(filters) : '/new-vehicles';
     // router.push("/used-vehicles/certified", undefined, { shallow: false });
     window.history.pushState({}, "title", url);
   }
+
   function routeToState() {/* TO DO */}
 
   return { filters, setFilter, stateToRoute, routeToState };

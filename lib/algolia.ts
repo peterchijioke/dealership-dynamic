@@ -5,7 +5,7 @@ import {
 } from "algoliasearch";
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
-import { srpIndex, vdpIndex } from "@/configs/config";
+import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -20,6 +20,8 @@ type SearchOptions = SearchParams & {
   query?: string;
   facets?: string[];
   facetFilters?: string[][];
+  numericFilters?: string[];
+  sortIndex?: string;
   hitsPerPage?: number;
   page?: number;
 };
@@ -40,25 +42,11 @@ async function search(options: SearchOptions) {
 }
 
 async function searchWithMultipleQueries(options: SearchOptions) {
-  const facetsList = [
-    "condition",
-    "make",
-    "model",
-    "year",
-    "body",
-    "fuel_type",
-    "ext_color",
-    "int_color",
-    "drive_train",
-    "transmission",
-    "engine",
-    "doors",
-    "key_features",
-    "mileage",
-  ];
+
+  const indexName = options.sortIndex || srpIndex;
 
   const mainQuery = {
-    indexName: srpIndex,
+    indexName,
     params: {
       ...options,
       facets: ["*"], // hits with their own facets (for current facet display)
@@ -66,7 +54,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
   };
 
   // Generate one facet query per facet (adaptive behavior)
-  const facetQueries = facetsList.map((facet) => {
+  const facetQueries = CATEGORICAL_FACETS.map((facet) => {
     // Exclude this facet’s refinements from its facet query
     const otherFacetFilters = (options.facetFilters || []).filter(
       (filter) =>
@@ -257,6 +245,20 @@ function parsePathRefinements(pathname: string) {
   return refinements;
 }
 
+/**
+ * Convert selectedFacets object into Algolia facetFilters
+ * Example:
+ *   { make: ["Acura", "Ford"], year: ["2025"] }
+ * → [ ["make:Acura", "make:Ford"], ["year:2025"] ]
+ */
+function generateFacetFilters(
+  selectedFacets: Record<string, string[]>
+): string[][] {
+  return Object.entries(selectedFacets)
+    .filter(([_, values]) => values && values.length > 0)
+    .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
+}
+
 export {
   client,
   search,
@@ -266,4 +268,5 @@ export {
   refinementToFacetFilters2,
   updateFacetFilter,
   parsePathRefinements,
+  generateFacetFilters,
 };
