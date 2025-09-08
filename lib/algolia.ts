@@ -42,13 +42,13 @@ async function search(options: SearchOptions) {
 }
 
 async function searchWithMultipleQueries(options: SearchOptions) {
-
-  const indexName = options.sortIndex || srpIndex;
+  const { sortIndex, ...searchParams } = options;
+  const indexName = sortIndex || srpIndex;
 
   const mainQuery = {
     indexName,
     params: {
-      ...options,
+      ...searchParams,
       facets: ["*"], // hits with their own facets (for current facet display)
     },
   };
@@ -56,7 +56,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
   // Generate one facet query per facet (adaptive behavior)
   const facetQueries = CATEGORICAL_FACETS.map((facet) => {
     // Exclude this facet’s refinements from its facet query
-    const otherFacetFilters = (options.facetFilters || []).filter(
+    const otherFacetFilters = (searchParams.facetFilters || []).filter(
       (filter) =>
         !(Array.isArray(filter)
           ? filter.some((f) => f.startsWith(`${facet}:`))
@@ -66,7 +66,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     return {
       indexName: srpIndex,
       params: {
-        ...options,
+        ...searchParams,
         hitsPerPage: 0,
         facets: [facet],
         facetFilters: otherFacetFilters,
@@ -94,7 +94,6 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     facets: mergedFacets,
   };
 }
-
 
 async function searchWithMultipleQueriesOld(options: SearchOptions) {
   const mainQuery = {

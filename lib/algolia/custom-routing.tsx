@@ -19,7 +19,7 @@ export const routing = {
     createURL({ routeState, location }: { routeState: any, location: any }) {
       // console.log("createURL:", routeState);
       // return typeof routeState === "string" ? routeState : "/";
-      // return `${process.env.NEXT_PUBLIC_BASE_URL}${routeState}`;
+      // return `${process.env.NEXT_PUBLIC_SITE_URL}${routeState}`;
       const filters = routeState.refinementList || {};
       return refinementToUrl(filters);
     },

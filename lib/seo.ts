@@ -5,58 +5,56 @@ export function generateSrpSeoMeta(
   slug: string[],
   rawSearchParams: { [key: string]: string | string[] | undefined }
 ) {
-    const canonicalBase = `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join(
-      "/"
-    )}`;
+  const canonicalBase = `${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}`;
 
-    const hasQueryParams =
-      rawSearchParams &&
-      Object.keys(rawSearchParams).some((key) =>
-        ["page", "sort"].includes(key.toLowerCase())
-      );
-
-    // Parse refinements
-    const searchParamsObj = new URLSearchParams(rawSearchParams as any);
-    const { params: refinementList } = urlParser2(
-      "/" + slug.join("/"),
-      searchParamsObj
+  const hasQueryParams =
+    rawSearchParams &&
+    Object.keys(rawSearchParams).some((key) =>
+      ["page", "sort"].includes(key.toLowerCase())
     );
 
-    // Build a dynamic title from refinements
-    const make = refinementList.make?.[0] || "";
-    const model = refinementList.model?.[0] || "";
-    const condition = refinementList.condition?.[0] || "";
-    const year = refinementList.year?.[0] || "";
+  // Parse refinements
+  const searchParamsObj = new URLSearchParams(rawSearchParams as any);
+  const { params: refinementList } = urlParser2(
+    "/" + slug.join("/"),
+    searchParamsObj
+  );
 
-    const titleParts: string[] = [];
-    if (year) titleParts.push(year);
-    if (condition) titleParts.push(condition);
-    if (make) titleParts.push(make);
-    if (model) titleParts.push(model);
+  // Build a dynamic title from refinements
+  const make = refinementList.make?.[0] || "";
+  const model = refinementList.model?.[0] || "";
+  const condition = refinementList.condition?.[0] || "";
+  const year = refinementList.year?.[0] || "";
 
-    const dynamicTitle =
-      titleParts.length > 0
-        ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
-        : `Browse Vehicles | Your Dealership`;
+  const titleParts: string[] = [];
+  if (year) titleParts.push(year);
+  if (condition) titleParts.push(condition);
+  if (make) titleParts.push(make);
+  if (model) titleParts.push(model);
 
-    const description =
-      titleParts.length > 0
-        ? `Explore ${titleParts.join(
-            " "
-          )} inventory. Find the best deals, prices, and availability at Your Brand.`
-        : `Browse our full inventory of new and used vehicles at Your Brand.`;
+  const dynamicTitle =
+    titleParts.length > 0
+      ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
+      : `Browse Vehicles | Your Dealership`;
 
-    return {
-      title: dynamicTitle,
-      description,
-      alternates: {
-        canonical: canonicalBase,
-      },
-      robots: {
-        index: !hasQueryParams,
-        follow: true,
-      },
-    };
+  const description =
+    titleParts.length > 0
+      ? `Explore ${titleParts.join(
+          " "
+        )} inventory. Find the best deals, prices, and availability at Your Brand.`
+      : `Browse our full inventory of new and used vehicles at Your Brand.`;
+
+  return {
+    title: dynamicTitle,
+    description,
+    alternates: {
+      canonical: canonicalBase,
+    },
+    robots: {
+      index: !hasQueryParams,
+      follow: true,
+    },
+  };
 }
 
 export function generateVdpSeoMeta(vehicle: Vehicle) {
@@ -68,7 +66,7 @@ export function generateVdpSeoMeta(vehicle: Vehicle) {
   } ${vehicle.trim || ""} in ${
     vehicle.ext_color
   }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at Your Dealership.`;
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/vehicle/${vehicle.objectID}`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/vehicle/${vehicle.objectID}`;
 
   return {
     title,
@@ -90,7 +88,6 @@ export function generateVdpSeoMeta(vehicle: Vehicle) {
       images: vehicle.photo ? [vehicle.photo] : undefined,
     },
   };
-
 }
 
 export function buildSrpJsonLd(slug: string[], hits: any) {
@@ -122,7 +119,7 @@ export function buildSrpJsonLd(slug: string[], hits: any) {
         price: hit.price,
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}/${
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}/${
           hit.objectID
         }`,
       },
