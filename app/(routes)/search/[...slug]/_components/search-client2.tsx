@@ -27,7 +27,7 @@ export default function SearchClient({ serverState }: Props) {
                 routing={{
                     router: createInstantSearchRouterNext({
                         singletonRouter,
-                        serverUrl: process.env.NEXT_PUBLIC_BASE_URL,
+                        serverUrl: process.env.NEXT_PUBLIC_SITE_URL,
                         routerOptions: {
                             cleanUrlOnDispose: false,
                         },

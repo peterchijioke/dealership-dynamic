@@ -3,15 +3,17 @@
 import { useState, useMemo } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import { searchWithMultipleQueries } from "@/lib/algolia";
+import { generateFacetFilters, searchWithMultipleQueries, updateFacetFilter } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import ActiveFiltersBar from "./active-filters";
-// import { useAllRefinements } from "@/hooks/useAlgolia";
+import ActiveFiltersBar from "./active-filters";
+import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
+import { algoliaSortOptions, CATEGORICAL_FACETS } from "@/configs/config";
+import SortDropdown from "./sort-opptions";
 
 interface Props {
-    initialResults: any; 
+    initialResults: any;
     refinements?: Record<string, string[]>; // condition: ["New"], make: ["Audi"]
 }
 
@@ -22,19 +24,38 @@ export default function SearchClient({
     const [selectedFacets, setSelectedFacets] =
         useState<Record<string, string[]>>(refinements);
     const [facets, setFacets] = useState(initialResults.facets);
-    // const { refinements: filterRefinements, queryRefinements, updateRefinements } = useAllRefinements();
+    const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
+    const { refinements: filterRefinements } = useAllRefinements();
+    const { stateToRoute } = useAlgolia();
 
-    // const handleRemoveFilter = (facet: string, value: string) => {
-    //     const updated = {
-    //         ...queryRefinements,
-    //         [facet]: (queryRefinements[facet] || []).filter((v) => v !== value),
-    //     };
-    //     updateRefinements(updated);
-    // };
+    const handleRemoveFilter = (facet: string, value: string) => {
+        if (!facet || !value) return;
+        const updated = updateFacetFilter(selectedFacets, facet, value);
+        console.log("Remove filter", updated);
+        stateToRoute(updated);
+        updateFacet(facet, value);
+        // setSelectedFacets((prev) => {
+        //     const updated = (prev[facet] || []).filter((v) => v !== value);
+        //     const next = { ...prev, [facet]: updated };
+        //     if (updated.length === 0) delete next[facet];
+        //     return next;
+        // });
+    };
 
-    // const handleClearAll = () => {
-    //     updateRefinements({});
-    // };
+    const handleClearAll = () => {
+        const defaultRefinements = { condition: ["New"] };
+        setSelectedFacets(defaultRefinements);
+        stateToRoute(defaultRefinements);
+    };
+
+    const buildFacetFilters = (facet: string, value: string) => {
+        return Object.entries({
+            ...selectedFacets,
+            [facet]: selectedFacets[facet]?.includes(value)
+                ? selectedFacets[facet].filter((v) => v !== value)
+                : [...(selectedFacets[facet] || []), value],
+        }).map(([f, vals]) => vals.map((v) => `${f}:${v}`));
+    };
 
     // When user toggles a facet in Sidebar
     const updateFacet = async (facet: string, value: string) => {
@@ -49,26 +70,22 @@ export default function SearchClient({
         // Refetch facets so sidebar counts stay in sync
         const res = await searchWithMultipleQueries({
             hitsPerPage: 0, // no hits, only facets
-            facetFilters: Object.entries({
-                ...selectedFacets,
-                [facet]: selectedFacets[facet]?.includes(value)
-                    ? selectedFacets[facet].filter((v) => v !== value)
-                    : [...(selectedFacets[facet] || []), value],
-            }).map(([f, vals]) => vals.map((v) => `${f}:${v}`)),
-            facets: [
-                "condition",
-                "make",
-                "model",
-                "year",
-                "body",
-                "fuel_type",
-                "ext_color",
-                "int_color",
-                "drive_train",
-                "transmission",
-            ],
+            facetFilters: buildFacetFilters(facet, value),
+            sortIndex: sortIndex,
+            facets: CATEGORICAL_FACETS,
         });
 
+        setFacets(res.facets);
+    };
+
+    const handleSortChange = async (newSort: string) => {
+        setSortIndex(newSort);
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: 0, // no hits, only facets
+            facetFilters: generateFacetFilters(selectedFacets),
+            sortIndex: newSort,
+            facets: CATEGORICAL_FACETS,
+        });
         setFacets(res.facets);
     };
 
@@ -97,15 +114,19 @@ export default function SearchClient({
                 <main className="flex-1 bg-gray-100">
                     <ScrollArea className="h-full">
                         <div className="p-4 space-y-4">
-                            <div className="w-full flex justify-end md:flex-row gap-2">
-                                {/* <ActiveFiltersBar
+                            <div className="w-full flex justify-between md:flex-row gap-2">
+                                <ActiveFiltersBar
                                     refinements={filterRefinements}
                                     onRemove={handleRemoveFilter}
                                     onClearAll={handleClearAll}
-                                /> */}
-                                <Button className="bg-rose-700 hover:bg-rose-800 p-3 rounded-lg cursor-pointer shrink-0">
+                                />
+                                <SortDropdown
+                                    currentSort={sortIndex}
+                                    onChange={handleSortChange}
+                                />
+                                {/* <Button className="bg-rose-700 hover:bg-rose-800 p-3 rounded-lg cursor-pointer shrink-0">
                                     <Filter className="size-4 text-white" />
-                                </Button>
+                                </Button> */}
                             </div>
 
                             <InfiniteHits

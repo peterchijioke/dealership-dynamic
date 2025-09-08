@@ -16,9 +16,7 @@ interface VehicleCardProps {
 
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
-  console.log("=============price=======================");
-  console.log(JSON.stringify(hit.prices, null, 2));
-  console.log("====================================");
+  
   const BLUR_PLACEHOLDER =
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");

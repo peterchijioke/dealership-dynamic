@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
 import { buildSrpJsonLd, generateSrpSeoMeta } from "@/lib/seo";
+import Script from "next/script";
+import { getDealerInfo } from "@/lib/website";
 
 const ALLOWED_PREFIXES = [
     "new-vehicles",
@@ -17,37 +19,39 @@ interface PageProps {
 
 /**
  * SEO: Generate canonical for each slug, ignoring query params
- * ${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}
+ * ${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}
  */
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
     const { slug = [] } = await params;
     const rawSearchParams = await searchParams;
     if (!slug || slug.length === 0) return {};
 
-    return generateSrpSeoMeta(slug, rawSearchParams);
+    const dealerInfo = await getDealerInfo();
+
+    return generateSrpSeoMeta(slug, rawSearchParams, dealerInfo);
 }
 
 export default async function CatchAllPage({ params, searchParams }: PageProps) {
     const { slug = [] } = await params;
     if (!slug || slug.length === 0) return notFound();
-    
-        // Enforce valid prefixes only
-        const prefix = slug[0];
-        if (!ALLOWED_PREFIXES.includes(prefix)) {
-            return notFound();
-        }
-    
-        const rawSearchParams = await searchParams;
-        const searchParamsObj = new URLSearchParams(rawSearchParams as any);
-    
-        // Parse the URL into refinementList using your urlParser
-        const { params: refinementList } = urlParser2(
-            '/' + slug.join('/'),
-            searchParamsObj
-        );
-    
-        // Use Algolia search with parsed query & filters
-        // const query = searchParamsObj.get("query") || "";
+
+    // Enforce valid prefixes only
+    const prefix = slug[0];
+    if (!ALLOWED_PREFIXES.includes(prefix)) {
+        return notFound();
+    }
+
+    const rawSearchParams = await searchParams;
+    const searchParamsObj = new URLSearchParams(rawSearchParams as any);
+
+    // Parse the URL into refinementList using your urlParser
+    const { params: refinementList } = urlParser2(
+        '/' + slug.join('/'),
+        searchParamsObj
+    );
+
+    // Use Algolia search with parsed query & filters
+    // const query = searchParamsObj.get("query") || "";
     const facetFilters = refinementToFacetFilters(refinementList);
 
     // Prefetch first page from Algolia
@@ -65,8 +69,10 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
 
     return (
         <div className="h-screen flex flex-col relative">
-            <script
+            <Script
+                id="structured-data"
                 type="application/ld+json"
+                strategy="lazyOnload"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
