@@ -48,7 +48,7 @@ export default function ActiveFiltersBar({
                     className="text-sm text-gray-600 hover:text-rose-700 cursor-pointer"
                     onClick={onClearAll}
                 >
-                    Clear All
+                    Reset
                 </Button>
             )}
         </div>

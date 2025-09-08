@@ -33,11 +33,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "https://yourdealership.com"
   ),
   title: {
-    template: "%s | Your Dealership Name", // Replace with your actual dealership name
-    default: "Your Dealership Name - Quality Pre-Owned & New Vehicles",
+    template: "%s | Dealership", 
+    default: "Dealership - Quality Pre-Owned & New Vehicles",
   },
   description:
-    "Find your perfect vehicle at Your Dealership Name. Browse our extensive inventory of quality pre-owned and new cars, trucks, and SUVs with competitive pricing and excellent service.",
+    "Find your perfect vehicle at Dealership. Browse our extensive inventory of quality pre-owned and new cars, trucks, and SUVs with competitive pricing and excellent service.",
   keywords: [
     "used cars",
     "new cars",
@@ -48,9 +48,9 @@ export const metadata: Metadata = {
     "SUVs",
     "sedans",
   ],
-  authors: [{ name: "Your Dealership Name" }],
-  creator: "Your Dealership Name",
-  publisher: "Your Dealership Name",
+  authors: [{ name: "Dealership" }],
+  creator: "Dealership",
+  publisher: "Dealership",
   formatDetection: {
     email: false,
     address: false,
@@ -60,24 +60,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://yourdealership.com",
-    siteName: "Your Dealership Name",
-    title: "Your Dealership Name - Quality Pre-Owned & New Vehicles",
+    siteName: "Dealership",
+    title: "Dealership - Quality Pre-Owned & New Vehicles",
     description:
-      "Find your perfect vehicle at Your Dealership Name. Browse our extensive inventory with competitive pricing and excellent service.",
+      "Find your perfect vehicle at Dealership. Browse our extensive inventory with competitive pricing and excellent service.",
     images: [
       {
         url: "/og-image.jpg", // Add your dealership's OpenGraph image
         width: 1200,
         height: 630,
-        alt: "Your Dealership Name",
+        alt: "Dealership",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Your Dealership Name - Quality Pre-Owned & New Vehicles",
+    title: "Dealership - Quality Pre-Owned & New Vehicles",
     description:
-      "Find your perfect vehicle at Your Dealership Name. Browse our extensive inventory with competitive pricing and excellent service.",
+      "Find your perfect vehicle at Dealership. Browse our extensive inventory with competitive pricing and excellent service.",
     images: ["/twitter-image.jpg"], // Add your dealership's Twitter image
     creator: "@yourdealership", // Replace with your Twitter handle
   },
@@ -151,7 +151,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "AutoDealer",
-              name: "Your Dealership Name",
+              name: "Dealership",
               url:
                 process.env.NEXT_PUBLIC_SITE_URL ||
                 "https://yourdealership.com",

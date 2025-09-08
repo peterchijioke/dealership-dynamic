@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
 import { buildSrpJsonLd, generateSrpSeoMeta } from "@/lib/seo";
+import Script from "next/script";
+import { getDealerInfo } from "@/lib/website";
 
 const ALLOWED_PREFIXES = [
     "new-vehicles",
@@ -24,7 +26,9 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     const rawSearchParams = await searchParams;
     if (!slug || slug.length === 0) return {};
 
-    return generateSrpSeoMeta(slug, rawSearchParams);
+    const dealerInfo = await getDealerInfo();
+
+    return generateSrpSeoMeta(slug, rawSearchParams, dealerInfo);
 }
 
 export default async function CatchAllPage({ params, searchParams }: PageProps) {
@@ -65,8 +69,10 @@ export default async function CatchAllPage({ params, searchParams }: PageProps) 
 
     return (
         <div className="h-screen flex flex-col relative">
-            <script
+            <Script
+                id="structured-data"
                 type="application/ld+json"
+                strategy="lazyOnload"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 

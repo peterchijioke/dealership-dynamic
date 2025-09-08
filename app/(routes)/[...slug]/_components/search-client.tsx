@@ -28,11 +28,12 @@ export default function SearchClient({
     const { refinements: filterRefinements } = useAllRefinements();
     const { stateToRoute } = useAlgolia();
 
-    const handleRemoveFilter = (filter: string) => {
-        const [facet, value] = filter.split(":");
-        updateFacet(facet, value);
+    const handleRemoveFilter = (facet: string, value: string) => {
+        if (!facet || !value) return;
         const updated = updateFacetFilter(selectedFacets, facet, value);
+        console.log("Remove filter", updated);
         stateToRoute(updated);
+        updateFacet(facet, value);
         // setSelectedFacets((prev) => {
         //     const updated = (prev[facet] || []).filter((v) => v !== value);
         //     const next = { ...prev, [facet]: updated };
@@ -42,8 +43,9 @@ export default function SearchClient({
     };
 
     const handleClearAll = () => {
-        setSelectedFacets({});
-        stateToRoute({});
+        const defaultRefinements = { condition: ["New"] };
+        setSelectedFacets(defaultRefinements);
+        stateToRoute(defaultRefinements);
     };
 
     const buildFacetFilters = (facet: string, value: string) => {
@@ -85,7 +87,6 @@ export default function SearchClient({
             facets: CATEGORICAL_FACETS,
         });
         setFacets(res.facets);
-        // also update hits
     };
 
     const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
@@ -113,7 +114,7 @@ export default function SearchClient({
                 <main className="flex-1 bg-gray-100">
                     <ScrollArea className="h-full">
                         <div className="p-4 space-y-4">
-                            <div className="w-full flex justify-end md:flex-row gap-2">
+                            <div className="w-full flex justify-between md:flex-row gap-2">
                                 <ActiveFiltersBar
                                     refinements={filterRefinements}
                                     onRemove={handleRemoveFilter}

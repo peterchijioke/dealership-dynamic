@@ -3,7 +3,13 @@ import { urlParser2 } from "./url-formatter";
 
 export function generateSrpSeoMeta(
   slug: string[],
-  rawSearchParams: { [key: string]: string | string[] | undefined }
+  rawSearchParams: { [key: string]: string | string[] | undefined },
+  dealerInfo: {
+    name: string;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+  }
 ) {
   const canonicalBase = `${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}`;
 
@@ -27,22 +33,28 @@ export function generateSrpSeoMeta(
   const year = refinementList.year?.[0] || "";
 
   const titleParts: string[] = [];
-  if (year) titleParts.push(year);
   if (condition) titleParts.push(condition);
+  if (year) titleParts.push(year);
   if (make) titleParts.push(make);
   if (model) titleParts.push(model);
 
-  const dynamicTitle =
-    titleParts.length > 0
-      ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
-      : `Browse Vehicles | Your Dealership`;
+  // const dynamicTitle =
+  //   titleParts.length > 0
+  //     ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
+  //     : `Browse Vehicles | Your Dealership`;
+
+  const dealerInfoSuffix: string =
+    dealerInfo?.city && dealerInfo?.state
+      ? `in ${dealerInfo.city}, ${dealerInfo.state}`
+      : `at ${dealerInfo.name}`;
+  const dynamicTitle = `${condition} Vehicles for Sale ${dealerInfoSuffix}`;
 
   const description =
     titleParts.length > 0
       ? `Explore ${titleParts.join(
           " "
-        )} inventory. Find the best deals, prices, and availability at Your Brand.`
-      : `Browse our full inventory of new and used vehicles at Your Brand.`;
+        )} inventory. Find the best deals, prices, and availability ${dealerInfoSuffix}.`
+      : `Browse our full inventory of ${condition} Vehicles ${dealerInfoSuffix}.`;
 
   return {
     title: dynamicTitle,
@@ -58,14 +70,12 @@ export function generateSrpSeoMeta(
 }
 
 export function generateVdpSeoMeta(vehicle: Vehicle) {
-  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${
-    vehicle.trim || ""
-  } for Sale | Your Dealership`;
-  const description = `Find this ${vehicle.year} ${vehicle.make} ${
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.condition} ${vehicle.body} for Sale in ${vehicle.dealer_city},  ${vehicle.dealer_state}`;
+  const description = `Test drive a ${vehicle.condition} ${vehicle.year} ${vehicle.make} ${
     vehicle.model
   } ${vehicle.trim || ""} in ${
     vehicle.ext_color
-  }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at Your Dealership.`;
+  }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at ${vehicle.dealer_name}.`;
   const url = `${process.env.NEXT_PUBLIC_SITE_URL}/vehicle/${vehicle.objectID}`;
 
   return {
