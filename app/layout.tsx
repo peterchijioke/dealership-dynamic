@@ -145,6 +145,7 @@ export default function RootLayout({
 
         {/* Structured data for organization */}
         <Script
+          id="organization-structured-data"
           type="application/ld+json"
           strategy="lazyOnload"
           dangerouslySetInnerHTML={{
