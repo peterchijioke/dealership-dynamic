@@ -164,3 +164,45 @@ export function recordToSearchParams2(
 
   return params;
 }
+
+/**
+ * Convert pathname + querystring into refinements object.
+ * Handles:
+ *   /new-vehicles → { condition: ["new"] }
+ *   /used-vehicles/ford → { condition: ["used"], make: ["ford"] }
+ *   /new-vehicles/ford/focus?year=2024,2023
+ *   → { condition:["new"], make:["ford"], model:["focus"], year:["2024","2023"] }
+ */
+export function urlToRefinement(url: string): Record<string, string[]> {
+  const u = new URL(url, window.location.origin); // base required for parsing
+  const refinements: Record<string, string[]> = {};
+
+  // ---- Path-based refinements ----
+  const segments = u.pathname.split("/").filter(Boolean);
+
+  if (segments.length > 0) {
+    const [condition, make, model] = segments;
+
+    if (condition === "new-vehicles" || condition === "used-vehicles") {
+      refinements["condition"] = [
+        condition.replace("-vehicles", "").toLowerCase(),
+      ];
+    }
+
+    if (make && make !== "new-vehicles" && make !== "used-vehicles") {
+      refinements["make"] = [make];
+    }
+
+    if (model) {
+      refinements["model"] = [model];
+    }
+  }
+
+  // ---- Query-based refinements ----
+  u.searchParams.forEach((val, key) => {
+    refinements[key] = val.split(",").filter(Boolean);
+  });
+
+  return refinements;
+}
+

@@ -16,6 +16,24 @@ const client = algoliasearch(
   }
 );
 
+// await client.setSettings({
+//   indexName: srpIndex,
+//   indexSettings: {
+//     attributesForFaceting: [
+//       "make",
+//       "hierarchicalCategories:model_trim",
+//       "condition",
+//       "year",
+//       "body",
+//       "fuel_type",
+//       "ext_color",
+//       "int_color",
+//       "drive_train",
+//       "transmission",
+//     ],
+//   },
+// });
+
 type SearchOptions = SearchParams & {
   query?: string;
   facets?: string[];
@@ -44,6 +62,7 @@ async function search(options: SearchOptions) {
 async function searchWithMultipleQueries(options: SearchOptions) {
   const { sortIndex, ...searchParams } = options;
   const indexName = sortIndex || srpIndex;
+  // console.log("Searching index:", indexName, searchParams);
 
   const mainQuery = {
     indexName,

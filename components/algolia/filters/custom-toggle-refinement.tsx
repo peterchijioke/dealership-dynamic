@@ -9,18 +9,25 @@ type Props = {
     attribute: string;
     label: string;
     labelPosition?: "left" | "right";
+    selectedFacets: Record<string, string[]>;
+    updateFacet: (attribute: string, value: string) => void;
     className?: string;
 };
 
-export default function CustomToggleRefinement({ attribute, label, labelPosition = "right", className }: Props) {
-    const { filters, setFilter } = useAlgolia();
-    const value = filters[attribute];
-    const isOn = Array.isArray(value)
-        ? value.includes("true")
-        : value === "true";
+export default function CustomToggleRefinement({ attribute, label, labelPosition = "right", selectedFacets, updateFacet, className }: Props) {
+    const { stateToRoute } = useAlgolia();
+    const isChecked = (selectedFacets[attribute] || []).includes("true");
 
     function toggle() {
-        setFilter(attribute, isOn ? undefined : "true");
+        updateFacet(attribute, "true");
+        const updated = { ...selectedFacets };
+        if (isChecked) {
+            updated[attribute] = [];
+        } else {
+            updated[attribute] = ["true"];
+        }
+
+        stateToRoute(updated);
     }
 
     return (
@@ -29,7 +36,7 @@ export default function CustomToggleRefinement({ attribute, label, labelPosition
                 <Label htmlFor={attribute}>{label}</Label>
             }
             <Switch
-                checked={isOn}
+                checked={isChecked}
                 onCheckedChange={toggle}
                 id={attribute}
                 className="cursor-pointer"

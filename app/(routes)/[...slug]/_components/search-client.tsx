@@ -31,7 +31,7 @@ export default function SearchClient({
     const handleRemoveFilter = (facet: string, value: string) => {
         if (!facet || !value) return;
         const updated = updateFacetFilter(selectedFacets, facet, value);
-        console.log("Remove filter", updated);
+        // console.log("Remove filter", updated);
         stateToRoute(updated);
         updateFacet(facet, value);
         // setSelectedFacets((prev) => {
