@@ -21,6 +21,19 @@ export default function ActiveFiltersBar({
 
     return (
         <div className="flex flex-wrap items-center gap-2">
+
+            {/* Clear All (only appears if query refinements exist) */}
+            {Object.keys(refinements).length > 0 && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-gray-600 hover:text-rose-700 cursor-pointer"
+                    onClick={onClearAll}
+                >
+                    Reset
+                </Button>
+            )}
+            
             {Object.entries(refinements).map(([facet, values]) =>
                 values.map((value) => (
                     <span
@@ -38,18 +51,6 @@ export default function ActiveFiltersBar({
                         </button>
                     </span>
                 ))
-            )}
-
-            {/* Clear All (only appears if query refinements exist) */}
-            {Object.keys(refinements).length > 0 && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-sm text-gray-600 hover:text-rose-700 cursor-pointer"
-                    onClick={onClearAll}
-                >
-                    Reset
-                </Button>
             )}
         </div>
     );
