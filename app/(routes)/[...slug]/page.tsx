@@ -25,17 +25,13 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  try {
-    const { slug = [] } = await params;
-    const rawSearchParams = await searchParams;
-    if (!slug || slug.length === 0) return {};
+  const { slug = [] } = await params;
+  const rawSearchParams = await searchParams;
+  if (!slug || slug.length === 0) return {};
 
-    const dealerInfo = await getDealerInfo();
+  const dealerInfo = await getDealerInfo();
 
-    return generateSrpSeoMeta(slug, rawSearchParams, dealerInfo);
-  } catch (error) {
-    throw error;
-  }
+  return generateSrpSeoMeta(slug, rawSearchParams, dealerInfo);
 }
 
 export default async function CatchAllPage({
