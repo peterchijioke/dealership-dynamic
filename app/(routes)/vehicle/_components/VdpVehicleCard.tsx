@@ -31,7 +31,7 @@ export default function VdpVehicleCard() {
               </div>
             </div>
             <div className="flex flex-col items-end ">
-              <div className=" text-rose-700  animate-bounce font-bold text-2xl">
+              <div className=" text-rose-700 font-bold text-2xl">
                 <h2>
                   {vdpData.sale_price?.toLocaleString("en-US", {
                     style: "currency",

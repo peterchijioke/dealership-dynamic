@@ -154,11 +154,24 @@ export default function CarouselComponents() {
                   style={{ width: "100%", minWidth: "100%" }}
                 >
                   <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                    <img
+                    {/* <img
                       loading="eager"
                       alt={`Car preview ${index + 1}`}
                       src={item}
                       className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
+                    /> */}
+                    <img
+                      className="absolute top-0 left-0 w-full h-full object-cover rounded-img"
+                      src={item}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        aspectRatio: "1600/1200",
+                        opacity: 1,
+                        transition: "opacity 200ms ease-in",
+                      }}
+                      alt="car preview"
+                      loading="eager"
                     />
                   </div>
                 </div>
