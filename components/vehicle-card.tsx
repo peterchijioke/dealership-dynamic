@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { generateImagePreviewData, previewurl } from "@/utils/utils";
+import VehicleImage from "./vehicle-image";
 
 interface VehicleCardProps {
   hit: Vehicle;
@@ -17,47 +19,39 @@ interface VehicleCardProps {
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
 
-  const BLUR_PLACEHOLDER =
-    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
   const route = useRouter();
+
+  const [isHydrating, setIsHydrating] = useState(true);
+
+  useEffect(() => {
+    setIsHydrating(false);
+  }, []);
 
   return (
     <div className="vehicle-grid__card-wrapper">
       <Card
         className={cn(
-          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px]"
+          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px] overflow-hidden"
         )}
       >
-        {hit.is_special && (
-          <div className="bg-green-700 text-white text-sm font-semibold text-center py-1">
+        {/* {hit.is_special && (
+          <div className="bg-green-700  text-white text-sm font-semibold text-center py-1">
             {hit.sale_price || "Eligible for $5k Oregon Charge Ahead Rebate"}
+          </div>
+        )} */}
+        {hit?.is_special && (
+          <div className="absolute top-6 -left-2 z-10 bg-rose-700 text-white text-xs font-bold px-3 py-1 rounded uppercase">
+            Special
           </div>
         )}
         {/* Vehicle Image */}
-        <div className="relative w-full flex items-center justify-center !my-0 aspect-[3/2]">
-          <img
-            style={{
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              inset: "0px",
-              color: "transparent",
-            }}
-            src={
-              encryptedUrl ??
-              "https://cdn.dealertower.com/dealer/494a1788-0619-4a53-99c1-1c9f9b2e8fcc/media/no_vehicle_image_url-6caea94a-bd29-4652-a0a6-37e6767b69c9.jpg"
-            }
-            alt={hit.year + " " + hit.make + " " + hit.model}
-            fetchPriority={hit.__position <= 3 ? "high" : "auto"}
-            loading={"lazy"}
-            className={cn(
-              "w-full h-full rounded-t-2xl ",
-              encryptedUrl ? " object-cover" : "object-contain"
-            )}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </div>
+        <VehicleImage
+          hit={hit}
+          encryptedUrl={encryptedUrl}
+          isHydrating={isHydrating}
+        />
+
         <div className="flex items-center justify-between px-3 ">
           <div
             className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
@@ -144,12 +138,12 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           )}{" "}
           {/* CTA Button */}
           <div className="w-full">
-            <Button
+            <button
               onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
-              className="w-full py-6 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800 border-0"
+              className="w-full py-2 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800 border-0"
             >
               View Details
-            </Button>
+            </button>
           </div>
           {/* Closing tag for the div started at line 64 */}
         </div>

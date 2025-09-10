@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import VideoPlayer from "./VideoPlayer";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
+import { generateImagePreviewData, previewurl } from "@/utils/utils";
 
 type Props = {
   photo: string;
@@ -22,7 +23,7 @@ function VehicleGridCardMedia(props: Props) {
 
   return (
     <div className="relative aspect-[3/2] overflow-hidden">
-      {photo && (
+      {/* {photo && (
         <Image
           alt={alt}
           width={400}
@@ -39,14 +40,10 @@ function VehicleGridCardMedia(props: Props) {
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
           // Use blur placeholder only for the prioritized image to save bytes
           placeholder={shouldPreloadImage ? "blur" : "empty"}
-          blurDataURL={
-            shouldPreloadImage
-              ? "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-              : undefined
-          }
+          blurDataURL={generateImagePreviewData(previewurl)}
           className="object-cover w-full h-full"
         />
-      )}
+      )} */}
     </div>
   );
 }
