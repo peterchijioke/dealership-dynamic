@@ -68,7 +68,16 @@ export default function CustomRefinementList({
 
             <ul className="space-y-1 max-h-60 overflow-y-auto">
                 {visibleValues.map(([value, count]) => {
-                    const isChecked = selected.includes(value);
+                    let isChecked = selected.includes(value);
+                    let isDisabled = false;
+
+                    // Special rule for "condition"
+                    if (attribute === "condition") {
+                        if (selected.includes("Used") && value === "Certified") {
+                            isChecked = true;
+                            isDisabled = true;
+                        }
+                    }
 
                     return (
                         <li key={value}>
@@ -77,6 +86,7 @@ export default function CustomRefinementList({
                                     <input
                                         type="checkbox"
                                         checked={isChecked}
+                                        disabled={isDisabled}
                                         onChange={() => toggle(value)}
                                         className="h-4 w-4 cursor-pointer"
                                     />
