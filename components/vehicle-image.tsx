@@ -62,7 +62,7 @@ export default function VehicleImage({
           loading={"lazy"}
           className={cn(
             "w-full h-full rounded-t-2xl ",
-            encryptedUrl ? " object-cover" : "object-contain"
+            encryptedUrl ? " object-contain" : "object-contain"
           )}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
