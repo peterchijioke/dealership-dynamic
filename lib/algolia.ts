@@ -16,6 +16,24 @@ const client = algoliasearch(
   }
 );
 
+// await client.setSettings({
+//   indexName: srpIndex,
+//   indexSettings: {
+//     attributesForFaceting: [
+//       "make",
+//       "hierarchicalCategories:model_trim",
+//       "condition",
+//       "year",
+//       "body",
+//       "fuel_type",
+//       "ext_color",
+//       "int_color",
+//       "drive_train",
+//       "transmission",
+//     ],
+//   },
+// });
+
 type SearchOptions = SearchParams & {
   query?: string;
   facets?: string[];
@@ -80,6 +98,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
+  console.log("Searching index:", indexName, hitsResult);
 
   // Merge facets into a single object
   const mergedFacets = facetResults.reduce<Record<string, any>>(

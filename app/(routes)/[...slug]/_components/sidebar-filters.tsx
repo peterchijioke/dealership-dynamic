@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Accordion, AccordionItem } from '@/components/ui/custom-accordion'
 import CustomRefinementList from "@/components/algolia/filters/custom-refinement-list"
-// import CustomRangeInput from "@/components/algolia/custom-range-input"
 import CustomToggleRefinement from "@/components/algolia/filters/custom-toggle-refinement"
 
 type Props = {
@@ -34,6 +33,8 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                 attribute="is_special"
                 label="Show Special"
                 labelPosition="left"
+                selectedFacets={selectedFacets}
+                updateFacet={updateFacet}
                 className="justify-between px-2 pb-3"
             />
             <Accordion>
@@ -162,7 +163,7 @@ export default function SidebarFilters({ facets, currentRefinements, onToggleFac
                 >
                     <CustomRefinementList
                         attribute="transmission"
-                        values={facets?.transform || {}}
+                        values={facets?.transmission || {}}
                         selectedFacets={selectedFacets}
                         updateFacet={updateFacet}
                         searchable

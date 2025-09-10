@@ -97,6 +97,7 @@ export const CATEGORICAL_FACETS = [
   "condition",
   "make",
   "model",
+  // "hierarchicalCategories:model_trim",
   "year",
   "body",
   "fuel_type",
@@ -104,4 +105,9 @@ export const CATEGORICAL_FACETS = [
   "int_color",
   "drive_train",
   "transmission",
+  "doors",
+  "engine",
+  "key_features",
+  "mileage",
+  "is_special",
 ];
