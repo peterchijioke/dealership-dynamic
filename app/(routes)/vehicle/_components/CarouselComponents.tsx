@@ -4,8 +4,13 @@ import React, { useState, useEffect } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
-import { encryptObject } from "@/utils/utils";
+import {
+  encryptObject,
+  generateImagePreviewData,
+  previewurl,
+} from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
+import Image from "next/image";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -168,7 +173,7 @@ export default function CarouselComponents() {
                     /> */}
                     <img
                       className="absolute top-0 left-0 w-full h-full object-cover rounded-img"
-                      src={item}
+                      src={item || generateImagePreviewData(previewurl)}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -269,7 +274,7 @@ export default function CarouselComponents() {
               >
                 <div className="relative w-full h-full flex items-center justify-center p-4">
                   <img
-                    src={image}
+                    src={image || generateImagePreviewData(previewurl)}
                     alt={`Car image ${index + 1}`}
                     className="w-full h-full object-contain"
                     loading="eager"
