@@ -1,5 +1,12 @@
 import React, { Fragment, useState } from "react";
-import { MapPin, Phone, X, ArrowLeft } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  X,
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -93,7 +100,7 @@ interface ButtonDataWithFormHandler extends CTAButton {
   onFormClick?: (formId: string) => void;
 }
 
-// Inline Form Component
+// Inline Form Component - Simplified without accordion
 const InlineForm: React.FC<{
   formId: string;
   dealerDomain: string;
@@ -141,7 +148,6 @@ const InlineForm: React.FC<{
     setSubmitting(true);
 
     try {
-      // Make POST request to submit form data
       const response = await fetch(
         `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
         {
@@ -164,7 +170,6 @@ const InlineForm: React.FC<{
             duration: 4000,
           });
 
-          // Wait a moment then go back to show the toast
           setTimeout(() => {
             onBack();
           }, 1500);
@@ -215,7 +220,7 @@ const InlineForm: React.FC<{
               type={field.field_type}
               name={field.name}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -231,7 +236,7 @@ const InlineForm: React.FC<{
               type="date"
               name={field.name}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -243,24 +248,27 @@ const InlineForm: React.FC<{
       case "select":
         return (
           <div key={field.name} className={gridClass}>
-            <select
-              name={field.name}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
-              required={isRequired}
-              defaultValue={field.default_value || ""}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
-              disabled={submitting}
-            >
-              <option value="">
-                {field.label}
-                {isRequired ? "*" : ""}
-              </option>
-              {field.options?.map((option, index) => (
-                <option key={index} value={option.value}>
-                  {option.label}
+            <div className="relative">
+              <select
+                name={field.name}
+                className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 appearance-none bg-white"
+                required={isRequired}
+                defaultValue={field.default_value || ""}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                disabled={submitting}
+              >
+                <option value="">
+                  Select {field.label}
+                  {isRequired ? "*" : ""}
                 </option>
-              ))}
-            </select>
+                {field.options?.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
         );
 
@@ -268,7 +276,7 @@ const InlineForm: React.FC<{
         return (
           <div key={field.name} className={gridClass}>
             <fieldset className="space-y-2">
-              <legend className="text-sm font-medium text-gray-700 mb-2">
+              <legend className="text-sm font-medium text-gray-700 mb-3">
                 {field.label}
                 {isRequired ? "*" : ""}
               </legend>
@@ -276,7 +284,7 @@ const InlineForm: React.FC<{
                 {field.options?.map((option, index) => (
                   <label
                     key={index}
-                    className="flex items-center space-x-2 text-sm"
+                    className="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors"
                   >
                     <input
                       type="radio"
@@ -290,7 +298,9 @@ const InlineForm: React.FC<{
                       }
                       disabled={submitting}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-gray-700 capitalize">
+                      {option.label}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -301,7 +311,7 @@ const InlineForm: React.FC<{
       case "checkbox":
         return (
           <div key={field.name} className={gridClass}>
-            <label className="flex items-start space-x-2 text-sm">
+            <label className="flex items-start space-x-3 text-sm cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
               <input
                 type="checkbox"
                 name={field.name}
@@ -317,7 +327,7 @@ const InlineForm: React.FC<{
                 }
                 disabled={submitting}
               />
-              <span className="text-gray-700">
+              <span className="text-gray-700 leading-relaxed">
                 {field.label}
                 {isRequired ? "*" : ""}
               </span>
@@ -328,6 +338,7 @@ const InlineForm: React.FC<{
       case "paragraph":
         const tagName =
           (field.settings?.tag_name as keyof JSX.IntrinsicElements) || "p";
+
         return (
           <div key={field.name} className={gridClass}>
             {React.createElement(
@@ -336,8 +347,9 @@ const InlineForm: React.FC<{
                 className: cn(
                   "text-gray-800",
                   tagName === "h2" &&
-                    "text-lg font-semibold mb-4 mt-6 first:mt-0",
-                  tagName === "p" && "text-sm text-gray-600 mb-4"
+                    "text-lg font-semibold mt-6 mb-3 text-gray-900 border-b border-gray-200 pb-2",
+                  tagName === "p" &&
+                    "text-xs text-gray-600 mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg"
                 ),
               },
               field.default_value
@@ -352,7 +364,7 @@ const InlineForm: React.FC<{
               name={field.name}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
               rows={3}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 resize-none transition-all duration-200"
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none transition-all duration-200"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -412,7 +424,7 @@ const InlineForm: React.FC<{
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-red-600 text-white py-2.5 rounded-md font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {submitting ? (
                     <>
@@ -420,7 +432,7 @@ const InlineForm: React.FC<{
                       Submitting...
                     </>
                   ) : (
-                    "Submit"
+                    "Submit Application"
                   )}
                 </button>
               </div>
@@ -466,7 +478,7 @@ export default function VdpVehicleCard(): JSX.Element {
   const { footerInView, vdpData } = useVehicleDetails() as VdpContextType;
   const [showForm, setShowForm] = useState<boolean>(false);
   const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
-
+  const [showCtaButtons, setShowCtaButtons] = useState<boolean>(false);
   const handleFormCTA = (formId: string): void => {
     setSelectedFormId(formId);
     setShowForm(true);
@@ -540,24 +552,32 @@ export default function VdpVehicleCard(): JSX.Element {
                 </div>
 
                 <div className=" hidden md:block py-2">
-                  {vdpData.cta?.map((ctaItem, index) => (
-                    <div key={index} className="flex items-center  w-full py-1">
-                      {getButtonType({
-                        ...ctaItem,
-                        onFormClick: handleFormCTA,
-                      })}
-                    </div>
-                  ))}
+                  {showCtaButtons &&
+                    vdpData.cta?.map((ctaItem, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center  w-full py-1"
+                      >
+                        {getButtonType({
+                          ...ctaItem,
+                          onFormClick: handleFormCTA,
+                        })}
+                      </div>
+                    ))}
 
-                  <button
-                    className="active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
-                    aria-haspopup="false"
-                  >
-                    <MapPin className="h-6 w-6 mr-0  " />
-                    <div className="w-full text-[0.96rem]">
-                      I&apos;m Interested
-                    </div>
-                  </button>
+                  {!showCtaButtons && (
+                    <button
+                      onClick={() => {
+                        setShowCtaButtons(!showCtaButtons);
+                      }}
+                      className=" bg-rose-700 cursor-pointer text-white active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
+                      aria-haspopup="false"
+                    >
+                      <div className="w-full text-[0.96rem]">
+                        I&apos;m Interested
+                      </div>
+                    </button>
+                  )}
                 </div>
 
                 <div className=" flex-row flex items-center">
@@ -598,7 +618,6 @@ export default function VdpVehicleCard(): JSX.Element {
 export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
   const {
     btn_content,
-    btn_styles,
     cta_label,
     cta_type,
     open_newtab = false,
