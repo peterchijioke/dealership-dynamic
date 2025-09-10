@@ -53,7 +53,7 @@ const NissanFeatures = () => {
 
   return (
     <>
-      <div className=" w-full">
+      <div className=" w-full hidden md:block">
         <h2 className=" font-bold  mb-6">
           Reasons to love this {vdpData?.title}
         </h2>

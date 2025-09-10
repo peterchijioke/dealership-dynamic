@@ -16,7 +16,7 @@ interface VehicleCardProps {
 
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
-  
+
   const BLUR_PLACEHOLDER =
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
@@ -35,7 +35,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </div>
         )}
         {/* Vehicle Image */}
-        <div className="relative !my-0 aspect-[3/2]">
+        <div className="relative w-full flex items-center justify-center !my-0 aspect-[3/2]">
           <img
             style={{
               position: "absolute",
@@ -44,11 +44,17 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               inset: "0px",
               color: "transparent",
             }}
-            src={encryptedUrl ?? "https://placehold.co/600x400"}
+            src={
+              encryptedUrl ??
+              "https://cdn.dealertower.com/dealer/494a1788-0619-4a53-99c1-1c9f9b2e8fcc/media/no_vehicle_image_url-6caea94a-bd29-4652-a0a6-37e6767b69c9.jpg"
+            }
             alt={hit.year + " " + hit.make + " " + hit.model}
             fetchPriority={hit.__position <= 3 ? "high" : "auto"}
             loading={"lazy"}
-            className="object-cover w-full h-full rounded-t-2xl"
+            className={cn(
+              "w-full h-full rounded-t-2xl ",
+              encryptedUrl ? " object-cover" : "object-contain"
+            )}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>

@@ -7,15 +7,6 @@ import VehicleFeatures from "./VehicleFeatures";
 import { useVehicleDetails } from "./VdpContextProvider";
 
 export type VehicleDetailsProps = {
-  title?: string; // e.g., "New 2026 Hyundai Palisade"
-  trim?: string; // e.g., "Limited"
-  price?: string; // e.g., "$51,035"
-  mileage?: string; // e.g., "12 mi"
-  vin?: string; // e.g., "KM8RK5S29TU019023"
-  stock?: string; // e.g., "TU019023"
-  dealerName?: string; // e.g., "Wyatt Johnson Hyundai Mazda"
-  dealerPhone?: string; // tel link, e.g., "931-536-9898"
-  hours?: string[]; // lines of text
   onGoBack?: () => void;
   onPriceDetails?: () => void;
   onAllFeatures?: () => void;
@@ -31,19 +22,7 @@ export type VehicleDetailsProps = {
  */
 export default function VehicleDetails({
   inViewRef,
-  title = "New 2026 Hyundai Palisade",
-  trim = "Limited",
-  price = "$51,035",
-  mileage = "12 mi",
-  vin = "KM8RK5S29TU019023",
-  stock = "TU019023",
-  dealerName = "Wyatt Johnson Hyundai Mazda",
-  dealerPhone = "931-536-9898",
-  hours = [
-    "Monday to Friday: 8:00 AM - 8:00 PM",
-    "Saturday: 9:00 AM - 6:00 PM",
-    "Sunday: Closed",
-  ],
+
   onGoBack,
   onPriceDetails,
   onAllFeatures,
@@ -57,15 +36,20 @@ export default function VehicleDetails({
         <div className="flex flex-row gap-4 justify-between mb-6">
           <div className="flex flex-col">
             <div className="font-bold text-xl inline-block !text-[20px] ">
-              <h1>{title}</h1>
+              <h1>{vdpData.title}</h1>
             </div>
             <div className="inline-block text-lg">
-              <h2>{trim}</h2>
+              <h2>{vdpData.trim}</h2>
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <div className="text-xl font-bold text-lg">
-              <h2>{price}</h2>
+            <div className=" font-bold text-lg text-rose-700">
+              <h2>
+                {vdpData.sale_price?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }) || vdpData.prices?.dealer_sale_price_formatted}
+              </h2>
             </div>
             <div className="flex flex-row min-w-max">
               <button
@@ -94,46 +78,38 @@ export default function VehicleDetails({
       <div className="md:hidden py-2 flex flex-col gap-y-3">
         <div className="flex flex-row justify-between">
           <span className="font-semibold">Mileage</span>
-          <span>{mileage}</span>
+          <span>{vdpData.mileage}</span>
         </div>
         <div className="flex flex-row justify-between">
           <span className="font-semibold">VIN #</span>
           <button className="relative flex flex-row items-center rounded-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1">
-            <span>{vin}</span>
+            <span>{vdpData.vin_number}</span>
           </button>
         </div>
         <div className="flex flex-row justify-between">
           <span className="font-semibold">Stock #</span>
           <button className="relative flex flex-row items-center rounded-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1">
-            <span>{stock}</span>
+            <span>{vdpData.stock_number}</span>
           </button>
         </div>
       </div>
       <div className="h-[1px] w-full bg-slate-400 my-5 md:hidden" />
       {/* Features / Specs */}
-      <VehicleFeatures trim={trim} ref={inViewRef} />
-      <div className="h-[1px] w-full bg-slate-400 my-5" />
+      <VehicleFeatures trim={vdpData.trim} ref={inViewRef} />
+      <div className="h-[1px] w-full bg-slate-400 my-5 hidden md:block" />
       {/* Warranty For Life */}
       <WarrantyForLife />
       {/* Dealer info (mobile only) */}
       <div className="md:hidden">
         <div className="h-[1px] w-full bg-slate-400 my-5 md:hidden" />
         <div className=" font-semibold mt-3 mb-2 text-lg">
-          <h2>Located at {dealerName}</h2>
+          <h2>Located at </h2>
         </div>
         <div className="mt-5 mb-5 flex flex-col">
-          <span className="text-lg font-semibold">
-            Questions? Give us a call:
-          </span>
-          <span>
-            <a href={`tel:${dealerPhone}`}>{dealerPhone}</a>
-          </span>
-        </div>
-        <div className="mb-5 flex flex-col">
-          <span className="text-lg font-semibold">Hours:</span>
-          {hours.map((line) => (
-            <span key={line}>{line}</span>
-          ))}
+          <div className="w-full text-[0.96rem]">
+            {vdpData?.dealer_city}, {vdpData?.dealer_state}{" "}
+            {vdpData?.dealer_zip_code}
+          </div>
         </div>
       </div>
       <div className="h-[1px] w-full bg-slate-400 my-5" />

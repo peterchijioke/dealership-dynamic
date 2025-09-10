@@ -37,7 +37,7 @@ const VehicleFeatures = forwardRef<HTMLDivElement, VehicleFeaturesProps>(
       >
         <p className="text-xl font-semibold">Details</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 my-3">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-5 my-3">
           {Object.entries(extractedData).map(([label, value]) => (
             <div key={label} className="flex flex-col">
               <span className="text-gray-700 text-md">{label}</span>
