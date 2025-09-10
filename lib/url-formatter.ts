@@ -132,7 +132,9 @@ export function urlParser2(
   else if (matchedCondition.includes("used-vehicles/certified"))
     condition = ["Certified"];
   else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
-  else if (matchedCondition.includes("used-vehicles")) condition = ["Certified", "Used"];
+  else if (matchedCondition.includes("used-vehicles") && queryParams.condition?.includes("new"))
+    condition = ["Used"];
+  else if (matchedCondition.includes("used-vehicles")) condition = ["Used", "Certified"];
 
   // Return full refinementList
   return {
@@ -167,7 +169,7 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   // Rule 1: New + Used/Pre-Owned together → certified
   if (hasNewAndUsed) {
     return {
-      pathname: "/used-vehicles/certified",
+      pathname: "/used-vehicles",
       params: { condition: ["new"] },
     };
   }
@@ -185,7 +187,12 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
     return { pathname: "/new-vehicles", params: {} };
   }
 
-  // Rule 4: Only Used / Pre-Owned
+  // Rule 4: Only Certified
+  if (last === "certified" && condition.length === 1) {
+    return { pathname: "/used-vehicles/certified", params: {} };
+  }
+
+  // Rule 5: Only Used / Pre-Owned
   if (last === "used" || last === "pre-owned" || last === "preowned") {
     return { pathname: "/used-vehicles", params: {} };
   }
