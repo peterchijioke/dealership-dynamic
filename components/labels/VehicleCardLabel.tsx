@@ -37,7 +37,7 @@ function VehicleCardLabel(props: Props) {
         </div>
       )}
 
-      <div className="vehicle-grid-card-label__badge-container absolute -left-2 top-9 z-2 flex flex-col gap-1 text-sm  ">
+      <div className="vehicle-grid-card-label__badge-container absolute -left-2 top-7 z-2 flex flex-col gap-1 text-sm  ">
         {tags
           .filter((tag) => tag.tag_type === "badge")
           .map((tag, index) => (
@@ -59,7 +59,7 @@ function VehicleCardLabel(props: Props) {
 
         {isSpecial && (
           <div className="vehicle-grid-card-label__badge vehicle-grid-card-label__badge--special w-fit rounded-sm bg-rose-700 px-1.5 py-0.5 uppercase text-white">
-            SPECIAL
+            special
           </div>
         )}
       </div>
