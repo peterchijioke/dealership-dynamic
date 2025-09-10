@@ -97,7 +97,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
             return newState;
         });
 
-        console.log("FacetFilters sent:", selectedFacets);
+        console.log("FacetFilters sent:", buildFacetFilters());
 
         // Refetch facet counts
         const res = await searchWithMultipleQueries({

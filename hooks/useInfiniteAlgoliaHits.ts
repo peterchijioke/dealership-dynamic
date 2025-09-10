@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { VehicleHit } from "@/types/vehicle";
-import { searchWithMultipleQueries } from "@/lib/algolia";
+import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
+import { CATEGORICAL_FACETS } from "@/configs/config";
 
 type UseInfiniteAlgoliaHitsProps = {
   initialHits: VehicleHit[];
@@ -21,16 +22,36 @@ export function useInfiniteAlgoliaHits({
   const [page, setPage] = useState(initialPage);
   const [isLastPage, setIsLastPage] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   // Build facetFilters for Algolia
   const buildFacetFilters = useCallback(() => {
+    return refinementToFacetFilters(refinements);
+  }, [refinements]);
+
+  const buildFacetFiltersx = useCallback(() => {
     return Object.entries(refinements)
       .filter(([_, values]) => values.length > 0)
-      .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
+      .map(([facet, values]) =>
+        values.map((v) => {
+          if (facet === "is_special") {
+            return `${facet}:${String(v)}`; // ensures "true" not true
+          }
+          return `${facet}:${v}`;
+        })
+      );
   }, [refinements]);
 
   // Reset hits when refinements, sortIndex, or hitsPerPage change
   useEffect(() => {
+    if (!refinements || Object.keys(refinements).length === 0) return;
+
+    if (!initialized) {
+      // Skip first run, trust initialHits
+      setInitialized(true);
+      return;
+    }
+
     let active = true;
     (async () => {
       setLoading(true);
@@ -40,6 +61,7 @@ export function useInfiniteAlgoliaHits({
           hitsPerPage,
           facetFilters: buildFacetFilters(),
           sortIndex,
+          facets: CATEGORICAL_FACETS,
         });
 
         if (!active) return;
@@ -70,6 +92,7 @@ export function useInfiniteAlgoliaHits({
         hitsPerPage,
         facetFilters: buildFacetFilters(),
         sortIndex,
+        facets: CATEGORICAL_FACETS,
       });
 
       if (!response?.hits || response.hits.length === 0) {
