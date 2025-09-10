@@ -62,7 +62,6 @@ async function search(options: SearchOptions) {
 async function searchWithMultipleQueries(options: SearchOptions) {
   const { sortIndex, ...searchParams } = options;
   const indexName = sortIndex || srpIndex;
-  // console.log("Searching index:", indexName, searchParams);
 
   const mainQuery = {
     indexName,
@@ -99,6 +98,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
+  console.log("Searching index:", indexName, hitsResult);
 
   // Merge facets into a single object
   const mergedFacets = facetResults.reduce<Record<string, any>>(

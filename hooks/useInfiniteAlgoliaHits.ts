@@ -6,26 +6,30 @@ type UseInfiniteAlgoliaHitsProps = {
   initialHits: VehicleHit[];
   initialPage?: number;
   refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
+  sortIndex?: string;
+  hitsPerPage?: number;
 };
 
 export function useInfiniteAlgoliaHits({
   initialHits,
   initialPage = 0,
   refinements = {},
+  hitsPerPage = 12,
+  sortIndex,
 }: UseInfiniteAlgoliaHitsProps) {
   const [hits, setHits] = useState<VehicleHit[]>(initialHits);
   const [page, setPage] = useState(initialPage);
   const [isLastPage, setIsLastPage] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Normalize facetFilters for Algolia
+  // Build facetFilters for Algolia
   const buildFacetFilters = useCallback(() => {
     return Object.entries(refinements)
       .filter(([_, values]) => values.length > 0)
       .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
   }, [refinements]);
 
-  // Reset hits when refinements change
+  // Reset hits when refinements, sortIndex, or hitsPerPage change
   useEffect(() => {
     let active = true;
     (async () => {
@@ -33,8 +37,9 @@ export function useInfiniteAlgoliaHits({
       try {
         const response = await searchWithMultipleQueries({
           page: 0,
-          hitsPerPage: 20,
+          hitsPerPage,
           facetFilters: buildFacetFilters(),
+          sortIndex,
         });
 
         if (!active) return;
@@ -50,29 +55,34 @@ export function useInfiniteAlgoliaHits({
     return () => {
       active = false;
     };
-  }, [buildFacetFilters]);
+  }, [buildFacetFilters, sortIndex, hitsPerPage]);
 
-  // Infinite scroll "show more"
+  // Infinite scroll: fetch next page
   const showMore = useCallback(async () => {
     if (loading || isLastPage) return;
+
     setLoading(true);
+    const nextPage = page + 1;
 
-    const response = await searchWithMultipleQueries({
-      page: page + 1,
-      hitsPerPage: 20,
-      facetFilters: buildFacetFilters(),
-    });
+    try {
+      const response = await searchWithMultipleQueries({
+        page: nextPage,
+        hitsPerPage,
+        facetFilters: buildFacetFilters(),
+        sortIndex,
+      });
 
-    if (!response?.hits || response.hits.length === 0) {
-      setIsLastPage(true);
-    } else {
-      setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
-      setPage((p) => p + 1);
-      setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
+      if (!response?.hits || response.hits.length === 0) {
+        setIsLastPage(true);
+      } else {
+        setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
+        setPage(nextPage);
+        setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
+      }
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-  }, [page, loading, isLastPage, buildFacetFilters]);
+  }, [page, loading, isLastPage, buildFacetFilters, hitsPerPage, sortIndex]);
 
   return { hits, isLastPage, showMore, loading };
 }

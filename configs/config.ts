@@ -96,7 +96,8 @@ export const ATTRUBUTES_TO_RETRIEVE = [
 export const CATEGORICAL_FACETS = [
   "condition",
   "make",
-  "hierarchicalCategories:model_trim",
+  "model",
+  // "hierarchicalCategories:model_trim",
   "year",
   "body",
   "fuel_type",
