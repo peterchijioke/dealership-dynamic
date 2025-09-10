@@ -86,7 +86,7 @@ export const customStateMapping = {
 };
 
 export const nextRouter = createInstantSearchRouterNext({
-  serverUrl: process.env.NEXT_PUBLIC_BASE_URL,
+  serverUrl: process.env.NEXT_PUBLIC_SITE_URL,
   singletonRouter,
   routerOptions: {}
 });

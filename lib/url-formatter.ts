@@ -98,7 +98,7 @@ export function urlParser2(
   ];
 
   let remainingPath = pathname;
-  console.log("urlParser2", pathname, params);
+  // console.log("urlParser2", pathname, params);
   const matchedCondition =
     conditionPaths.find((p) => pathname.startsWith(p)) || "/new-vehicles/";
   remainingPath = remainingPath
@@ -130,9 +130,9 @@ export function urlParser2(
   if (matchedCondition.includes("new-vehicles/certified"))
     condition = ["New", "Certified"];
   else if (matchedCondition.includes("used-vehicles/certified"))
-    condition = ["Used", "Certified"];
+    condition = ["Certified"];
   else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
-  else if (matchedCondition.includes("used-vehicles")) condition = ["Used"];
+  else if (matchedCondition.includes("used-vehicles")) condition = ["Certified", "Used"];
 
   // Return full refinementList
   return {

@@ -1,19 +1,17 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import React from "react";
 import { Action } from "./BottomSection";
+import { VdpContextType } from "./VdpVehicleCard";
+import { useVehicleDetails } from "./VdpContextProvider";
 
 type Props = {
   action: Action;
   setAction: React.Dispatch<React.SetStateAction<Action>>;
 };
-const OPTIONS: { value: Action; label: string }[] = [
-  { value: "confirmAvailability", label: "Confirm Availability" },
-  { value: "testDrive", label: "Schedule Test Drive" },
-  { value: "explorePayments", label: "Explore Payments" },
-  { value: "valueMyTrade", label: "Value My Trade" },
-];
 
 const AvailabilityForm = ({ action, setAction }: Props) => {
+  const { vdpData } = useVehicleDetails() as VdpContextType;
+
   return (
     <ScrollArea className=" bg-gray-50 h-96 pt-8 w-full">
       {/* Header */}
@@ -24,12 +22,19 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
               id="sheet-title"
               className="text-2xl font-extrabold leading-snug"
             >
-              New 2026 Hyundai Palisade
+              {vdpData?.title || "Vehicle"}
             </h1>
             <p className="text-gray-600">Limited</p>
           </div>
           <div className="text-right">
-            <div className="text-xl font-bold">$51,035</div>
+            <div className="text-xl font-bold">
+              {vdpData.sale_price?.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              }) ||
+                vdpData.prices?.dealer_sale_price_formatted ||
+                "$0"}
+            </div>
           </div>
         </div>
         {/* Question */}
@@ -42,13 +47,13 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
       </div>
       {/* Options */}
       <div className="space-y-3 px-4 pb-8">
-        {OPTIONS.map(({ value, label }, idx) => {
+        {vdpData.cta?.map((ctaItem, idx) => {
           const id = `vdp-${idx + 1}`;
-          const selected = action === value;
+          const selected = action === ctaItem.btn_content;
 
           return (
             <div
-              key={value}
+              key={ctaItem.btn_content}
               className={[
                 "rounded-2xl border px-4 py-3 transition",
                 selected
@@ -88,7 +93,9 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
                   )}
                 </span>
 
-                <span className="text-base font-medium">{label}</span>
+                <span className="text-base font-medium">
+                  {ctaItem.cta_label}
+                </span>
               </label>
 
               <input
@@ -96,9 +103,9 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
                 type="radio"
                 name="vdp"
                 className="sr-only"
-                value={value}
+                value={ctaItem.btn_content}
                 checked={selected}
-                onChange={() => setAction(value)}
+                onChange={() => setAction(ctaItem.btn_content as Action)}
               />
             </div>
           );

@@ -34,7 +34,7 @@ export const FeaturesModal = ({ isOpen, onClose }: FeaturesModalProps) => {
         <div className="p-6 pt-4 w-full flex items-center justify-center ">
           <button
             onClick={onClose}
-            className=" px-6 cursor-pointer py-2 bg-primary text-white w-fit  rounded-full font-semibold hover:bg-primary transition-colors"
+            className=" px-6 cursor-pointer py-2 bg-rose-700 text-white w-fit  rounded-full font-semibold hover:bg-rose-700 transition-colors"
           >
             Close
           </button>

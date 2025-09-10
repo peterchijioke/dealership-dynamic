@@ -50,14 +50,7 @@ export default function CustomRefinementList({
     function toggle(value: string) {
         // Update state
         updateFacet(attribute, value);
-
-        // Update URL filter
-        // const next = selected.includes(value)
-        //     ? selected.filter((v) => v !== value)
-        //     : [...selected, value];
-        
         const updated = updateFacetFilter(selectedFacets, attribute, value);
-
         stateToRoute(updated);
     }
 
@@ -79,13 +72,13 @@ export default function CustomRefinementList({
 
                     return (
                         <li key={value}>
-                            <label className="flex items-center justify-between gap-2">
+                            <label className="flex items-center justify-between gap-2 cursor-pointer">
                                 <div className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
                                         checked={isChecked}
                                         onChange={() => toggle(value)}
-                                        className="h-4 w-4"
+                                        className="h-4 w-4 cursor-pointer"
                                     />
                                     <span className="text-sm">{value}</span>
                                 </div>

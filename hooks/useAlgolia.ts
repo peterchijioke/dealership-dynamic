@@ -1,12 +1,13 @@
 "use client";
 
 import { parsePathRefinements } from "@/lib/algolia";
+import { urlToRefinement } from "@/lib/helpers";
 import { refinementToUrl } from "@/lib/url-formatter";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
-
+import { useEffect, useMemo } from "react";
 
 export function useAlgolia() {
+  // const router = useRouter();
   const searchParams = useSearchParams();
   // const pathname = usePathname();
 
@@ -36,11 +37,32 @@ export function useAlgolia() {
   }
 
   function stateToRoute(filters: Record<string, string[]>) {
-    const url = refinementToUrl(filters);
-    // router.push("/used-vehicles/certified", undefined, { shallow: false });
-    window.history.pushState({}, "title", url);
+    const url = filters ? refinementToUrl(filters) : "/new-vehicles";
+    // router.push(url, { scroll: false });
+    // window.history.pushState({}, "title", url);
+    setTimeout(() => {
+      window.history.pushState({}, "title", url);
+    }, 0);
   }
-  function routeToState() {/* TO DO */}
+
+  function routeToState() {
+    return urlToRefinement(window.location.pathname + window.location.search);
+  }
+
+  // Listen for back/forward navigation
+  useEffect(() => {
+    const handler = () => {
+      const refinements = routeToState();
+      // dispatch refinements back into your app state
+      window.dispatchEvent(
+        new CustomEvent("algolia:popstate", { detail: refinements })
+      );
+    };
+
+    window.addEventListener("popstate", handler);
+    // console.log("Added popstate listener");
+    return () => window.removeEventListener("popstate", handler);
+  }, []);
 
   return { filters, setFilter, stateToRoute, routeToState };
 }
@@ -102,7 +124,7 @@ export function useAllRefinements() {
     const qs = params.toString();
     const newUrl = qs ? `${pathname}?${qs}` : pathname;
 
-    router.push(newUrl, { scroll: false });
+    router.replace(newUrl, { scroll: false });
   };
 
   return { pathRefinements, queryRefinements, refinements, updateRefinements };

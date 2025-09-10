@@ -21,6 +21,19 @@ export default function ActiveFiltersBar({
 
     return (
         <div className="flex flex-wrap items-center gap-2">
+
+            {/* Clear All (only appears if query refinements exist) */}
+            {Object.keys(refinements).length > 0 && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-gray-600 hover:text-rose-700 cursor-pointer"
+                    onClick={onClearAll}
+                >
+                    Reset
+                </Button>
+            )}
+            
             {Object.entries(refinements).map(([facet, values]) =>
                 values.map((value) => (
                     <span
@@ -31,25 +44,13 @@ export default function ActiveFiltersBar({
                         <button
                             type="button"
                             onClick={() => onRemove(facet, value)}
-                            className="ml-1 hover:text-rose-900"
+                            className="ml-1 hover:text-rose-900 cursor-pointer"
                             aria-label={`Remove filter ${facet}: ${value}`}
                         >
                             <X className="w-3 h-3" />
                         </button>
                     </span>
                 ))
-            )}
-
-            {/* Clear All (only appears if query refinements exist) */}
-            {Object.keys(refinements).length > 0 && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-sm text-gray-600 hover:text-rose-700"
-                    onClick={onClearAll}
-                >
-                    Clear All
-                </Button>
             )}
         </div>
     );

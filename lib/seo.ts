@@ -3,72 +3,80 @@ import { urlParser2 } from "./url-formatter";
 
 export function generateSrpSeoMeta(
   slug: string[],
-  rawSearchParams: { [key: string]: string | string[] | undefined }
+  rawSearchParams: { [key: string]: string | string[] | undefined },
+  dealerInfo: {
+    name: string;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+  }
 ) {
-    const canonicalBase = `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join(
-      "/"
-    )}`;
+  const canonicalBase = `${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}`;
 
-    const hasQueryParams =
-      rawSearchParams &&
-      Object.keys(rawSearchParams).some((key) =>
-        ["page", "sort"].includes(key.toLowerCase())
-      );
-
-    // Parse refinements
-    const searchParamsObj = new URLSearchParams(rawSearchParams as any);
-    const { params: refinementList } = urlParser2(
-      "/" + slug.join("/"),
-      searchParamsObj
+  const hasQueryParams =
+    rawSearchParams &&
+    Object.keys(rawSearchParams).some((key) =>
+      ["page", "sort"].includes(key.toLowerCase())
     );
 
-    // Build a dynamic title from refinements
-    const make = refinementList.make?.[0] || "";
-    const model = refinementList.model?.[0] || "";
-    const condition = refinementList.condition?.[0] || "";
-    const year = refinementList.year?.[0] || "";
+  // Parse refinements
+  const searchParamsObj = new URLSearchParams(rawSearchParams as any);
+  const { params: refinementList } = urlParser2(
+    "/" + slug.join("/"),
+    searchParamsObj
+  );
 
-    const titleParts: string[] = [];
-    if (year) titleParts.push(year);
-    if (condition) titleParts.push(condition);
-    if (make) titleParts.push(make);
-    if (model) titleParts.push(model);
+  // Build a dynamic title from refinements
+  const make = refinementList.make?.[0] || "";
+  const model = refinementList.model?.[0] || "";
+  const condition = refinementList.condition?.[0] || "";
+  const year = refinementList.year?.[0] || "";
 
-    const dynamicTitle =
-      titleParts.length > 0
-        ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
-        : `Browse Vehicles | Your Dealership`;
+  const titleParts: string[] = [];
+  if (condition) titleParts.push(condition);
+  if (year) titleParts.push(year);
+  if (make) titleParts.push(make);
+  if (model) titleParts.push(model);
 
-    const description =
-      titleParts.length > 0
-        ? `Explore ${titleParts.join(
-            " "
-          )} inventory. Find the best deals, prices, and availability at Your Brand.`
-        : `Browse our full inventory of new and used vehicles at Your Brand.`;
+  // const dynamicTitle =
+  //   titleParts.length > 0
+  //     ? `${titleParts.join(" ")} Vehicles for Sale | Your Dealership`
+  //     : `Browse Vehicles | Your Dealership`;
 
-    return {
-      title: dynamicTitle,
-      description,
-      alternates: {
-        canonical: canonicalBase,
-      },
-      robots: {
-        index: !hasQueryParams,
-        follow: true,
-      },
-    };
+  const dealerInfoSuffix: string =
+    dealerInfo?.city && dealerInfo?.state
+      ? `in ${dealerInfo.city}, ${dealerInfo.state}`
+      : `at ${dealerInfo.name}`;
+  const dynamicTitle = `${condition} Vehicles for Sale ${dealerInfoSuffix}`;
+
+  const description =
+    titleParts.length > 0
+      ? `Explore ${titleParts.join(
+          " "
+        )} inventory. Find the best deals, prices, and availability ${dealerInfoSuffix}.`
+      : `Browse our full inventory of ${condition} Vehicles ${dealerInfoSuffix}.`;
+
+  return {
+    title: dynamicTitle,
+    description,
+    alternates: {
+      canonical: canonicalBase,
+    },
+    robots: {
+      index: !hasQueryParams,
+      follow: true,
+    },
+  };
 }
 
 export function generateVdpSeoMeta(vehicle: Vehicle) {
-  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${
-    vehicle.trim || ""
-  } for Sale | Your Dealership`;
-  const description = `Find this ${vehicle.year} ${vehicle.make} ${
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.condition} ${vehicle.body} for Sale in ${vehicle.dealer_city},  ${vehicle.dealer_state}`;
+  const description = `Test drive a ${vehicle.condition} ${vehicle.year} ${vehicle.make} ${
     vehicle.model
   } ${vehicle.trim || ""} in ${
     vehicle.ext_color
-  }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at Your Dealership.`;
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/vehicle/${vehicle.objectID}`;
+  }, ${vehicle.mileage?.toLocaleString()} miles, for $${vehicle.price?.toLocaleString()}. Available now at ${vehicle.dealer_name}.`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/vehicle/${vehicle.objectID}`;
 
   return {
     title,
@@ -90,7 +98,6 @@ export function generateVdpSeoMeta(vehicle: Vehicle) {
       images: vehicle.photo ? [vehicle.photo] : undefined,
     },
   };
-
 }
 
 export function buildSrpJsonLd(slug: string[], hits: any) {
@@ -122,7 +129,7 @@ export function buildSrpJsonLd(slug: string[], hits: any) {
         price: hit.price,
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/${slug.join("/")}/${
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/${slug.join("/")}/${
           hit.objectID
         }`,
       },
