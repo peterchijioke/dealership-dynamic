@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 export function useAlgolia() {
+  // const router = useRouter();
   const searchParams = useSearchParams();
   // const pathname = usePathname();
 
@@ -37,8 +38,11 @@ export function useAlgolia() {
 
   function stateToRoute(filters: Record<string, string[]>) {
     const url = filters ? refinementToUrl(filters) : "/new-vehicles";
-    // router.push("/used-vehicles/certified", undefined, { shallow: false });
-    window.history.pushState({}, "title", url);
+    // router.push(url, { scroll: false });
+    // window.history.pushState({}, "title", url);
+    setTimeout(() => {
+      window.history.pushState({}, "title", url);
+    }, 0);
   }
 
   function routeToState() {
@@ -56,7 +60,7 @@ export function useAlgolia() {
     };
 
     window.addEventListener("popstate", handler);
-    console.log("Added popstate listener");
+    // console.log("Added popstate listener");
     return () => window.removeEventListener("popstate", handler);
   }, []);
 

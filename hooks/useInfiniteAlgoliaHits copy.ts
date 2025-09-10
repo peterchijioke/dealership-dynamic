@@ -22,14 +22,14 @@ export function useInfiniteAlgoliaHits({
   const [isLastPage, setIsLastPage] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Build facetFilters for Algolia
+  // Normalize facetFilters for Algolia
   const buildFacetFilters = useCallback(() => {
     return Object.entries(refinements)
       .filter(([_, values]) => values.length > 0)
       .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
   }, [refinements]);
 
-  // Reset hits when refinements, sortIndex, or hitsPerPage change
+  // Reset hits when refinements change
   useEffect(() => {
     let active = true;
     (async () => {
@@ -55,34 +55,30 @@ export function useInfiniteAlgoliaHits({
     return () => {
       active = false;
     };
-  }, [buildFacetFilters, sortIndex, hitsPerPage]);
+  }, [buildFacetFilters]);
 
-  // Infinite scroll: fetch next page
+  // Infinite scroll "show more"
   const showMore = useCallback(async () => {
     if (loading || isLastPage) return;
-
     setLoading(true);
-    const nextPage = page + 1;
 
-    try {
-      const response = await searchWithMultipleQueries({
-        page: nextPage,
-        hitsPerPage,
-        facetFilters: buildFacetFilters(),
-        sortIndex,
-      });
+    const response = await searchWithMultipleQueries({
+      page: page + 1,
+      hitsPerPage,
+      facetFilters: buildFacetFilters(),
+      sortIndex,
+    });
 
-      if (!response?.hits || response.hits.length === 0) {
-        setIsLastPage(true);
-      } else {
-        setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
-        setPage(nextPage);
-        setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
-      }
-    } finally {
-      setLoading(false);
+    if (!response?.hits || response.hits.length === 0) {
+      setIsLastPage(true);
+    } else {
+      setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
+      setPage((p) => p + 1);
+      setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
     }
-  }, [page, loading, isLastPage, buildFacetFilters, hitsPerPage, sortIndex]);
+
+    setLoading(false);
+  }, [page, loading, isLastPage, buildFacetFilters]);
 
   return { hits, isLastPage, showMore, loading };
 }
