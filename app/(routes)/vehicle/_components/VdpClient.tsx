@@ -6,6 +6,7 @@ import VdpBodySection from "./VdpBodySection";
 import VdpVehicleCard from "./VdpVehicleCard";
 import { useInView } from "@/hooks/useInView";
 import { useVehicleDetails } from "./VdpContextProvider";
+import SRPBanner from "@/components/banners/SRPBanner";
 
 export default function VdpClient() {
   const footerRef = useRef<HTMLDivElement>(null);
@@ -31,9 +32,12 @@ export default function VdpClient() {
   return (
     <>
       <main className="w-full max-w-[1441px] mx-auto  ">
-        <div className="flex flex-row md:gap-x-5 lg:gap-x-20 md:mx-8 lg:mx-20 mb-36">
-          <VdpBodySection />
-          <VdpVehicleCard />
+        <div className=" flex-col md:pt-40 gap-10 pt-20 flex w-full md:mx-8 lg:mx-20 mb-36">
+          {/* <SRPBanner /> */}
+          <div className="flex flex-row md:gap-x-5 lg:gap-x-20 ">
+            <VdpBodySection />
+            <VdpVehicleCard />
+          </div>
         </div>
       </main>
 
