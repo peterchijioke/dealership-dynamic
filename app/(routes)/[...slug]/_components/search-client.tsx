@@ -74,6 +74,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
 
     // Toggle a facet
     const updateFacet = async (facet: string, value: string) => {
+        let currentRefinements = selectedFacets;
         setSelectedFacets((prev) => {
             let newState: Record<string, string[]> = { ...prev };
 
@@ -93,16 +94,18 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
                 if (newState[facet].length === 0) delete newState[facet];
             }
 
+            currentRefinements = newState;
+
             stateToRoute(newState);
             return newState;
         });
 
-        console.log("FacetFilters sent:", selectedFacets);
+        console.log("FacetFilters sent:", currentRefinements);
 
         // Refetch facet counts
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(),
+            facetFilters: refinementToFacetFilters(currentRefinements),
             sortIndex,
             facets: CATEGORICAL_FACETS,
         });
@@ -110,12 +113,14 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
     };
 
     const handleRemoveFilter = async (facet: string, value: string) => {
+        let currentRefinements = selectedFacets;
         setSelectedFacets((prev) => {
             const updated = {
                 ...prev,
                 [facet]: (prev[facet] || []).filter((v) => v !== value),
             };
             if (updated[facet].length === 0) delete updated[facet];
+            currentRefinements = updated;
 
             stateToRoute(updated); // push URL change
             return updated;
@@ -123,7 +128,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
 
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(),
+            facetFilters: refinementToFacetFilters(currentRefinements),
             sortIndex,
             facets: CATEGORICAL_FACETS,
         });
@@ -137,7 +142,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
 
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(defaultRefinements),
+            facetFilters: refinementToFacetFilters(defaultRefinements),
             sortIndex,
             facets: CATEGORICAL_FACETS,
         });
@@ -149,7 +154,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
 
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(),
+            facetFilters: refinementToFacetFilters(selectedFacets),
             sortIndex: newSort,
             facets: CATEGORICAL_FACETS,
         });
