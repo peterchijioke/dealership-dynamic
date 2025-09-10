@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
+import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
 import { algoliaSortOptions, CATEGORICAL_FACETS } from "@/configs/config";
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
+import { urlParser2 } from "@/lib/url-formatter";
 
 interface Props {
     initialResults: any;
-    refinements?: Record<string, string[]>; // condition: ["New"], make: ["Audi"]
+    refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
 }
 
 const HITS_PER_PAGE = 12;
@@ -26,6 +27,7 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
     const { refinements: filterRefinements } = useAllRefinements();
     const { stateToRoute } = useAlgolia();
 
+    // Infinite hits hook
     const { hits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
         initialHits: initialResults.hits,
         refinements: selectedFacets,
@@ -33,36 +35,57 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
         hitsPerPage: HITS_PER_PAGE,
     });
 
-    const buildFacetFilters = (facet?: string, value?: string) => {
-        const updated = facet
-            ? {
-                ...selectedFacets,
-                [facet]: selectedFacets[facet]?.includes(value!)
-                    ? selectedFacets[facet].filter((v) => v !== value)
-                    : [...(selectedFacets[facet] || []), value!],
-            }
-            : selectedFacets;
+    // Helper: build Algolia facetFilters array from selected facets
+    const buildFacetFilters = useCallback(
+        (facetsOverride?: Record<string, string[]>) => {
+            const source = facetsOverride ?? selectedFacets;
+            return Object.entries(source)
+                .filter(([_, vals]) => vals.length > 0)
+                .map(([f, vals]) => vals.map((v) => `${f}:${v}`));
+        },
+        [selectedFacets]
+    );
 
-        return Object.entries(updated)
-            .filter(([_, vals]) => vals.length > 0)
-            .map(([f, vals]) => vals.map((v) => `${f}:${v}`));
-    };
+    // Sync state with URL back/forward
+    useEffect(() => {
+        const handlePopState = () => {
+            console.log("Popstate detected, syncing state with URL");
+            const searchParamsObj = new URLSearchParams(window.location.search);
+            const { params: newRefinements } = urlParser2(window.location.pathname, searchParamsObj);
+            setSelectedFacets(newRefinements);
 
+            // Refetch facets counts
+            searchWithMultipleQueries({
+                hitsPerPage: HITS_PER_PAGE,
+                facetFilters: refinementToFacetFilters(newRefinements),
+                sortIndex,
+                facets: CATEGORICAL_FACETS,
+            }).then((res) => setFacets(res.facets));
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => window.removeEventListener("popstate", handlePopState);
+    }, [sortIndex]);
+
+    // Toggle a facet
     const updateFacet = async (facet: string, value: string) => {
         setSelectedFacets((prev) => {
             const current = prev[facet] || [];
             const updated = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
-            return { ...prev, [facet]: updated };
+            const newState = { ...prev, [facet]: updated };
+            if (newState[facet].length === 0) delete newState[facet];
+
+            stateToRoute(newState); // push URL change
+            return newState;
         });
 
-        // Refetch facets for sidebar counts
+        // Refetch facet counts
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(facet, value),
+            facetFilters: buildFacetFilters(),
             sortIndex,
             facets: CATEGORICAL_FACETS,
         });
-
         setFacets(res.facets);
     };
 
@@ -74,24 +97,9 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
             };
             if (updated[facet].length === 0) delete updated[facet];
 
-            stateToRoute(updated);
+            stateToRoute(updated); // push URL change
             return updated;
         });
-
-        const res = await searchWithMultipleQueries({
-            hitsPerPage: HITS_PER_PAGE,
-            facetFilters: buildFacetFilters(facet, value),
-            sortIndex,
-            facets: CATEGORICAL_FACETS,
-        });
-
-        setFacets(res.facets);
-    };
-
-    const handleReset = async () => {
-        const defaultRefinements = { condition: ["New"] };
-        setSelectedFacets(defaultRefinements);
-        stateToRoute(defaultRefinements);
 
         const res = await searchWithMultipleQueries({
             hitsPerPage: HITS_PER_PAGE,
@@ -99,7 +107,20 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
             sortIndex,
             facets: CATEGORICAL_FACETS,
         });
+        setFacets(res.facets);
+    };
 
+    const handleReset = async () => {
+        const defaultRefinements = { condition: ["New"] };
+        setSelectedFacets(defaultRefinements);
+        stateToRoute(defaultRefinements); // replaceState to avoid extra history entry
+
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: HITS_PER_PAGE,
+            facetFilters: buildFacetFilters(defaultRefinements),
+            sortIndex,
+            facets: CATEGORICAL_FACETS,
+        });
         setFacets(res.facets);
     };
 
@@ -112,7 +133,6 @@ export default function SearchClient({ initialResults, refinements = {} }: Props
             sortIndex: newSort,
             facets: CATEGORICAL_FACETS,
         });
-
         setFacets(res.facets);
     };
 
