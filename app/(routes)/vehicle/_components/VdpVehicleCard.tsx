@@ -1,12 +1,5 @@
 import React, { Fragment, useState } from "react";
-import {
-  MapPin,
-  Phone,
-  X,
-  ArrowLeft,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
