@@ -11,6 +11,7 @@ import {
 } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -131,7 +132,9 @@ export default function CarouselComponents() {
     <>
       {/* Main Carousel */}
       <div
-        className="relative cursor-zoom-in w-full max-w-4xl mx-auto px-4 md:px-0"
+        className={cn(
+          "relative cursor-zoom-in w-full max-w-4xl mx-auto px-4 lg:px-0 md:px-0"
+        )}
         data-label="vdp-carousel"
       >
         <div className="rounded-lg md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
