@@ -14,14 +14,14 @@ function VehicleCardLabel(props: Props) {
   const topLabelTag = tags.find((tag) => tag.tag_type === "top_label");
 
   const tagClassName =
-    "vehicle-grid-card-label__badge text-white bg-primary px-1.5 py-0.5 uppercase rounded-sm w-fit";
+    "vehicle-grid-card-label__badge text-white  bg-primary px-1.5 py-0.5 uppercase rounded-sm w-fit";
 
   return (
     <>
       {topLabelTag && (
         <div
           className={cn(
-            "vehicle-grid-card-label__top-label left-0 top-0 z-2 w-full rounded-t-xl py-1.5 text-center text-xs font-semibold",
+            "vehicle-grid-card-label__top-label left-0 absolute top-0 z-2 w-full rounded-t-xl py-1.5 text-center text-xs font-semibold",
             {
               "vehicle-grid-card-label__top-label--clickable cursor-help":
                 !!topLabelTag.tag_disclaimer,
