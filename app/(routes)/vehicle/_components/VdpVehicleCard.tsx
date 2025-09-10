@@ -448,7 +448,7 @@ const InlineForm: React.FC<{
             Error Loading Form
           </h3>
           <p className="text-gray-600 text-center mb-3 text-xs">
-            We couldn't load the form. Please try again.
+            We couldn&apos;t load the form. Please try again.
           </p>
           <button
             onClick={() => fetchFormData()}
@@ -555,8 +555,7 @@ export default function VdpVehicleCard(): JSX.Element {
                   >
                     <MapPin className="h-6 w-6 mr-0  " />
                     <div className="w-full text-[0.96rem]">
-                      {vdpData?.dealer_city}, {vdpData?.dealer_state}{" "}
-                      {vdpData?.dealer_zip_code}
+                      I&apos;m Interested
                     </div>
                   </button>
                 </div>
