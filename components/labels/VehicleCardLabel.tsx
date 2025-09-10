@@ -21,7 +21,7 @@ function VehicleCardLabel(props: Props) {
       {topLabelTag && (
         <div
           className={cn(
-            "vehicle-grid-card-label__top-label absolute left-0 top-0 z-2 w-full rounded-t-xl py-1.5 text-center text-xs font-semibold",
+            "vehicle-grid-card-label__top-label left-0 top-0 z-2 w-full rounded-t-xl py-1.5 text-center text-xs font-semibold",
             {
               "vehicle-grid-card-label__top-label--clickable cursor-help":
                 !!topLabelTag.tag_disclaimer,

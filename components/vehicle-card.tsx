@@ -42,9 +42,11 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </div>
         )} */}
 
-        <div className="vehicle-default-theme__label-wrapper">
-          <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
-        </div>
+        {hit.is_special && hit.tag && (
+          <div className="vehicle-default-theme__label-wrapper">
+            <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
+          </div>
+        )}
         {/* Vehicle Image */}
         <VehicleImage
           hit={hit}
