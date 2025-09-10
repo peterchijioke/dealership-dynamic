@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
+import VehicleCardLabel from "./labels/VehicleCardLabel";
 
 interface VehicleCardProps {
   hit: Vehicle;
@@ -32,7 +33,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     <div className="vehicle-grid__card-wrapper">
       <Card
         className={cn(
-          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px] overflow-hidden"
+          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px] "
         )}
       >
         {/* {hit.is_special && (
@@ -40,11 +41,10 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
             {hit.sale_price || "Eligible for $5k Oregon Charge Ahead Rebate"}
           </div>
         )} */}
-        {hit?.is_special && (
-          <div className="absolute top-6 -left-2 z-10 bg-rose-700 text-white text-xs font-bold px-3 py-1 rounded uppercase">
-            Special
-          </div>
-        )}
+
+        <div className="vehicle-default-theme__label-wrapper">
+          <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
+        </div>
         {/* Vehicle Image */}
         <VehicleImage
           hit={hit}
