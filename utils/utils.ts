@@ -127,5 +127,10 @@ export const formatPrice = (price: number | bigint) => {
     }).format(price);
   }
 
+export const generateImagePreviewData = (imagePreview: string) =>
+  `data:image/jpeg;base64,${imagePreview}`;
 
+
+export const previewurl =
+    "UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoMAAkAAUAmJYwCdAEOy+QpWgAA/uiU0K7BTDeyr8YIl1v3bADof4++we2QEribfwRCO5TAxCfxN3OOfMPrfCLqc6VyIzxpPcHCSLojeleYpuW5wuF5TzTFGEJb0oKDgAA=";
  import React from "react";
