@@ -138,10 +138,16 @@ export default function CarouselComponents() {
               >
                 <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                   <img
+                    style={{
+                      aspectRatio: "1600/1200",
+                      width: "100%",
+                      height: "100%",
+                      opacity: 1,
+                      transition: "opacity 500ms ease-in-out",
+                    }}
                     loading="eager"
                     alt={`Car preview }`}
                     src="https://placehold.co/600x400?text=Coming+Soon"
-                    className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
                   />
                 </div>
               </div>
@@ -168,7 +174,7 @@ export default function CarouselComponents() {
                         height: "100%",
                         aspectRatio: "1600/1200",
                         opacity: 1,
-                        transition: "opacity 200ms ease-in",
+                        transition: "opacity 500ms ease-in-out",
                       }}
                       alt="car preview"
                       loading="eager"
