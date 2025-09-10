@@ -346,8 +346,10 @@ const InlineForm: React.FC<{
               {
                 className: cn(
                   "text-gray-800",
-                  tagName === "h2" && "text-lg font-semibold mt-6 mb-3 text-gray-900 border-b border-gray-200 pb-2",
-                  tagName === "p" && "text-xs text-gray-600 mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg"
+                  tagName === "h2" &&
+                    "text-lg font-semibold mt-6 mb-3 text-gray-900 border-b border-gray-200 pb-2",
+                  tagName === "p" &&
+                    "text-xs text-gray-600 mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg"
                 ),
               },
               field.default_value
