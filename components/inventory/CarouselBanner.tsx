@@ -16,7 +16,7 @@ interface Slide {
 }
 
 // Array of paths where the carousel should be shown
-const SHOW_CAROUSEL_PATHS = ["/new-vehicles", "/used-vehicles"];
+const SHOW_CAROUSEL_PATHS = ["/new-vehicles/", "/used-vehicles/"];
 
 const CarouselBanner = () => {
   const pathname = usePathname();
@@ -130,16 +130,20 @@ const CarouselBanner = () => {
 
   const shouldShowCarousel = SHOW_CAROUSEL_PATHS.includes(pathname);
 
+  console.log("=============path=======================");
+  console.log(pathname);
+  console.log("====================================");
+
   return (
     <Fragment>
       <div
         className={cn(
           "relative w-full overflow-hidden   bg-gray-400",
-          shouldShowCarousel && "rounded-md mx-auto px-5"
+          shouldShowCarousel ? "rounded-md mx-auto px-5" : ""
         )}
       >
         {/* Image Container - Full Width */}
-        <div className="relative w-full h-28 overflow-hidden">
+        <div className="relative w-full h-36 overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out w-full h-full"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}

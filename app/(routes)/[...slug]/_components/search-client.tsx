@@ -15,6 +15,7 @@ import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
+import { Search } from "lucide-react";
 
 interface Props {
   initialResults: any;
@@ -175,15 +176,29 @@ export default function SearchClient({
               <CarouselBanner />
             </div>
             <div className="p-4 space-y-4">
-              <div className="w-full flex justify-between md:flex-row gap-2">
+              <div className="w-full flex py-4  flex-col gap-2">
+                <div className="w-full flex items-center md:flex-row gap-2">
+                  <div className=" w-full flex items-center gap-1 flex-1">
+                    <span className="">1438 vehicles found for sale</span>
+                    <div className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]">
+                      <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
+                      <input
+                        type="text"
+                        className="w-full flex-1 bg-transparent placeholder:text-gray-600 focus:outline-none px-2 py-2"
+                        placeholder="Search here"
+                      />
+                    </div>
+                  </div>
+                  {/* Sort dropdown */}
+                  <SortDropdown
+                    currentSort={sortIndex}
+                    onChange={handleSortChange}
+                  />
+                </div>
                 <ActiveFiltersBar
                   refinements={filterRefinements}
                   onRemove={handleRemoveFilter}
                   onClearAll={handleReset}
-                />
-                <SortDropdown
-                  currentSort={sortIndex}
-                  onChange={handleSortChange}
                 />
               </div>
 
