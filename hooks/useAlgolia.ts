@@ -49,21 +49,6 @@ export function useAlgolia() {
     return urlToRefinement(window.location.pathname + window.location.search);
   }
 
-  // Listen for back/forward navigation
-  useEffect(() => {
-    const handler = () => {
-      const refinements = routeToState();
-      // dispatch refinements back into your app state
-      window.dispatchEvent(
-        new CustomEvent("algolia:popstate", { detail: refinements })
-      );
-    };
-
-    window.addEventListener("popstate", handler);
-    // console.log("Added popstate listener");
-    return () => window.removeEventListener("popstate", handler);
-  }, []);
-
   return { filters, setFilter, stateToRoute, routeToState };
 }
 
