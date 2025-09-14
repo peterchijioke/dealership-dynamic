@@ -32,10 +32,15 @@ function AccordionItem({
       {/* Header */}
       <button
         onClick={() => setIsOpen((o) => !o)}
-        className="flex w-full items-center justify-between text-gray-800 hover:bg-gray-100 transition-colors px-2 py-4"
+        className="flex w-full items-center justify-between text-gray-800 hover:bg-gray-100 cursor-pointer transition-colors px-2 py-4"
       >
-        <div className="flex items-center">
-          <span>{title}</span>
+        <div className="flex items-center gap-2">
+          <span>{title}</span>{" "}
+          {count !== undefined && count > 0 && (
+            <span className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-700 text-white text-xs">
+              {count}
+            </span>
+          )}
         </div>
         <Plus
           className={cn(
@@ -43,11 +48,6 @@ function AccordionItem({
             isOpen && "rotate-180"
           )}
         />
-        {count !== undefined && count > 0 && (
-          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-700 text-white text-xs">
-            {count}
-          </span>
-        )}
       </button>
 
       {/* Content */}
@@ -70,7 +70,7 @@ interface AccordionProps {
 }
 
 export function Accordion({ children }: AccordionProps) {
-  return <div>{children}</div>;
+  return <div className=" bg-inherit">{children}</div>;
 }
 
 export { AccordionItem };

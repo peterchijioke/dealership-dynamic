@@ -155,7 +155,7 @@ export default function SearchClient({
   return (
     <div className="sm:pt-28 md:pt-28 lg:pt-28">
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
-        <aside className="hidden lg:block w-72 shrink-0 border-r bg-white">
+        <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
           <ScrollArea className="h-full">
             <div className="p-4">
               <h2 className="font-bold text-center uppercase">
@@ -170,7 +170,7 @@ export default function SearchClient({
           </ScrollArea>
         </aside>
 
-        <main className="flex-1 bg-gray-100">
+        <main className="flex-1 ">
           <ScrollArea className="h-full  ">
             <div className="w-full px-4 pt-5">
               <CarouselBanner />
