@@ -11,6 +11,7 @@
   "dependencies": {
     "@algolia/autocomplete-js": "^1.19.2",
     "@algolia/autocomplete-theme-classic": "^1.19.2",
+    "@algolia/cache-common": "^4.25.2",
     "@algolia/cache-in-memory": "^4.25.2",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.13",

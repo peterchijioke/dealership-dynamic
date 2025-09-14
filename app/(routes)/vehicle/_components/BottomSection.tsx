@@ -498,7 +498,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent z-10" />
 
       {!open && (
-        <div className="md:hidden fixed inset-x-4 bottom-6 z-30">
+        <div className="md:hidden fixed left-0 right-0 bottom-6 z-30 px-4">
           {!featureInView && (
             <button
               type="button"
