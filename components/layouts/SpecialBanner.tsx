@@ -1,14 +1,18 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import CarouselBanner from "../inventory/CarouselBanner";
 import { usePathname } from "next/navigation";
 
 export default function SpecialBanner() {
   const pathname = usePathname();
 
+  const isSpecialPage = useMemo(() => {
+    return pathname;
+  }, [pathname]);
+
   if (
-    pathname?.includes("/used-vehicles/") ||
-    pathname?.includes("/new-vehicle/")
+    isSpecialPage?.includes("/used-vehicles/") ||
+    isSpecialPage?.includes("/new-vehicles/")
   ) {
     return null;
   }
