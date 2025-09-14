@@ -4,7 +4,6 @@ import React, { useState, useEffect, Fragment, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { useCurrentRefinements } from "react-instantsearch";
 import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
 
@@ -20,24 +19,11 @@ const SHOW_CAROUSEL_PATHS = ["/new-vehicles", "/used-vehicles"];
 
 const CarouselBanner = () => {
   const pathname = usePathname();
-  const { items: currentRefinements } = useCurrentRefinements();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Extract selected makes from current refinements
-  const selectedMakes = useMemo(() => {
-
-    const makeRefinement = currentRefinements.find(
-      (refinement) => refinement.attribute === "make"
-    );
-
-    if (makeRefinement?.refinements) {
-      const makes = makeRefinement.refinements.map((ref: any) => ref.value);
-      return makes;
-    }
-
-    return ["Nissan"];
-  }, [currentRefinements]);
+  const selectedMakes = useMemo(() => ["Nissan"], []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -140,7 +126,7 @@ const CarouselBanner = () => {
 
   if (dynamicSlides.length === 0) {
     return (
-      <div className="relative h-28 w-full overflow-hidden mt-5">
+      <div className="relative h-28 w-full overflow-hidden">
         <div className="relative w-full h-28 overflow-hidden bg-gray-300 ">
           <div className="w-full h-full bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 animate-pulse"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -155,7 +141,7 @@ const CarouselBanner = () => {
 
   return (
     <Fragment>
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full overflow-hidden bg-gray-400">
         {/* Image Container - Full Width */}
         <div className="relative w-full h-28 overflow-hidden">
           <div
