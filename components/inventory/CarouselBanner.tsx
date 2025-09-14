@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 
 interface Slide {
   id: number;
@@ -21,37 +22,40 @@ const CarouselBanner = () => {
   const pathname = usePathname();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
   // Extract selected makes from current refinements
   const selectedMakes = useMemo(() => ["Nissan"], []);
+  const fetchSpecials = async () => {
+    setIsLoading(true);
+    try {
+      const payload = {
+        channels: ["srp_banner"],
+        filters: {
+          condition: [
+            pathname.includes("/new-vehicles/") ||
+            pathname.includes("/vehicle/")
+              ? "new"
+              : "used",
+          ],
+          make: selectedMakes,
+        },
+      };
+      const data = await getSpecialBanner(payload);
+      console.log("===========getSpecialBanner=========================");
+      console.log("Special Banner Data:", JSON.stringify(data, null, 2));
+      console.log("===========getSpecialBanner=========================");
+      const final = data?.data.flatMap((item: any) => item);
+      setSpecials(final || []);
+    } catch (_error) {
+      console.log("Error fetching specials:", _error);
 
+      // Swallow network errors to avoid noisy console in production
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    let isCancelled = false;
-    (async () => {
-      setIsLoading(true);
-      try {
-        const payload = {
-          channels: ["srp_banner"],
-          filters: {
-            condition: [pathname.includes("new-vehicles") ? "new" : "used"],
-            make: selectedMakes,
-          },
-        };
-        const data = await getSpecialBanner(payload);
-        const final = data?.data.flatMap((item: any) => item);
-
-        if (!isCancelled) setSpecials(final ?? []);
-      } catch (_error) {
-        // Swallow network errors to avoid noisy console in production
-        if (!isCancelled) setSpecials([]);
-      } finally {
-        if (!isCancelled) setIsLoading(false);
-      }
-    })();
-    return () => {
-      isCancelled = true;
-    };
-  }, [pathname, selectedMakes]);
+    fetchSpecials();
+  }, []);
 
   const specialsData: Special[] = useMemo(() => {
     return specials;
@@ -81,7 +85,7 @@ const CarouselBanner = () => {
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, dynamicSlides.length]);
-
+  console.log(specials, "=======console.log(dynamicSlides);=========");
   // Clamp currentSlide if slides shrink (e.g., from 1 to 0)
   useEffect(() => {
     if (dynamicSlides.length === 0) {
@@ -124,24 +128,16 @@ const CarouselBanner = () => {
     );
   }
 
-  if (dynamicSlides.length === 0) {
-    return (
-      <div className="relative h-28 w-full overflow-hidden">
-        <div className="relative w-full h-28 overflow-hidden bg-gray-300 ">
-          <div className="w-full h-full bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 animate-pulse"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-gray-500 text-sm font-medium">
-              Loading specials...
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const shouldShowCarousel = SHOW_CAROUSEL_PATHS.includes(pathname);
 
   return (
     <Fragment>
-      <div className="relative w-full overflow-hidden bg-gray-400">
+      <div
+        className={cn(
+          "relative w-full overflow-hidden   bg-gray-400",
+          shouldShowCarousel && "rounded-md mx-auto px-5"
+        )}
+      >
         {/* Image Container - Full Width */}
         <div className="relative w-full h-28 overflow-hidden">
           <div
