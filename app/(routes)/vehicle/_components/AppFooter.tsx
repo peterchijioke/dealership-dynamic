@@ -16,13 +16,13 @@ export default function AppFooter() {
               <div className="flex gap-3 flex-col mt-3">
                 <Link
                   className="w-fit font-medium text-white"
-                  href="/used-cars-in-maryland-virginia-washington-dc"
+                  href="/used-vehicles/"
                 >
                   Used Cars Nearby
                 </Link>
                 <Link
                   className="w-fit font-medium text-white"
-                  href="/new-cars-in-maryland-virginia-washington-dc"
+                  href="/new-vehicles/"
                 >
                   New Cars Nearby
                 </Link>
@@ -96,13 +96,10 @@ export default function AppFooter() {
                   Support & FAQ
                 </Link>
                 <Link className="w-fit font-medium text-white" href="/about">
-                  About Koons
+                  About Nissan of Portland
                 </Link>
-                <Link
-                  className="w-fit font-medium text-white"
-                  href="/koons-customer-buying-car-reviews"
-                >
-                  Koons Reviews
+                <Link className="w-fit font-medium text-white" href="#">
+                  Nissan Portland Reviews
                 </Link>
               </div>
             </div>
