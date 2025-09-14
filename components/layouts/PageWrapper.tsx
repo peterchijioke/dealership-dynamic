@@ -20,7 +20,7 @@ export default async function PageWrapper({
       </div>
 
       <div className="grid bg-[#FAF9F7]">
-        <div className=" w-full pt-32">
+        <div className=" w-full pt-20 md:pt-36 lg:pt-36">
           <CarouselBanner />
         </div>
         <main className="w-full max-w-[1441px] mx-auto ">{children}</main>
