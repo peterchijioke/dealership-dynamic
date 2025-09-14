@@ -493,7 +493,7 @@ export default function VdpVehicleCard(): JSX.Element {
             bottom: "unset",
             top: "unset",
           }}
-          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-40 pb-6x max-w-sm"
+          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
         >
           <div>
             {/* Price section - always visible */}
