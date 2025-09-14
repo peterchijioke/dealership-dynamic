@@ -29,6 +29,39 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     setIsHydrating(false);
   }, []);
 
+  const prices = {
+    total_discounts: 1950,
+    sale_price_label: "Sale price",
+    total_additional: 0,
+    retail_price_label: "Retail Price",
+    sale_price_formatted: "$22,975",
+    dealer_discount_label: "Dealership Discount",
+    dealer_discount_total: 1950,
+    total_discounts_label: "Discounts",
+    retail_price_formatted: "$24,925",
+    total_additional_label: null,
+    dealer_additional_label: null,
+    dealer_additional_total: 0,
+    dealer_discount_details: [
+      {
+        title: "Dealership Discount",
+        value: "-$1,950",
+        disclaimer: null,
+      },
+    ],
+    dealer_sale_price_label: null,
+    incentive_discount_label: null,
+    incentive_discount_total: 0,
+    dealer_additional_details: [],
+    total_discounts_formatted: "$1,950",
+    incentive_additional_label: null,
+    incentive_additional_total: 0,
+    incentive_discount_details: [],
+    total_additional_formatted: null,
+    dealer_sale_price_formatted: "$22,975",
+    incentive_additional_details: [],
+  };
+
   return (
     <div className="vehicle-grid__card-wrapper">
       <Card
@@ -124,18 +157,93 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </div>
           {isPriceOpen && (
             <div className=" text-gray-800 p-3 w-full  py-2">
-              {hit.prices &&
-                Object.entries(hit.prices).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="w-full capitalize flex items-center justify-between py-2 border-b border-gray-200"
-                  >
-                    <span className="font-medium">{key}</span>
-                    {/* <span className="font-semibold">{value}</span> */}
-                  </div>
-                ))}
+              {/* Prefer prices from hit if available */}
+              {((hit.prices && Object.keys(hit.prices).length > 0) || prices) &&
+                (() => {
+                  const p: any =
+                    hit.prices && Object.keys(hit.prices).length > 0
+                      ? hit.prices
+                      : prices;
+
+                  // helper to safely read formatted values
+                  const msrp = p.retail_price_formatted || p.msrp || null;
+                  const sale =
+                    p.dealer_sale_price_formatted ||
+                    p.sale_price_formatted ||
+                    null;
+                  const totalDiscounts =
+                    p.total_discounts_formatted ||
+                    (p.total_discounts ? `$${p.total_discounts}` : null);
+
+                  // gather discount detail lines if present
+                  const discountDetails: { title: string; value: string }[] =
+                    [];
+                  if (Array.isArray(p.dealer_discount_details)) {
+                    p.dealer_discount_details.forEach((d: any) => {
+                      if (d && (d.title || d.value)) {
+                        discountDetails.push({
+                          title: d.title || "Discount",
+                          value: d.value || "",
+                        });
+                      }
+                    });
+                  }
+
+                  return (
+                    <div className="w-full">
+                      {/* MSRP / Retail (struck-through when different from sale) */}
+                      {msrp && (
+                        <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                          <span className="font-medium text-sm">MSRP</span>
+                          <span className="text-sm text-gray-500 line-through">
+                            {msrp}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Individual discounts */}
+                      {discountDetails.map((d, idx) => (
+                        <div
+                          key={`disc-${idx}`}
+                          className="w-full flex items-center justify-between py-2 border-b border-gray-200"
+                        >
+                          <span className="font-medium text-sm capitalize">
+                            {d.title}
+                          </span>
+                          <span className="font-semibold text-sm text-gray-700">
+                            {d.value}
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Total discounts */}
+                      {totalDiscounts && (
+                        <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
+                          <span className="font-medium text-sm">
+                            Total Discounts
+                          </span>
+                          <span className="font-semibold text-sm text-gray-700">
+                            {totalDiscounts}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Sale price / final price */}
+                      {sale && (
+                        <div className="w-full flex items-center justify-between py-3">
+                          <span className="font-medium text-sm">
+                            Sale Price
+                          </span>
+                          <span className="font-bold text-base text-gray-900">
+                            {sale}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
             </div>
-          )}{" "}
+          )}
           {/* CTA Button */}
           <div className="w-full">
             <button
