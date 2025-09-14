@@ -81,7 +81,10 @@ const NavigationMenuComponent = ({
                                   (model: ThemeData["models"][0]) => (
                                     <Link
                                       key={model.model}
-                                      href={`${model.url.replace("https://www.tonkinwilsonvillenissan.com", "")}`}
+                                      href={`${model.url.replace(
+                                        "https://www.tonkinwilsonvillenissan.com",
+                                        ""
+                                      )}`}
                                       className="flex items-center space-x-2 min-w-[150px] hover:bg-gray-200 rounded-md px-2 py-1"
                                     >
                                       {model.image_url ? (
@@ -122,7 +125,7 @@ const NavigationMenuComponent = ({
                 </>
               ) : item.children && item.children.length > 0 ? (
                 <>
-                    <NavigationMenuTrigger className="bg-transparent rounded-none cursor-pointer hover:bg-transparent font-semibold px-4 py-6 uppercase">
+                  <NavigationMenuTrigger className="bg-transparent rounded-none cursor-pointer hover:bg-transparent font-semibold px-4 py-6 uppercase">
                     <Link prefetch={true} href={item.link}>
                       {item.label.toLowerCase()}
                     </Link>

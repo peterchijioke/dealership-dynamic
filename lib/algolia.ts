@@ -6,6 +6,7 @@ import {
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
+import { reverse } from "dns";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -98,7 +99,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
-  console.log("Searching index:", indexName, hitsResult);
+  // console.log("Searching index:", indexName, hitsResult);
 
   // Merge facets into a single object
   const mergedFacets = facetResults.reduce<Record<string, any>>(
@@ -107,6 +108,19 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     },
     {}
   );
+
+  // Sort year facet descending
+  if (mergedFacets.year) {
+    const reversedData: Record<string, any> = {};
+    const keys = Object.keys(mergedFacets.year).reverse();
+
+    for (const key of keys) {
+      reversedData[` ${key}`] = mergedFacets.year[key];
+    }
+
+    // console.log("reversedData", keys, reversedData);
+    mergedFacets.year = reversedData;
+  }
 
   return {
     ...hitsResult,

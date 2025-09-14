@@ -13,6 +13,7 @@ interface VehicleImageProps {
 }
 const blurDataURL =
   "https://dealertower.app/image/UuPD13gL_j3TIE57a2mSoOGLRxwnwl_PpZ0OOPDuQ1icAbVhR_62E7sfpRP7217gmQmnZGk2UQ_YGUIwA-8OVVbNXjhM1nntORyi1OhKFWu6LD2kslrksibGGIkol0mk7spFpJbIja2z0mpjuB2FLux6aOZKzArQNHRnVWXp3omIvBsiM1G9qOu0koZP06vG0mGrvanG1c6TVvPaihCMs2zfkzelz9ls_6cLDmKxDF05-fr642YaI6rrC9rtCQ.avif";
+
 export default function VehicleImage({
   hit,
   encryptedUrl,
@@ -62,7 +63,7 @@ export default function VehicleImage({
           loading={"lazy"}
           className={cn(
             "w-full h-full rounded-t-2xl ",
-            encryptedUrl ? " object-cover" : "object-contain"
+            encryptedUrl ? " object-contain" : "object-contain"
           )}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />

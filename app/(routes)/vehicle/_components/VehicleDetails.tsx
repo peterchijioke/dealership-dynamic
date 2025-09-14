@@ -25,7 +25,6 @@ export default function VehicleDetails({
 
   onGoBack,
   onPriceDetails,
-  onAllFeatures,
 }: VehicleDetailsProps) {
   const { vdpData } = useVehicleDetails();
 
@@ -115,16 +114,17 @@ export default function VehicleDetails({
       <div className="h-[1px] w-full bg-slate-400 my-5" />
       <div className="flex flex-col w-full gap-5 md:p-0 md:py-5">
         <p className="text-xl font-semibold">Vehicle Description</p>
-        <section className="gap-y-3 leading-8 ">
-          {vdpData?.description || ""}
-        </section>
+        <section
+          className=" leading-8 "
+          dangerouslySetInnerHTML={{ __html: vdpData.description || "" }}
+        />
       </div>
 
       <div className="flex flex-col w-full pt-10 gap-5 md:p-0 md:py-5">
         <p className="text-xl font-semibold">Disclaimer</p>
         <section
           dangerouslySetInnerHTML={{ __html: vdpData.disclaimers.new || "" }}
-          className="gap-y-3 leading-8 italic   "
+          className="leading-8 italic   "
         />
       </div>
     </div>

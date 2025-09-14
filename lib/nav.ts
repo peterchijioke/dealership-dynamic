@@ -1,4 +1,24 @@
+
 'use server'
+export async function getSpecialBanner(payload: any) {
+  const response = await fetch(
+    `${baseUrl}/${getDynamicPath()}/get-specials`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  
+    console.log('==============getSpecialBanner======================');
+    console.log(response);
+    console.log('============getSpecialBanner========================');
+
+  return await response.json();
+}
 import { baseUrl, getDynamicPath, getWebsiteInformationPath } from "@/configs/config";
 
 export type NavItem = { label: string; href: string };
@@ -33,23 +53,3 @@ export const getThemeImage = async (path: string): Promise<any> => {
   
   return (await response.json()) as any;
 };
-
-
-
-export async function getSpecialBanner(data:any) {
-  const response = await fetch(`${baseUrl}/${getDynamicPath()}/get-specials`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache, no-store'
-    },
-    body: JSON.stringify(data)
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result;
-}
