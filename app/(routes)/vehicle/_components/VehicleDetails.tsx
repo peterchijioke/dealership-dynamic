@@ -48,7 +48,10 @@ export default function VehicleDetails({
                 {vdpData.sale_price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
-                }) || stripTrailingCents(vdpData.prices?.dealer_sale_price_formatted)}
+                }) ||
+                  stripTrailingCents(
+                    vdpData.prices?.dealer_sale_price_formatted
+                  )}
               </h2>
             </div>
             <div className="flex flex-row min-w-max">

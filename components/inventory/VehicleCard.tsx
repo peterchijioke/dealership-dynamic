@@ -237,8 +237,8 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
                       <div className="flex justify-between text-base">
                         <span className="text-gray-700">{inc.title}</span>
                         <span className="font-semibold">
-                              {formatPrice(inc.cashback_price)}
-                            </span>
+                          {formatPrice(inc.cashback_price)}
+                        </span>
                       </div>
                     </div>
                   ))}

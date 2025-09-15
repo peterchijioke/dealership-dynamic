@@ -165,11 +165,11 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               <span className=" text-[#69707C]">After all rebates</span>
               <div className="flex items-center">
                 <span className="text-base font-bold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
-                  {(hit.sale_price != null
+                  {hit.sale_price != null
                     ? formatPrice(hit.sale_price)
                     : stripTrailingCents(
                         hit.prices.dealer_sale_price_formatted
-                      ))}
+                      )}
                 </span>
                 <button
                   type="button"
