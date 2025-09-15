@@ -179,7 +179,7 @@ export default function SearchClient({
         </aside>
 
         <main className="flex-1 ">
-          <div className="h-full">
+          <ScrollArea className="h-full  ">
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row  gap-2">
@@ -225,7 +225,7 @@ export default function SearchClient({
                 loading={loading}
               />
             </div>
-          </div>
+          </ScrollArea>
         </main>
       </div>
     </div>
