@@ -1,7 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
 import CarouselBanner from "../inventory/CarouselBanner";
-import { usePathname } from "next/navigation";
 
 export default function SpecialBanner() {
   // const pathname = usePathname();
