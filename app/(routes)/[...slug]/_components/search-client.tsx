@@ -187,7 +187,10 @@ export default function SearchClient({
                     <span className=" hidden md:block">
                       1438 vehicles found for sale
                     </span>
-                    <div className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]">
+                  <div
+                    className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]"
+                    // onClick={() => setSearchOpen(true)}
+                  >
                       <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
                       <input
                         type="text"
