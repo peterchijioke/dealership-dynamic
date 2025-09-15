@@ -27,10 +27,6 @@ export const VdpContextProvider: React.FC<{
   const [featureInView, setFeatureInView] = useState(false);
   const [footerInView, setFooterInView] = useState(false);
 
-  console.log("============111====srp data====================");
-  console.log(srpData);
-  console.log("==========222==srp data========================");
-
   return (
     <VDPContext.Provider
       value={{

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, VideoIcon, X } from "lucide-react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
@@ -11,6 +11,9 @@ import {
 } from "@/utils/utils";
 import { key, urlCache } from "@/hooks/useEncryptedImageUrl";
 import Image from "next/image";
+import ClipLoader from "react-spinners/ClipLoader";
+import HoverVideoPlayer from "react-hover-video-player";
+import { cn } from "@/lib/utils";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -19,37 +22,40 @@ export default function CarouselComponents() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCurrentSlide, setModalCurrentSlide] = useState(0);
 
-  const images = (vdpData?.photos || []).map((url) => {
-    const cacheKey = JSON.stringify({
-      url,
-      width: 400,
-      quality: 65,
-      cache: 1,
-    });
-
-    if (urlCache.has(cacheKey)) {
-      return urlCache.get(cacheKey)!;
-    }
-    const isCancelled = false;
-    encryptObject(
-      {
+  const images = [
+    { type: "video", url: vdpData.video },
+    ...(vdpData?.photos || []).map((url) => {
+      const cacheKey = JSON.stringify({
         url,
         width: 400,
         quality: 65,
         cache: 1,
-      },
-      key!
-    )
-      .then((str) => {
-        const finalUrl = `https://dealertower.app/image/${str}.avif`;
-        urlCache.set(cacheKey, finalUrl);
-        if (!isCancelled) return finalUrl;
-      })
-      .catch(() => {
-        if (!isCancelled) return undefined;
       });
-    return undefined;
-  });
+
+      if (urlCache.has(cacheKey)) {
+        return { type: "image", url: urlCache.get(cacheKey)! };
+      }
+      const isCancelled = false;
+      encryptObject(
+        {
+          url,
+          width: 400,
+          quality: 65,
+          cache: 1,
+        },
+        key!
+      )
+        .then((str) => {
+          const finalUrl = `https://dealertower.app/image/${str}.avif`;
+          urlCache.set(cacheKey, finalUrl);
+          if (!isCancelled) return { type: "image", url: finalUrl };
+        })
+        .catch(() => {
+          if (!isCancelled) return undefined;
+        });
+      return { type: "image", url: undefined };
+    }),
+  ];
 
   // Main carousel slider
   const [sliderRef, instanceRef] = useKeenSlider({
@@ -126,7 +132,19 @@ export default function CarouselComponents() {
       modalContainer?.removeEventListener("scroll", handleScroll);
     };
   }, [isModalOpen, images.length]);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
+  const handlePlayVideo = () => {
+    setIsVideoPlaying(true);
+  };
+  const handlePauseVideo = () => {
+    setIsVideoPlaying(false);
+  };
+
+  const [isMount, setIsMount] = useState(false);
+  useEffect(() => {
+    setIsMount(true);
+  }, []);
   return (
     <>
       {/* Main Carousel */}
@@ -136,60 +154,119 @@ export default function CarouselComponents() {
         }
         data-label="vdp-carousel"
       >
-        <div className="rounded-lg md:rounded-3xl bg-[#e6e7e8] overflow-hidden relative">
+        <div className="rounded-lg md:rounded-3xl  overflow-hidden relative">
           <div ref={sliderRef} className="keen-slider w-full">
-            {images.length === 0 ? (
-              <div
-                className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
-                style={{ width: "100%", minWidth: "100%" }}
-              >
-                <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                  <img
-                    style={{
-                      aspectRatio: "1600/1200",
-                      width: "100%",
-                      height: "100%",
-                      opacity: 1,
-                      transition: "opacity 500ms ease-in-out",
-                    }}
-                    loading="eager"
-                    alt={`Car preview }`}
-                    src="https://placehold.co/600x400?text=Coming+Soon"
-                  />
-                </div>
-              </div>
-            ) : (
-              images.map((item, index) => (
+            <Fragment>
+              {images.length === 0 ? (
                 <div
-                  key={index}
                   className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
-                  onClick={() => openModal(index)}
                   style={{ width: "100%", minWidth: "100%" }}
                 >
                   <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                    {/* <img
+                    <img
+                      style={{
+                        aspectRatio: "1600/1200",
+                        width: "100%",
+                        height: "100%",
+                        opacity: 1,
+                        transition: "opacity 500ms ease-in-out",
+                      }}
+                      loading="eager"
+                      alt={`Car preview }`}
+                      src="https://placehold.co/600x400?text=Coming+Soon"
+                    />
+                  </div>
+                </div>
+              ) : (
+                images.map((item, index) => {
+                  if (item.type === "video") {
+                    return (
+                      <div
+                        key={index}
+                        className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
+                        style={{ width: "100%", minWidth: "100%" }}
+                      >
+                        <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
+                          <HoverVideoPlayer
+                            className="h-full w-full object-cover"
+                            videoClassName="w-full h-full object-cover"
+                            videoSrc={item.url}
+                            controls
+                            focused={isVideoPlaying}
+                            preload="none"
+                            onHoverStart={handlePlayVideo}
+                            onHoverEnd={handlePauseVideo}
+                            pausedOverlay={
+                              <div className="relative flex h-full w-full items-center justify-center bg-white">
+                                <Image
+                                  alt="video"
+                                  src={vdpData.photo}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                />
+                                {!isVideoPlaying && (
+                                  <VideoIcon
+                                    width={48}
+                                    height={48}
+                                    color="white"
+                                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform"
+                                  />
+                                )}
+                              </div>
+                            }
+                            loadingOverlay={
+                              <ClipLoader loading size={36} color="#FFFFFF" />
+                            }
+                            loadingOverlayWrapperClassName="flex items-center justify-center"
+                            unloadVideoOnPaused
+                            playbackStartDelay={200}
+                            videoCaptions={
+                              vdpData.video_subtitle ? (
+                                <track
+                                  src={vdpData.video_subtitle}
+                                  srcLang="en"
+                                  label="English"
+                                  kind="captions"
+                                />
+                              ) : undefined
+                            }
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div
+                      key={index}
+                      className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
+                      onClick={() => openModal(index)}
+                      style={{ width: "100%", minWidth: "100%" }}
+                    >
+                      <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
+                        {/* <img
                       loading="eager"
                       alt={`Car preview ${index + 1}`}
                       src={item}
                       className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
                     /> */}
-                    <img
-                      className="absolute top-0 left-0 w-full h-full object-cover rounded-img"
-                      src={item || generateImagePreviewData(previewurl)}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        aspectRatio: "1600/1200",
-                        opacity: 1,
-                        transition: "opacity 500ms ease-in-out",
-                      }}
-                      alt="car preview"
-                      loading="eager"
-                    />
-                  </div>
-                </div>
-              ))
-            )}
+                        <img
+                          className={cn(
+                            "absolute top-0 left-0 w-full h-full  scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain",
+                            !isMount && "blur-[10px]"
+                          )}
+                          src={
+                            item?.url || generateImagePreviewData(previewurl)
+                          }
+                          alt="car preview"
+                          loading="eager"
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </Fragment>
           </div>
 
           {/* Photo counter for main carousel */}
@@ -265,29 +342,34 @@ export default function CarouselComponents() {
               height: "100vh",
             }}
           >
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className="snap-start flex items-center justify-center"
-                style={{
-                  minHeight: "100vh",
-                  width: "100vw",
-                }}
-              >
-                <div className="relative w-full h-full flex items-center justify-center p-4">
-                  <img
-                    src={image || generateImagePreviewData(previewurl)}
-                    alt={`Car image ${index + 1}`}
-                    className="w-full h-full object-contain"
-                    loading="eager"
-                    style={{
-                      maxWidth: "95vw",
-                      maxHeight: "90vh",
-                    }}
-                  />
+            {images.map((image, index) => {
+              if (image.type === "video") {
+                return null;
+              }
+              return (
+                <div
+                  key={index}
+                  className="snap-start flex items-center justify-center"
+                  style={{
+                    minHeight: "100vh",
+                    width: "100vw",
+                  }}
+                >
+                  <div className="relative w-full h-full flex items-center justify-center p-4">
+                    <img
+                      src={image?.url || generateImagePreviewData(previewurl)}
+                      alt={`Car image ${index + 1}`}
+                      className="w-full h-full object-contain"
+                      loading="eager"
+                      style={{
+                        maxWidth: "95vw",
+                        maxHeight: "90vh",
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Click overlay to close */}

@@ -1,25 +1,29 @@
 import { algoliasearch } from 'algoliasearch';
 import { createInMemoryCache } from "@algolia/cache-in-memory";
+import { createNullCache } from '@algolia/cache-common'
 
 export const responsesCache = createInMemoryCache();
+export const nullCache = createNullCache();
 
 export const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!,
+ 
   {
-    responsesCache: createInMemoryCache(),
-    requestsCache: createInMemoryCache(),
+    responsesCache: responsesCache,
+    requestsCache: responsesCache,
   }
+  
 );
-export const vdpIndex = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP ?? "";
-export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON ?? ""
-export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST ?? ""
+export const vdpIndex = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP!
+export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!
+export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST!
 export const baseUrl=process.env.NEXT_PUBLIC_API_BASE_URL!
 export const getWebsiteInformationPath=()=>`/${getDynamicPath()}/get-website-information`
 export const algoliaSortOptions = [
   {
     label: "Relevance",
-    value: "prod_73d6c4fc8ffb471e88c45e8eeddc1c63_srp",
+    value: srpIndex,
   },
   {
     label: "Price: Low to High",

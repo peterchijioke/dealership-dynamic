@@ -1,12 +1,5 @@
 import React, { Fragment, useState } from "react";
-import {
-  MapPin,
-  Phone,
-  X,
-  ArrowLeft,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -500,7 +493,7 @@ export default function VdpVehicleCard(): JSX.Element {
             bottom: "unset",
             top: "unset",
           }}
-          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-40 pb-6x max-w-sm"
+          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
         >
           <div>
             {/* Price section - always visible */}
@@ -552,20 +545,16 @@ export default function VdpVehicleCard(): JSX.Element {
                 </div>
 
                 <div className=" hidden md:block py-2">
-                  {showCtaButtons &&
-                    vdpData.cta?.map((ctaItem, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center  w-full py-1"
-                      >
-                        {getButtonType({
-                          ...ctaItem,
-                          onFormClick: handleFormCTA,
-                        })}
-                      </div>
-                    ))}
+                  {vdpData.cta?.map((ctaItem, index) => (
+                    <div key={index} className="flex items-center  w-full py-1">
+                      {getButtonType({
+                        ...ctaItem,
+                        onFormClick: handleFormCTA,
+                      })}
+                    </div>
+                  ))}
 
-                  {!showCtaButtons && (
+                  {/* {!showCtaButtons && (
                     <button
                       onClick={() => {
                         setShowCtaButtons(!showCtaButtons);
@@ -577,7 +566,7 @@ export default function VdpVehicleCard(): JSX.Element {
                         I&apos;m Interested
                       </div>
                     </button>
-                  )}
+                  )} */}
                 </div>
 
                 <div className=" flex-row flex items-center">
