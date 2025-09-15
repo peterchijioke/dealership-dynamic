@@ -150,11 +150,12 @@ const CarouselBanner = () => {
           >
             {dynamicSlides.map((slide) => (
               <div key={slide.id} className="w-full h-full flex-shrink-0">
-                <CustomImage
+                <img
                   src={slide.image}
+                  loading="eager"
                   alt={slide.title || slide.image}
                   className="w-full h-full object-cover"
-                  priority={slide.id === 1}
+                  fetchPriority="high"
                 />
               </div>
             ))}
