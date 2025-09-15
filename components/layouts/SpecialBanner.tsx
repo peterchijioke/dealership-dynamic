@@ -17,7 +17,7 @@ export default function SpecialBanner() {
   //   return null;
   // }
   return (
-    <div className=" w-full pt-20 md:pt-36 lg:pt-36">
+    <div className=" w-full pt-20 md:pt-32">
       <CarouselBanner />
     </div>
   );
