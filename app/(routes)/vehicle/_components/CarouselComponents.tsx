@@ -198,10 +198,11 @@ export default function CarouselComponents() {
                             onHoverEnd={handlePauseVideo}
                             pausedOverlay={
                               <div className="relative flex h-full w-full items-center justify-center bg-white">
-                                <img
+                                <Image
                                   alt="video"
                                   loading="eager"
                                   fetchPriority="high"
+                                  fill
                                   src={vdpData.photo}
                                   className="object-cover"
                                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
