@@ -8,6 +8,7 @@ import { Heart, Circle } from "lucide-react";
 import { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
+import { stripTrailingCents } from "@/utils/utils";
 
 interface VehicleCardProps {
     hit: Vehicle;
@@ -79,7 +80,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                         <div className="flex justify-between">
                             <span>MSRP</span>
                             <span className="line-through">
-                                {hit.prices.retail_price_formatted}
+                                {stripTrailingCents(hit.prices.retail_price_formatted)}
                             </span>
                         </div>
                     )}
@@ -98,7 +99,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                     {hit.prices.dealer_sale_price_formatted && (
                         <div className="flex justify-between">
                             <span>{hit.prices.sale_price_label || "Sale Price"}</span>
-                            <span>{hit.prices.dealer_sale_price_formatted}</span>
+                            <span>{stripTrailingCents(hit.prices.dealer_sale_price_formatted)}</span>
                         </div>
                     )}
 

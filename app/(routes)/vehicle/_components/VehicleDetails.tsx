@@ -5,6 +5,7 @@ import { ChevronLeft, Calendar, Car, Globe } from "lucide-react";
 import WarrantyForLife from "./WarrantyForLife";
 import VehicleFeatures from "./VehicleFeatures";
 import { useVehicleDetails } from "./VdpContextProvider";
+import { stripTrailingCents } from "@/utils/utils";
 
 export type VehicleDetailsProps = {
   onGoBack?: () => void;
@@ -47,7 +48,7 @@ export default function VehicleDetails({
                 {vdpData.sale_price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
-                }) || vdpData.prices?.dealer_sale_price_formatted}
+                }) || stripTrailingCents(vdpData.prices?.dealer_sale_price_formatted)}
               </h2>
             </div>
             <div className="flex flex-row min-w-max">
