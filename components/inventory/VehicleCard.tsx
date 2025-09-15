@@ -9,7 +9,7 @@ import VehicleCTAs from "./VehicleCtas";
 import { Vehicle } from "@/types/vehicle";
 import classNames from "classnames";
 import VehicleGridCardMedia from "./VehicleGridCardMedia";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice, stripTrailingCents } from "@/utils/utils";
 
 const formatMileage = (mileage?: number): string => {
   if (mileage === undefined || mileage === null) return "";
@@ -160,7 +160,7 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
                     {data?.prices?.retail_price_label ?? "Retail Price"}
                   </span>
                   <span className="font-semibold line-through">
-                    {data?.prices?.retail_price_formatted}
+                    {stripTrailingCents(data?.prices?.retail_price_formatted)}
                   </span>
                 </div>
               )}
@@ -174,7 +174,7 @@ export const VehicleCard = ({ hit, isLcpCandidate = false }: any) => {
                   >
                     <span className="text-gray-700">{discount.title}</span>
                     <span className="text-black font-semibold">
-                      {discount.value}
+                      {stripTrailingCents(discount.value)}
                     </span>
                   </div>
                 )

@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
+import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
 
 // Type definitions matching the context
@@ -511,10 +512,11 @@ export default function VdpVehicleCard(): JSX.Element {
               <div className="flex flex-col items-end ">
                 <div className=" text-rose-700 font-bold text-2xl">
                   <h2>
-                    {vdpData.sale_price?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }) || vdpData.prices?.dealer_sale_price_formatted}
+                    {vdpData.sale_price != null
+                      ? formatPrice(vdpData.sale_price)
+                      : stripTrailingCents(
+                          vdpData.prices?.dealer_sale_price_formatted
+                        )}
                   </h2>
                 </div>
                 <div className="flex flex-row min-w-max">

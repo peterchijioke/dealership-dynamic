@@ -202,7 +202,7 @@ export default function SearchClient({
                   />
                 </div>
                 <div className="block md:hidden">
-                  <span className=" text-sm hidden md:block">
+                  <span className=" text-sm ">
                     1438 vehicles found for sale
                   </span>
                 </div>
