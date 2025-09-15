@@ -156,9 +156,9 @@ export default function SearchClient({
   return (
     <div
       className={cn(
-        "w-full",
+        "w-full"
 
-        "m:pt-28 md:pt-28 lg:pt-28"
+        // "m:pt-28 md:pt-28 lg:pt-28"
       )}
     >
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
