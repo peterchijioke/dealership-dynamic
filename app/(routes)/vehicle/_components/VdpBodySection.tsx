@@ -30,7 +30,6 @@ export default function VdpBodySection() {
   return (
     <div className="flex-initial   w-full md:pt-10 pt-5   md:max-w-[calc(100%-25.25rem)] lg:max-w-[calc(100%-29rem)]">
       <CarouselComponents />
-
       <VehicleDetails inViewRef={featuresRef} />
     </div>
   );
