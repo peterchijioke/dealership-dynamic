@@ -21,9 +21,9 @@ export default function SortDropdown({
 }: SortDropdownProps) {
   return (
     <Select value={currentSort} onValueChange={onChange}>
-      <SelectTrigger className="w-[150px] flex items-center gap-2 border shadow-none rounded-lg px-3 py-2 border-none">
+      <SelectTrigger className="md:w-[150px] w-fit flex items-center gap-2 border shadow-none rounded-lg px-3 py-2 border-none">
         <ArrowUpDown className="h-4 w-4 text-rose-700" />
-        <SelectValue placeholder="Sort by" />
+        <SelectValue className=" md:block hidden" placeholder="Sort by" />
       </SelectTrigger>
       <SelectContent>
         {algoliaSortOptions.map((opt) => (
