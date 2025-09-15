@@ -9,12 +9,7 @@ import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import {
-  generateImagePreviewData,
-  previewurl,
-  stripTrailingCents,
-  formatPrice,
-} from "@/utils/utils";
+import { stripTrailingCents, formatPrice } from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
 
@@ -34,6 +29,10 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   useEffect(() => {
     setIsHydrating(false);
   }, []);
+
+  console.log("=========hit.priceshit.prices===========================");
+  console.log(hit.prices);
+  console.log("==============hit.priceshit.prices======================");
 
   const prices = {
     total_discounts: 1950,
