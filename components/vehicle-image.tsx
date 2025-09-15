@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
@@ -42,9 +40,7 @@ export default function VehicleImage({
           }}
           src={blurDataURL}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={
-            hit.__position && hit.__position <= 3 ? "high" : "auto"
-          }
+          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
           // Do not lazy-load the LCP candidate. Let the browser discover it in the initial document.
           loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn("w-full h-full rounded-t-2xl object-cover")}
@@ -62,9 +58,7 @@ export default function VehicleImage({
           }}
           src={encryptedUrl}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={
-            hit.__position && hit.__position <= 3 ? "high" : "auto"
-          }
+          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
           // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
           loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn(
