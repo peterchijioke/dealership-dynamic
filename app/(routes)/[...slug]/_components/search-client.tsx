@@ -156,9 +156,9 @@ export default function SearchClient({
   return (
     <div
       className={cn(
-        "w-full",
+        "w-full"
 
-        "m:pt-28 md:pt-28 lg:pt-28"
+        // "m:pt-28 md:pt-28 lg:pt-28"
       )}
     >
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
@@ -181,9 +181,11 @@ export default function SearchClient({
           <ScrollArea className="h-full  ">
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
-                <div className="w-full flex items-center md:flex-row gap-2">
-                  <div className=" w-full flex items-center gap-1 flex-1">
-                    <span className="">1438 vehicles found for sale</span>
+                <div className="w-full flex items-center md:flex-row  gap-2">
+                  <div className=" w-full flex flex-col md:flex-row items-center md:gap-3 gap-2 flex-1 ">
+                    <span className=" hidden md:block">
+                      1438 vehicles found for sale
+                    </span>
                     <div className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]">
                       <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
                       <input
@@ -198,6 +200,11 @@ export default function SearchClient({
                     currentSort={sortIndex}
                     onChange={handleSortChange}
                   />
+                </div>
+                <div className="block md:hidden">
+                  <span className=" hidden md:block">
+                    1438 vehicles found for sale
+                  </span>
                 </div>
                 <ActiveFiltersBar
                   refinements={filterRefinements}
