@@ -138,8 +138,8 @@ const CarouselBanner = () => {
     <Fragment>
       <div
         className={cn(
-          "relative w-full overflow-hidden   bg-gray-400",
-          shouldShowCarousel ? "rounded-md" : ""
+          "relative w-full overflow-hidden   bg-gray-400"
+          // shouldShowCarousel ? "rounded-md" : ""
         )}
       >
         {/* Image Container - Full Width */}

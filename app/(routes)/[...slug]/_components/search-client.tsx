@@ -172,9 +172,6 @@ export default function SearchClient({
 
         <main className="flex-1 ">
           <ScrollArea className="h-full  ">
-            <div className="w-full px-4 pt-5">
-              <CarouselBanner />
-            </div>
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row gap-2">
