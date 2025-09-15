@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { generateImagePreviewData } from "@/helpers/image-preview";
+import { previewurl } from "@/utils/utils";
 
 interface Slide {
   id: number;
@@ -153,7 +155,7 @@ const CarouselBanner = () => {
                 <img
                   src={slide.image}
                   loading="eager"
-                  alt={slide.title || slide.image}
+                  alt={slide.title || generateImagePreviewData(previewurl)}
                   className="w-full h-full object-cover"
                   fetchPriority="high"
                 />
