@@ -128,7 +128,7 @@ export default function VehicleDetails({
         <p className="text-xl font-semibold">Disclaimer</p>
         <section
           dangerouslySetInnerHTML={{ __html: vdpData.disclaimers.new || "" }}
-          className="leading-8 italic   "
+          className="leading-8 text-sm "
         />
       </div>
     </div>
