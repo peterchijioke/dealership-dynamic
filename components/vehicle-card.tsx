@@ -24,6 +24,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const route = useRouter();
 
   const [isHydrating, setIsHydrating] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setIsHydrating(false);
@@ -92,12 +93,50 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           >
             {hit.condition}
           </div>
-          <p
-            className="text-[0.84rem] font-normal text-[#000000]"
-            data-target="srp-card-price-ask"
-          >
-            #{hit.stock_number}
-          </p>
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const stock = hit.stock_number ?? "";
+                try {
+                  if (navigator && navigator.clipboard && stock) {
+                    navigator.clipboard.writeText(stock.toString());
+                    setCopied(true);
+                    window.setTimeout(() => setCopied(false), 1500);
+                  }
+                } catch (err) {
+                  // fallback: create temporary textarea
+                  const ta = document.createElement("textarea");
+                  ta.value = stock.toString();
+                  document.body.appendChild(ta);
+                  ta.select();
+                  try {
+                    document.execCommand("copy");
+                    setCopied(true);
+                    window.setTimeout(() => setCopied(false), 1500);
+                  } catch (e) {
+                    // no-op
+                  }
+                  document.body.removeChild(ta);
+                }
+              }}
+              aria-label={`Copy stock number ${hit.stock_number}`}
+              className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
+              data-target="srp-card-price-ask"
+            >
+              #{hit.stock_number}
+            </button>
+
+            <span
+              role="status"
+              aria-live="polite"
+              className="ml-2 text-sm text-green-600"
+            >
+              {copied ? "Copied" : ""}
+            </span>
+          </div>
         </div>
 
         {/* Vehicle Content */}
