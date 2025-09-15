@@ -17,6 +17,7 @@ import { urlParser2 } from "@/lib/url-formatter";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SpecialBanner from "@/components/layouts/SpecialBanner";
 
 interface Props {
   initialResults: any;
@@ -161,6 +162,8 @@ export default function SearchClient({
         // "m:pt-28 md:pt-28 lg:pt-28"
       )}
     >
+      <SpecialBanner />
+
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
           <ScrollArea className="h-full px-3">
