@@ -156,7 +156,7 @@ export default function SearchClient({
     <div className="sm:pt-28 md:pt-28 lg:pt-28">
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-full px-3">
             <div className="p-4">
               <h2 className="font-bold text-center uppercase">
                 Search Filters
