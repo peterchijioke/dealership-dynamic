@@ -201,6 +201,11 @@ export default function SearchClient({
                     onChange={handleSortChange}
                   />
                 </div>
+                <div className="block md:hidden">
+                  <span className=" hidden md:block">
+                    1438 vehicles found for sale
+                  </span>
+                </div>
                 <ActiveFiltersBar
                   refinements={filterRefinements}
                   onRemove={handleRemoveFilter}
