@@ -182,7 +182,7 @@ export default function SearchClient({
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row  gap-2">
-                  <div className=" w-full flex flex-col md:flex-row items-center gap-1 flex-1 ">
+                  <div className=" w-full flex flex-col md:flex-row items-center md:gap-3 gap-2 flex-1 ">
                     <span className=" hidden md:block">
                       1438 vehicles found for sale
                     </span>
@@ -202,7 +202,7 @@ export default function SearchClient({
                   />
                 </div>
                 <div className="block md:hidden">
-                  <span className=" hidden md:block">
+                  <span className=" text-sm hidden md:block">
                     1438 vehicles found for sale
                   </span>
                 </div>
