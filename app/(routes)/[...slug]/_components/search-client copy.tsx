@@ -1,0 +1,202 @@
+"use client";
+
+import { useState, useMemo, useEffect, useCallback } from "react";
+import SidebarFilters from "./sidebar-filters";
+import InfiniteHits from "@/components/algolia/infinite-hits-2";
+import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ActiveFiltersBar from "./active-filters";
+import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
+import { algoliaSortOptions, CATEGORICAL_FACETS } from "@/configs/config";
+import SortDropdown from "./sort-opptions";
+import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
+import { urlParser2 } from "@/lib/url-formatter";
+
+interface Props {
+    initialResults: any;
+    refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
+}
+
+const HITS_PER_PAGE = 12;
+
+export default function SearchClient({ initialResults, refinements = {} }: Props) {
+    const [selectedFacets, setSelectedFacets] = useState<Record<string, string[]>>(refinements);
+    const [facets, setFacets] = useState(initialResults.facets);
+    const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
+
+    const { refinements: filterRefinements } = useAllRefinements();
+    const { stateToRoute } = useAlgolia();
+
+    // Infinite hits hook
+    const { hits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
+        initialHits: initialResults.hits,
+        refinements: selectedFacets,
+        sortIndex,
+        hitsPerPage: HITS_PER_PAGE,
+    });
+
+    // Helper: build Algolia facetFilters array from selected facets
+    const buildFacetFilters = useCallback(
+        (facetsOverride?: Record<string, string[]>) => {
+            const source = facetsOverride ?? selectedFacets;
+            return Object.entries(source)
+                .filter(([_, vals]) => vals.length > 0)
+                .map(([f, vals]) => vals.map((v) => {
+                    if (f === "is_special") {
+                        return `${f}:${String(v)}`; // ensures "true" not true
+                    }
+                    return `${f}:${v}`;
+                }));
+        },
+        [selectedFacets]
+    );
+
+    // Sync state with URL back/forward
+    useEffect(() => {
+        const handlePopState = () => {
+            console.log("Popstate detected, syncing state with URL");
+            const searchParamsObj = new URLSearchParams(window.location.search);
+            const { params: newRefinements } = urlParser2(window.location.pathname, searchParamsObj);
+            setSelectedFacets(newRefinements);
+
+            // Refetch facets counts
+            searchWithMultipleQueries({
+                hitsPerPage: HITS_PER_PAGE,
+                facetFilters: refinementToFacetFilters(newRefinements),
+                sortIndex,
+                facets: CATEGORICAL_FACETS,
+            }).then((res) => setFacets(res.facets));
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => window.removeEventListener("popstate", handlePopState);
+    }, [sortIndex]);
+
+    // Toggle a facet
+    const updateFacet = async (facet: string, value: string) => {
+        setSelectedFacets((prev) => {
+            let newState: Record<string, string[]> = { ...prev };
+
+            if (facet === "is_special") {
+                // toggle ON = ["true"], toggle OFF = removed
+                if (prev[facet]?.includes("true")) {
+                    delete newState[facet];
+                } else {
+                    newState[facet] = ["true"];
+                }
+            } else {
+                const current = prev[facet] || [];
+                const updated = current.includes(value)
+                    ? current.filter((v) => v !== value)
+                    : [...current, value];
+                newState = { ...prev, [facet]: updated };
+                if (newState[facet].length === 0) delete newState[facet];
+            }
+
+            stateToRoute(newState);
+            return newState;
+        });
+
+        console.log("FacetFilters sent:", buildFacetFilters());
+
+        // Refetch facet counts
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: HITS_PER_PAGE,
+            facetFilters: buildFacetFilters(),
+            sortIndex,
+            facets: CATEGORICAL_FACETS,
+        });
+        setFacets(res.facets);
+    };
+
+    const handleRemoveFilter = async (facet: string, value: string) => {
+        setSelectedFacets((prev) => {
+            const updated = {
+                ...prev,
+                [facet]: (prev[facet] || []).filter((v) => v !== value),
+            };
+            if (updated[facet].length === 0) delete updated[facet];
+
+            stateToRoute(updated); // push URL change
+            return updated;
+        });
+
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: HITS_PER_PAGE,
+            facetFilters: buildFacetFilters(),
+            sortIndex,
+            facets: CATEGORICAL_FACETS,
+        });
+        setFacets(res.facets);
+    };
+
+    const handleReset = async () => {
+        const defaultRefinements = { condition: ["New"] };
+        setSelectedFacets(defaultRefinements);
+        stateToRoute(defaultRefinements); // replaceState to avoid extra history entry
+
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: HITS_PER_PAGE,
+            facetFilters: buildFacetFilters(defaultRefinements),
+            sortIndex,
+            facets: CATEGORICAL_FACETS,
+        });
+        setFacets(res.facets);
+    };
+
+    const handleSortChange = async (newSort: string) => {
+        setSortIndex(newSort);
+
+        const res = await searchWithMultipleQueries({
+            hitsPerPage: HITS_PER_PAGE,
+            facetFilters: buildFacetFilters(),
+            sortIndex: newSort,
+            facets: CATEGORICAL_FACETS,
+        });
+        setFacets(res.facets);
+    };
+
+    const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
+
+    return (
+        <div className="sm:pt-28 md:pt-28 lg:pt-28">
+            <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
+                <aside className="hidden lg:block w-72 shrink-0 border-r bg-white">
+                    <ScrollArea className="h-full">
+                        <div className="p-4">
+                            <h2 className="font-bold text-center uppercase">Search Filters</h2>
+                        </div>
+                        <SidebarFilters
+                            facets={sidebarFacets}
+                            currentRefinements={selectedFacets}
+                            onToggleFacet={updateFacet}
+                        />
+                    </ScrollArea>
+                </aside>
+
+                <main className="flex-1 bg-gray-100">
+                    <ScrollArea className="h-full">
+                        <div className="p-4 space-y-4">
+                            <div className="w-full flex justify-between md:flex-row gap-2">
+                                <ActiveFiltersBar
+                                    refinements={filterRefinements}
+                                    onRemove={handleRemoveFilter}
+                                    onClearAll={handleReset}
+                                />
+                                <SortDropdown currentSort={sortIndex} onChange={handleSortChange} />
+                            </div>
+
+                            <InfiniteHits
+                                hits={hits}
+                                refinements={selectedFacets}
+                                showMore={showMore}
+                                isLastPage={isLastPage}
+                                loading={loading}
+                            />
+                        </div>
+                    </ScrollArea>
+                </main>
+            </div>
+        </div>
+    );
+}

@@ -9,6 +9,42 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["react-instantsearch"],
   },
 
+  // Add long cache lifetimes for immutable/static assets and Next image optimizer
+  async headers() {
+    return [
+      {
+        // Cache Next.js static files (immutable) for 1 year
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Cache Next.js image optimizer results for 1 day (these can change)
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=2592000',
+          },
+        ],
+      },
+      {
+        // Cache public static files (e.g., /public) for 30 days
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
+
   // Reduce hydration mismatches
   reactStrictMode: true,
 

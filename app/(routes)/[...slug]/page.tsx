@@ -9,6 +9,7 @@ import { urlParser2 } from "@/lib/url-formatter";
 import { buildSrpJsonLd, generateSrpSeoMeta } from "@/lib/seo";
 import Script from "next/script";
 import { getDealerInfo } from "@/lib/website";
+import { CATEGORICAL_FACETS } from "@/configs/config";
 
 const ALLOWED_PREFIXES = ["new-vehicles", "used-vehicles"];
 
@@ -64,8 +65,8 @@ export default async function CatchAllPage({
   const initialResults = await searchWithMultipleQueries({
     hitsPerPage: 12,
     facetFilters,
-    facets: ["*"],
-    attributesToRetrieve: ["*"],
+    facets: CATEGORICAL_FACETS,
+    // attributesToRetrieve: ["*"],
   });
 
   // console.log("Initial search results:", initialResults);

@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { generateImagePreviewData } from "@/helpers/image-preview";
+import { previewurl } from "@/utils/utils";
 
 interface Slide {
   id: number;
@@ -138,23 +140,24 @@ const CarouselBanner = () => {
     <Fragment>
       <div
         className={cn(
-          "relative w-full overflow-hidden   bg-gray-400",
-          shouldShowCarousel ? "rounded-md" : ""
+          "relative w-full overflow-hidden h-36   bg-gray-400"
+          // shouldShowCarousel ? "rounded-md" : ""
         )}
       >
         {/* Image Container - Full Width */}
-        <div className="relative w-full h-36 overflow-hidden">
+        <div className="relative w-full h-full overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out w-full h-full"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {dynamicSlides.map((slide) => (
               <div key={slide.id} className="w-full h-full flex-shrink-0">
-                <CustomImage
+                <img
                   src={slide.image}
-                  alt={slide.title || slide.image}
+                  loading="eager"
+                  alt={slide.title || generateImagePreviewData(previewurl)}
                   className="w-full h-full object-cover"
-                  priority={slide.id === 1}
+                  fetchPriority="high"
                 />
               </div>
             ))}

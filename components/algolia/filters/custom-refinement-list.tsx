@@ -66,7 +66,7 @@ export default function CustomRefinementList({
         />
       )}
 
-      <ul className="space-y-2 max-h-60 overflow-y-auto">
+      <ul className="space-y-2 max-h-60 ">
         {visibleValues.map(([value, count]) => {
           let isChecked = selected.includes(value.trim());
           let isDisabled = false;

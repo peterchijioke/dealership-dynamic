@@ -6,7 +6,6 @@ import {
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
-import { reverse } from "dns";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -99,7 +98,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
-  // console.log("Searching index:", indexName, hitsResult);
+  console.log("Searching index:", indexName, hitsResult);
 
   // Merge facets into a single object
   const mergedFacets = facetResults.reduce<Record<string, any>>(
@@ -291,6 +290,27 @@ function generateFacetFilters(
     .map(([facet, values]) => values.map((v) => `${facet}:${v}`));
 }
 
+function buildFacetFilters(
+  refinements: Record<string, string[]>
+): (string | string[])[] {
+  return Object.entries(refinements)
+    .filter(([_, vals]) => vals.length > 0)
+    .map(([facet, vals]) => {
+      // Special case: force string for is_special
+      if (facet === "is_special") {
+        return `${facet}:${String(vals[0])}`;
+      }
+
+      if (vals.length > 1) {
+        // OR condition
+        return vals.map((v) => `${facet}:${v}`);
+      }
+
+      // Single value
+      return `${facet}:${vals[0]}`;
+    });
+}
+
 export {
   client,
   search,
@@ -301,4 +321,5 @@ export {
   updateFacetFilter,
   parsePathRefinements,
   generateFacetFilters,
+  buildFacetFilters,
 };

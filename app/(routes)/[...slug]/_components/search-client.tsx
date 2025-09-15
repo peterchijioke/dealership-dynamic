@@ -16,6 +16,7 @@ import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
 import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   initialResults: any;
@@ -153,10 +154,16 @@ export default function SearchClient({
   const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
 
   return (
-    <div className="sm:pt-28 md:pt-28 lg:pt-28">
+    <div
+      className={cn(
+        "w-full",
+
+        "m:pt-28 md:pt-28 lg:pt-28"
+      )}
+    >
       <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-full px-3">
             <div className="p-4">
               <h2 className="font-bold text-center uppercase">
                 Search Filters
@@ -172,9 +179,6 @@ export default function SearchClient({
 
         <main className="flex-1 ">
           <ScrollArea className="h-full  ">
-            <div className="w-full px-4 pt-5">
-              <CarouselBanner />
-            </div>
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row gap-2">
