@@ -33,6 +33,7 @@ export default function SearchClient({
     useState<Record<string, string[]>>(refinements);
   const [facets, setFacets] = useState(initialResults.facets);
   const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
+  const [isSearchOpen, setSearchOpen] = useState(false);
 
   const { refinements: filterRefinements } = useAllRefinements();
   const { stateToRoute } = useAlgolia();
@@ -178,7 +179,7 @@ export default function SearchClient({
         </aside>
 
         <main className="flex-1 ">
-          <ScrollArea className="h-full  ">
+          {/* <ScrollArea className="h-full  "> */}
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row  gap-2">
@@ -221,7 +222,7 @@ export default function SearchClient({
                 loading={loading}
               />
             </div>
-          </ScrollArea>
+          {/* </ScrollArea> */}
         </main>
       </div>
     </div>
