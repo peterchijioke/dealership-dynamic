@@ -139,7 +139,7 @@ const CarouselBanner = () => {
       <div
         className={cn(
           "relative w-full overflow-hidden   bg-gray-400",
-          shouldShowCarousel ? "rounded-md mx-auto px-5" : ""
+          shouldShowCarousel ? "rounded-md" : ""
         )}
       >
         {/* Image Container - Full Width */}
