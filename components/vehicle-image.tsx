@@ -42,8 +42,11 @@ export default function VehicleImage({
           }}
           src={blurDataURL}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position <= 3 ? "high" : "auto"}
-          loading={"lazy"}
+          fetchPriority={
+            hit.__position && hit.__position <= 3 ? "high" : "auto"
+          }
+          // Do not lazy-load the LCP candidate. Let the browser discover it in the initial document.
+          loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn("w-full h-full rounded-t-2xl object-cover")}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
@@ -59,8 +62,11 @@ export default function VehicleImage({
           }}
           src={encryptedUrl}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position <= 3 ? "high" : "auto"}
-          loading={"lazy"}
+          fetchPriority={
+            hit.__position && hit.__position <= 3 ? "high" : "auto"
+          }
+          // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
+          loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn(
             "w-full h-full rounded-t-2xl ",
             encryptedUrl ? " object-contain" : "object-contain"
@@ -79,6 +85,8 @@ export default function VehicleImage({
           src={generateImagePreviewData(previewurl)}
           alt={"blur placeholder"}
           fetchPriority={"auto"}
+          // Hydration placeholder isn't the LCP image; keep it default loading.
+          loading={"lazy"}
           className={cn("w-full h-full rounded-t-2xl ", "object-cover")}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
