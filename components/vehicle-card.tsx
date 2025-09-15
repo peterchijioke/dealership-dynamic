@@ -9,7 +9,12 @@ import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import { generateImagePreviewData, previewurl } from "@/utils/utils";
+import {
+  generateImagePreviewData,
+  previewurl,
+  stripTrailingCents,
+  formatPrice,
+} from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
 
@@ -160,10 +165,11 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               <span className=" text-[#69707C]">After all rebates</span>
               <div className="flex items-center">
                 <span className="text-base font-bold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
-                  {hit.sale_price?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }) || hit.prices.dealer_sale_price_formatted}
+                  {hit.sale_price != null
+                    ? formatPrice(hit.sale_price)
+                    : stripTrailingCents(
+                        hit.prices.dealer_sale_price_formatted
+                      )}
                 </span>
                 <button
                   type="button"
@@ -235,7 +241,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                         <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
                           <span className="font-medium text-sm">MSRP</span>
                           <span className="text-sm text-gray-500 line-through">
-                            {msrp}
+                            {stripTrailingCents(msrp)}
                           </span>
                         </div>
                       )}
@@ -250,7 +256,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                             {d.title}
                           </span>
                           <span className="font-semibold text-sm text-gray-700">
-                            {d.value}
+                            {stripTrailingCents(d.value)}
                           </span>
                         </div>
                       ))}
@@ -262,7 +268,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                             Total Discounts
                           </span>
                           <span className="font-semibold text-sm text-gray-700">
-                            {totalDiscounts}
+                            {stripTrailingCents(totalDiscounts)}
                           </span>
                         </div>
                       )}
@@ -274,7 +280,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                             Sale Price
                           </span>
                           <span className="font-bold text-base text-gray-900">
-                            {sale}
+                            {stripTrailingCents(sale)}
                           </span>
                         </div>
                       )}

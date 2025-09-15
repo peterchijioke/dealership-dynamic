@@ -127,6 +127,17 @@ export const formatPrice = (price: number | bigint) => {
     }).format(price);
   }
 
+// Remove trailing ".00" from formatted price strings (e.g. "$10,000.00" -> "$10,000")
+export const stripTrailingCents = (val?: string | null) => {
+  if (!val) return "";
+  try {
+    // Remove any trailing .00 occurrences that directly follow the numeric portion
+    return val.replace(/\.00(?=$|[^0-9])/g, "");
+  } catch {
+    return val;
+  }
+};
+
 export const generateImagePreviewData = (imagePreview: string) =>
   `data:image/jpeg;base64,${imagePreview}`;
 
