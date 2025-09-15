@@ -138,12 +138,12 @@ const CarouselBanner = () => {
     <Fragment>
       <div
         className={cn(
-          "relative w-full overflow-hidden   bg-gray-400",
-          shouldShowCarousel ? "rounded-md" : ""
+          "relative w-full overflow-hidden h-36   bg-gray-400"
+          // shouldShowCarousel ? "rounded-md" : ""
         )}
       >
         {/* Image Container - Full Width */}
-        <div className="relative w-full h-36 overflow-hidden">
+        <div className="relative w-full h-full overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out w-full h-full"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
