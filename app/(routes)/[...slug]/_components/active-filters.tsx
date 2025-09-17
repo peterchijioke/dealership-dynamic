@@ -19,6 +19,8 @@ export default function ActiveFiltersBar({
 
   if (!hasFilters) return null;
 
+  console.log("CurrentRefinements:", refinements);
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Clear All (only appears if query refinements exist) */}
