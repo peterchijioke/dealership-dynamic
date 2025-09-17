@@ -166,6 +166,8 @@ export function getLeadingUrlPattern(condition: string[]): UrlPattern {
   const hasCertified = normalized.includes("certified");
   const hasNewAndUsed = normalized.includes("new") && hasUsed;
 
+  // console.log("hasNewAndUsed:", normalized, hasNewAndUsed, hasUsed, last);
+
   // Rule 1: New + Used/Pre-Owned together → certified
   if (hasNewAndUsed) {
     return {
