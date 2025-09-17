@@ -66,7 +66,7 @@ export default function CustomRefinementList({
         />
       )}
 
-      <ul className="space-y-2 max-h-60 ">
+      <ul className="space-y-2 max-h-60 overflow-y-auto">
         {visibleValues.map(([value, count]) => {
           let isChecked = selected.includes(value.trim());
           let isDisabled = false;
@@ -103,7 +103,7 @@ export default function CustomRefinementList({
       {Object.keys(filtered).length > 10 && (
         <button
           onClick={() => setShowAll(!showAll)}
-          className="mt-3 text-red-500 text-sm font-medium"
+          className="mt-3 text-red-500 text-sm font-medium cursor-pointer"
         >
           {showAll ? "Show Less" : "Show More"}
         </button>

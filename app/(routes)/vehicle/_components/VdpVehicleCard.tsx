@@ -512,11 +512,7 @@ export default function VdpVehicleCard(): JSX.Element {
               <div className="flex flex-col items-end ">
                 <div className=" text-rose-700 font-bold text-2xl">
                   <h2>
-                    {vdpData.sale_price != null
-                      ? formatPrice(vdpData.sale_price)
-                      : stripTrailingCents(
-                          vdpData.prices?.dealer_sale_price_formatted
-                        )}
+                    {vdpData.sale_price ? formatPrice(vdpData.sale_price) : ""}
                   </h2>
                 </div>
                 <div className="flex flex-row min-w-max">

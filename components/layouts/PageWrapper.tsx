@@ -1,8 +1,6 @@
 import { ReactNode } from "react";
 import SiteHeader from "./SiteHeader";
 import { getPrimaryNav, getThemeImage } from "@/lib/nav";
-import CarouselBanner from "../inventory/CarouselBanner";
-import SpecialBanner from "./SpecialBanner";
 
 export default async function PageWrapper({
   children,
@@ -17,12 +15,11 @@ export default async function PageWrapper({
 
   return (
     <>
-      <div className={sticky ? "fixed top-0 z-50 w-full" : ""}>
+      <div className={sticky ? "fixed top-0 z-100 w-full" : ""}>
         <SiteHeader imagesRaw={imagesRaw?.data ?? {}} items={data ?? {}} />
       </div>
 
       <div className="grid bg-[#FAF9F7]">
-        <SpecialBanner />
         <main className="w-full">{children}</main>
       </div>
     </>

@@ -39,7 +39,7 @@ export default function ActiveFiltersBar({
             key={`${facet}-${value}`}
             className="px-3 py-1 text-base rounded-full bg-[#E5E4E1] text-black flex items-center gap-1"
           >
-            {value}
+            {facet === "is_special" ? "Special" : value}
             <button
               type="button"
               onClick={() => onRemove(facet, value)}

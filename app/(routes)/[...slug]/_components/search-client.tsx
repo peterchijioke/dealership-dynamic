@@ -10,13 +10,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
-import { algoliaSortOptions, CATEGORICAL_FACETS } from "@/configs/config";
+import { algoliaSortOptions, CATEGORICAL_FACETS, searchClient, srpIndex } from "@/configs/config";
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
-import CarouselBanner from "@/components/inventory/CarouselBanner";
 import { Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import SpecialBanner from "@/components/layouts/SpecialBanner";
+import SearchDropdown, { CustomSearchBox } from "./search-modal";
+import { InstantSearch } from "react-instantsearch";
+import connectSearchBox from "instantsearch.js/es/connectors/search-box/connectSearchBox";
 
 interface Props {
   initialResults: any;
@@ -33,6 +35,7 @@ export default function SearchClient({
     useState<Record<string, string[]>>(refinements);
   const [facets, setFacets] = useState(initialResults.facets);
   const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
+  const [isSearchOpen, setSearchOpen] = useState(false);
 
   const { refinements: filterRefinements } = useAllRefinements();
   const { stateToRoute } = useAlgolia();
@@ -155,14 +158,11 @@ export default function SearchClient({
 
   return (
     <div
-      className={cn(
-        "w-full"
+      className="w-full m:pt-28 md:pt-28 lg:pt-28">
+      <SpecialBanner />
 
-        // "m:pt-28 md:pt-28 lg:pt-28"
-      )}
-    >
-      <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
-        <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
+      <div className="h-[calc(100vh-7rem)]x flex overflow-hidden">
+        <aside className="hidden lg:block w-72 shrink-0 bg-[#FAF9F7]">
           <ScrollArea className="h-full px-3">
             <div className="p-4">
               <h2 className="font-bold text-center uppercase">
@@ -186,14 +186,27 @@ export default function SearchClient({
                     <span className=" hidden md:block">
                       1438 vehicles found for sale
                     </span>
-                    <div className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]">
-                      <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
-                      <input
-                        type="text"
-                        className="w-full flex-1 bg-transparent placeholder:text-gray-600 focus:outline-none px-2 py-2"
-                        placeholder="Search here"
-                      />
-                    </div>
+                    <InstantSearch indexName={srpIndex} searchClient={searchClient}>
+                      <div className="relative w-full z-50 pointer-events-auto">
+                        <CustomSearchBox setSearchOpen={setSearchOpen} />
+                        <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+                      </div>
+                    </InstantSearch>
+                    {/* <div className="relative w-full flex-1">
+                      <div
+                        className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]"
+                        onClick={() => setSearchOpen(true)}
+                      >
+                        <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
+                        <input
+                          type="text"
+                          className="w-full flex-1 bg-transparent placeholder:text-gray-600 focus:outline-none px-2 py-2"
+                          placeholder="Search here"
+                          onFocus={() => setSearchOpen(true)}
+                        />
+                        <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+                      </div>
+                    </div> */}
                   </div>
                   {/* Sort dropdown */}
                   <SortDropdown
