@@ -30,9 +30,9 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     setIsHydrating(false);
   }, []);
 
-  console.log("=========hit.priceshit.prices===========================");
-  console.log(hit.prices);
-  console.log("==============hit.priceshit.prices======================");
+  // console.log("=========hit.priceshit.prices===========================");
+  // console.log(hit.prices);
+  // console.log("==============hit.priceshit.prices======================");
 
   const prices = {
     total_discounts: 1950,

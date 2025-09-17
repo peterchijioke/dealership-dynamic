@@ -128,7 +128,7 @@ export function searchParamsToCommaSeparatedQuery(
   // Group by key
   for (const [key, value] of params.entries()) {
     if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(value);
+    grouped[key].push(slugify(value));
   }
 
   // Join values with commas
