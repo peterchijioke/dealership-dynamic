@@ -5,6 +5,7 @@ import { CATEGORICAL_FACETS } from "@/configs/config";
 
 type UseInfiniteAlgoliaHitsProps = {
   initialHits: VehicleHit[];
+  initialTotalHits?: number;
   initialPage?: number;
   refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
   sortIndex?: string;
@@ -13,11 +14,13 @@ type UseInfiniteAlgoliaHitsProps = {
 
 export function useInfiniteAlgoliaHits({
   initialHits,
+  initialTotalHits = 0,
   initialPage = 0,
   refinements = {},
   hitsPerPage = 12,
   sortIndex,
 }: UseInfiniteAlgoliaHitsProps) {
+  const [totalHits, setTotalHits] = useState(initialTotalHits);
   const [hits, setHits] = useState<VehicleHit[]>(initialHits);
   const [page, setPage] = useState(initialPage);
   const [isLastPage, setIsLastPage] = useState(false);
@@ -27,19 +30,6 @@ export function useInfiniteAlgoliaHits({
   // Build facetFilters for Algolia
   const buildFacetFilters = useCallback(() => {
     return refinementToFacetFilters(refinements);
-  }, [refinements]);
-
-  const buildFacetFiltersx = useCallback(() => {
-    return Object.entries(refinements)
-      .filter(([_, values]) => values.length > 0)
-      .map(([facet, values]) =>
-        values.map((v) => {
-          if (facet === "is_special") {
-            return `${facet}:${String(v)}`; // ensures "true" not true
-          }
-          return `${facet}:${v}`;
-        })
-      );
   }, [refinements]);
 
   // Reset hits when refinements, sortIndex, or hitsPerPage change
@@ -63,9 +53,11 @@ export function useInfiniteAlgoliaHits({
           sortIndex,
           facets: CATEGORICAL_FACETS,
         });
+        // console.log("Reset hits response:", response);
 
         if (!active) return;
 
+        setTotalHits(response.nbHits ?? 0);
         setHits(response.hits as VehicleHit[]);
         setPage(0);
         setIsLastPage((response?.page ?? 0) + 1 >= (response?.nbPages ?? 0));
@@ -98,6 +90,7 @@ export function useInfiniteAlgoliaHits({
       if (!response?.hits || response.hits.length === 0) {
         setIsLastPage(true);
       } else {
+        setTotalHits(response.nbHits ?? 0);
         setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
         setPage(nextPage);
         setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
@@ -107,5 +100,5 @@ export function useInfiniteAlgoliaHits({
     }
   }, [page, loading, isLastPage, buildFacetFilters, hitsPerPage, sortIndex]);
 
-  return { hits, isLastPage, showMore, loading };
+  return { hits, totalHits, isLastPage, showMore, loading };
 }
