@@ -14,11 +14,9 @@ import { algoliaSortOptions, CATEGORICAL_FACETS, searchClient, srpIndex } from "
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
-import { Search } from "lucide-react";
 import SpecialBanner from "@/components/layouts/SpecialBanner";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
-import connectSearchBox from "instantsearch.js/es/connectors/search-box/connectSearchBox";
 
 interface Props {
   initialResults: any;
@@ -41,8 +39,9 @@ export default function SearchClient({
   const { stateToRoute } = useAlgolia();
 
   // Infinite hits hook
-  const { hits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
+  const { hits, totalHits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
     initialHits: initialResults.hits,
+    initialTotalHits: initialResults.nbHits,
     refinements: selectedFacets,
     sortIndex,
     hitsPerPage: HITS_PER_PAGE,
@@ -181,33 +180,16 @@ export default function SearchClient({
           <ScrollArea className="h-full  ">
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
-                <div className="w-full flex items-center md:flex-row  gap-2">
-                  <div className=" w-full flex flex-col md:flex-row items-center md:gap-3 gap-2 flex-1 ">
-                    <span className=" hidden md:block">
-                      1438 vehicles found for sale
-                    </span>
-                    <InstantSearch indexName={srpIndex} searchClient={searchClient}>
-                      <div className="relative w-full z-50 pointer-events-auto">
-                        <CustomSearchBox setSearchOpen={setSearchOpen} />
-                        <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
-                      </div>
-                    </InstantSearch>
-                    {/* <div className="relative w-full flex-1">
-                      <div
-                        className="rounded-full flex-row flex items-center flex-1 bg-[#E4E6E8]"
-                        onClick={() => setSearchOpen(true)}
-                      >
-                        <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
-                        <input
-                          type="text"
-                          className="w-full flex-1 bg-transparent placeholder:text-gray-600 focus:outline-none px-2 py-2"
-                          placeholder="Search here"
-                          onFocus={() => setSearchOpen(true)}
-                        />
-                        <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
-                      </div>
-                    </div> */}
+                <div className="w-full flex items-center md:flex-row gap-2">
+                  <div className="hidden md:block w-1/3">
+                    <span>{totalHits} vehicles found for sale</span>
                   </div>
+                  <InstantSearch indexName={srpIndex} searchClient={searchClient}>
+                    <div className="relative w-full z-50 pointer-events-auto">
+                      <CustomSearchBox setSearchOpen={setSearchOpen} />
+                      <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+                    </div>
+                  </InstantSearch>
                   {/* Sort dropdown */}
                   <SortDropdown
                     currentSort={sortIndex}
@@ -220,7 +202,7 @@ export default function SearchClient({
                   </span>
                 </div>
                 <ActiveFiltersBar
-                  refinements={filterRefinements}
+                  refinements={selectedFacets}
                   onRemove={handleRemoveFilter}
                   onClearAll={handleReset}
                 />
