@@ -79,7 +79,8 @@ function Hit({ hit }: any) {
             )}
             <div>
                 <p className="font-medium">
-                    <Highlight attribute="title" hit={hit} />
+                    {/* <Highlight attribute="title" hit={hit} /> */}
+                    {hit.title}
                 </p>
                 <p className="text-sm text-gray-500">${hit.price}</p>
             </div>
