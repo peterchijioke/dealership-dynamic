@@ -164,8 +164,8 @@ export default function SearchClient({
     >
       <SpecialBanner />
 
-      <div className="h-[calc(100vh-7rem)] flex overflow-hidden">
-        <aside className="hidden lg:block w-72 shrink-0  bg-[#FAF9F7]">
+      <div className="h-svh flex ">
+        <aside className="hidden lg:block sticky w-72 shrink-0  bg-[#FAF9F7]">
           <ScrollArea className="h-full px-3">
             <div className="p-4">
               <h2 className="font-bold text-center uppercase">
