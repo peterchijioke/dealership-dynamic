@@ -42,9 +42,9 @@ const CarouselBanner = () => {
         },
       };
       const data = await getSpecialBanner(payload);
-      console.log("===========getSpecialBanner=========================");
-      console.log("Special Banner Data:", JSON.stringify(data, null, 2));
-      console.log("===========getSpecialBanner=========================");
+      // console.log("===========getSpecialBanner=========================");
+      // console.log("Special Banner Data:", JSON.stringify(data, null, 2));
+      // console.log("===========getSpecialBanner=========================");
       const final = data?.data.flatMap((item: any) => item);
       setSpecials(final || []);
     } catch (_error) {
@@ -87,7 +87,7 @@ const CarouselBanner = () => {
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, dynamicSlides.length]);
-  console.log(specials, "=======console.log(dynamicSlides);=========");
+  // console.log(specials, "=======console.log(dynamicSlides);=========");
   // Clamp currentSlide if slides shrink (e.g., from 1 to 0)
   useEffect(() => {
     if (dynamicSlides.length === 0) {
@@ -130,11 +130,11 @@ const CarouselBanner = () => {
     );
   }
 
-  const shouldShowCarousel = SHOW_CAROUSEL_PATHS.includes(pathname);
+  // const shouldShowCarousel = SHOW_CAROUSEL_PATHS.includes(pathname);
 
-  console.log("=============path=======================");
-  console.log(pathname);
-  console.log("====================================");
+  // console.log("=============path=======================");
+  // console.log(pathname);
+  // console.log("====================================");
 
   return (
     <Fragment>

@@ -39,7 +39,7 @@ export default function SidebarFilters({
         attribute="is_special"
         label="Show Special"
         labelPosition="left"
-        selectedFacets={selectedFacets}
+        selectedFacets={currentRefinements}
         updateFacet={updateFacet}
         className="justify-between px-2 pb-3"
       />
@@ -51,7 +51,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="condition"
             values={facets?.condition || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             className="px-2 pb-3"
           />
@@ -66,7 +66,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="year"
             values={facets?.year || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -79,7 +79,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="make"
             values={facets?.make || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -92,7 +92,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="model"
             values={facets?.model || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -105,7 +105,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="body"
             values={facets?.body || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -118,7 +118,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="fuel_type"
             values={facets?.fuel_type || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -131,7 +131,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="ext_color"
             values={facets?.ext_color || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -144,7 +144,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="int_color"
             values={facets?.int_color || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -157,7 +157,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="drive_train"
             values={facets?.drive_train || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -170,7 +170,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="transmission"
             values={facets?.transmission || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -183,7 +183,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="engine"
             values={facets?.engine || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -196,7 +196,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="doors"
             values={facets?.doors || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -209,7 +209,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="key_features"
             values={facets?.key_features || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
@@ -222,7 +222,7 @@ export default function SidebarFilters({
           <CustomRefinementList
             attribute="mileage"
             values={facets?.mileage || {}}
-            selectedFacets={selectedFacets}
+            selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"

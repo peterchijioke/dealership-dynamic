@@ -98,7 +98,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
-  console.log("Searching index:", indexName, hitsResult);
+  // console.log("Searching index:", indexName, hitsResult);
 
   // Merge facets into a single object
   const mergedFacets = facetResults.reduce<Record<string, any>>(
