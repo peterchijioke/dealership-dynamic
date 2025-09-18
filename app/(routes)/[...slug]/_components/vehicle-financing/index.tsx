@@ -163,7 +163,7 @@ function VehicleFinancing({ vehicle }: Props) {
       )}
 
       <div className="vehicle-financing__details">
-        {activeTab === "buy" && (
+        {/* {activeTab === "buy" && (
           <p className="vehicle-financing__buy-details mt-3 flex flex-col items-center text-center">
             <span className="vehicle-financing__buy-price text-4xl font-semibold">
               {sale_price_formatted}
@@ -172,7 +172,7 @@ function VehicleFinancing({ vehicle }: Props) {
               Best price
             </span>
           </p>
-        )}
+        )} */}
         {activeTab === "finance" && (
           <div className="vehicle-financing__finance-details my-3 flex justify-between text-center">
             <div className="vehicle-financing__finance-item flex flex-col items-center text-center">
@@ -203,21 +203,29 @@ function VehicleFinancing({ vehicle }: Props) {
         )}
       </div>
 
-      <div className="flex w-full items-center ">
-        <button
-          type="button"
-          onClick={toggleExpand}
-          aria-expanded={isExpanded}
-          aria-controls={`price-breakdown-${vehicle.objectID}`}
-          className="ml-2 shadow px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors"
-        >
-          <ChevronDown
-            className={cn(
-              "size-4 transition-transform",
-              isExpanded && "rotate-180"
-            )}
-          />
-        </button>
+      <div className="flex w-full items-center justify-between ">
+        <div className=" flex items-center  gap-2">
+          <span className="vehicle-financing__buy-label capitalize text-[#69707C]0">
+            Sale price
+          </span>
+          <button
+            type="button"
+            onClick={toggleExpand}
+            aria-expanded={isExpanded}
+            aria-controls={`price-breakdown-${vehicle.objectID}`}
+            className=" cursor-pointer shadow px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors"
+          >
+            <ChevronDown
+              className={cn(
+                "size-4 transition-transform",
+                isExpanded && "rotate-180"
+              )}
+            />
+          </button>
+        </div>
+        <span className="vehicle-financing__buy-price text-lg font-semibold text-[#374151]">
+          {sale_price_formatted}
+        </span>
       </div>
 
       {isExpanded && (

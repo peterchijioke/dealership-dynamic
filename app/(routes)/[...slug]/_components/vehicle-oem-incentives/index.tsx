@@ -27,7 +27,11 @@ function VehicleOemIncentives(props: Props) {
         <span className="vehicle-oem-toggle-conditional text-sm py-1 text-[#72777E]">
           Conditional Specials
         </span>
-        {showSpecials ? <ChevronUp /> : <ChevronDown />}
+        {showSpecials ? (
+          <ChevronUp className="size-5" />
+        ) : (
+          <ChevronDown className="size-5" />
+        )}
       </button>
 
       {/* Incentive List */}
