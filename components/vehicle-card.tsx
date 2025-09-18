@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,113 @@ import { ChevronDown } from "lucide-react";
 import { stripTrailingCents, formatPrice } from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
+import Link from "next/link";
+import VehicleFinancing from "@/app/(routes)/[...slug]/_components/vehicle-financing";
+import VehicleOemIncentives from "@/app/(routes)/[...slug]/_components/vehicle-oem-incentives";
+
+/** ---- Price types & normalization ---- */
+
+type DiscountLine = { title: string; value: string };
+
+type CanonicalPrices = {
+  msrp?: string | null;
+  sale?: string | null;
+  totalDiscounts?: string | null;
+  discountDetails: DiscountLine[];
+  labels: {
+    msrp: string;
+    sale: string;
+    totalDiscounts: string;
+  };
+};
+
+function normalizePrices(raw: unknown): CanonicalPrices | null {
+  if (!raw || typeof raw !== "object") return null;
+  const p = raw as Record<string, unknown>;
+
+  // Case 1: structured shape (keys like retail_price_formatted, dealer_sale_price_formatted, etc.)
+  const isStructured =
+    "retail_price_formatted" in p ||
+    "dealer_sale_price_formatted" in p ||
+    "sale_price_formatted" in p;
+
+  if (isStructured) {
+    const msrp =
+      (p["retail_price_formatted"] as string | undefined) ||
+      (p["MSRP"] as string | undefined) ||
+      null;
+
+    const sale =
+      (p["dealer_sale_price_formatted"] as string | undefined) ||
+      (p["sale_price_formatted"] as string | undefined) ||
+      null;
+
+    const totalDiscounts =
+      (p["total_discounts_formatted"] as string | undefined) ||
+      (typeof p["total_discounts"] === "number"
+        ? `$${p["total_discounts"] as number}`
+        : null);
+
+    const dealerLines =
+      (Array.isArray(p["dealer_discount_details"])
+        ? (p["dealer_discount_details"] as DiscountLine[])
+        : []) ?? [];
+
+    const incentiveLines =
+      (Array.isArray(p["incentive_discount_details"])
+        ? (p["incentive_discount_details"] as DiscountLine[])
+        : []) ?? [];
+
+    return {
+      msrp,
+      sale,
+      totalDiscounts,
+      discountDetails: [...dealerLines, ...incentiveLines].filter(
+        (d) => d && (d.title || d.value)
+      ),
+      labels: {
+        msrp: "MSRP",
+        sale: "Sale Price",
+        totalDiscounts: "Total Discounts",
+      },
+    };
+  }
+
+  // Case 2: flat label:value map (e.g., { "MSRP": "$24,925", "After all rebates": "$22,975" })
+  const entries = Object.entries(p);
+  if (entries.length === 0) return null;
+
+  // Normalize label keys to make lookups robust
+  const byKey = new Map(
+    entries.map(([k, v]) => [k.trim().toLowerCase(), String(v)])
+  );
+
+  const msrp =
+    byKey.get("msrp") ??
+    byKey.get("retail") ??
+    byKey.get("retail price") ??
+    null;
+
+  const sale =
+    byKey.get("after all rebates") ??
+    byKey.get("sale price") ??
+    byKey.get("price") ??
+    null;
+
+  return {
+    msrp,
+    sale,
+    totalDiscounts: byKey.get("discounts") ?? null,
+    discountDetails: [], // not available in this shape
+    labels: {
+      msrp: "MSRP",
+      sale: byKey.has("after all rebates") ? "After all rebates" : "Sale Price",
+      totalDiscounts: "Total Discounts",
+    },
+  };
+}
+
+/** ---- Component ---- */
 
 interface VehicleCardProps {
   hit: Vehicle;
@@ -19,78 +126,86 @@ interface VehicleCardProps {
 
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
-
+  const [isHydrating, setIsHydrating] = React.useState(true);
+  const [copied, setCopied] = React.useState(false);
+  console.log("============hit.prices========================");
+  console.log(JSON.stringify(hit.prices, null, 2));
+  console.log("==============hit.prices======================");
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
-  const route = useRouter();
+  const router = useRouter();
 
-  const [isHydrating, setIsHydrating] = useState(true);
-  const [copied, setCopied] = useState(false);
+  React.useEffect(() => setIsHydrating(false), []);
 
-  useEffect(() => {
-    setIsHydrating(false);
-  }, []);
+  // Fallback demo prices if hit.prices is empty
+  const canonical = React.useMemo<CanonicalPrices | null>(() => {
+    const hasHitPrices =
+      hit.prices &&
+      typeof hit.prices === "object" &&
+      Object.keys(hit.prices).length > 0;
+    return normalizePrices(hasHitPrices ? hit.prices : undefined);
+  }, [hit.prices]);
 
-  // console.log("=========hit.priceshit.prices===========================");
-  // console.log(hit.prices);
-  // console.log("==============hit.priceshit.prices======================");
+  const msrpNode = canonical?.msrp ? (
+    <>
+      <span className="text-sm">{canonical.labels.msrp}</span>
+      <span className="stroke-2 text-lg text-rose-700 font-bold">
+        {stripTrailingCents(canonical.msrp)}
+      </span>
+    </>
+  ) : null;
 
-  const prices = {
-    total_discounts: 1950,
-    sale_price_label: "Sale price",
-    total_additional: 0,
-    retail_price_label: "Retail Price",
-    sale_price_formatted: "$22,975",
-    dealer_discount_label: "Dealership Discount",
-    dealer_discount_total: 1950,
-    total_discounts_label: "Discounts",
-    retail_price_formatted: "$24,925",
-    total_additional_label: null,
-    dealer_additional_label: null,
-    dealer_additional_total: 0,
-    dealer_discount_details: [
-      {
-        title: "Dealership Discount",
-        value: "-$1,950",
-        disclaimer: null,
-      },
-    ],
-    dealer_sale_price_label: null,
-    incentive_discount_label: null,
-    incentive_discount_total: 0,
-    dealer_additional_details: [],
-    total_discounts_formatted: "$1,950",
-    incentive_additional_label: null,
-    incentive_additional_total: 0,
-    incentive_discount_details: [],
-    total_additional_formatted: null,
-    dealer_sale_price_formatted: "$22,975",
-    incentive_additional_details: [],
+  const saleNode = canonical?.sale ? (
+    <>
+      <span className="text-sm">{canonical.labels.sale}</span>
+      <span className="stroke-2 text-lg text-rose-700 font-bold">
+        {stripTrailingCents(canonical.sale)}
+      </span>
+    </>
+  ) : null;
+
+  const copyStock = async () => {
+    const stock = hit.stock_number?.toString() ?? "";
+    if (!stock) return;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(stock);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = stock;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // no-op
+    }
   };
 
   return (
     <div className="vehicle-grid__card-wrapper">
       <Card
         className={cn(
-          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex  min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500  md:max-w-[380px] xl:max-w-[400px] "
+          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
         )}
       >
-        {/* {hit.is_special && (
-          <div className="bg-green-700  text-white text-sm font-semibold text-center py-1">
-            {hit.sale_price || "Eligible for $5k Oregon Charge Ahead Rebate"}
-          </div>
-        )} */}
-
         {hit.is_special && hit.tag && (
           <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
         )}
-        {/* Vehicle Image */}
-        <VehicleImage
-          hit={hit}
-          encryptedUrl={encryptedUrl}
-          isHydrating={isHydrating}
-        />
 
-        <div className="flex items-center justify-between px-3 ">
+        {/* Vehicle Image */}
+        <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
+          <VehicleImage
+            hit={hit}
+            encryptedUrl={encryptedUrl}
+            isHydrating={isHydrating}
+          />
+        </Link>
+
+        {/* Top row: condition & stock */}
+        <div className="flex items-center justify-between px-3">
           <div
             className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
             data-target="srp-card-mileage"
@@ -103,36 +218,14 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const stock = hit.stock_number ?? "";
-                try {
-                  if (navigator && navigator.clipboard && stock) {
-                    navigator.clipboard.writeText(stock.toString());
-                    setCopied(true);
-                    window.setTimeout(() => setCopied(false), 1500);
-                  }
-                } catch (err) {
-                  // fallback: create temporary textarea
-                  const ta = document.createElement("textarea");
-                  ta.value = stock.toString();
-                  document.body.appendChild(ta);
-                  ta.select();
-                  try {
-                    document.execCommand("copy");
-                    setCopied(true);
-                    window.setTimeout(() => setCopied(false), 1500);
-                  } catch (e) {
-                    // no-op
-                  }
-                  document.body.removeChild(ta);
-                }
+                void copyStock();
               }}
-              aria-label={`Copy stock number ${hit.stock_number}`}
+              aria-label={`Copy stock number ${hit.stock_number ?? ""}`}
               className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
               data-target="srp-card-price-ask"
             >
               #{hit.stock_number}
             </button>
-
             <span
               role="status"
               aria-live="polite"
@@ -143,163 +236,103 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </div>
         </div>
 
-        {/* Vehicle Content */}
+        {/* Body */}
         <div className="px-3 flex flex-col">
-          <div className=" w-full pb-3">
+          <div className="w-full pb-3">
             <h2
               data-target="srp-card-title"
-              className="text-base font-medium  text-[#000000] overflow-hidden line-clamp-1 text-ellipsis"
+              className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
+              title={hit.title}
             >
               {hit.title}
             </h2>
 
-            {/* Subtitle */}
-            <p className=" text-[#72777E] text-xs line-clamp-2 text-ellipsis mb-1.5">
+            <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
               {hit.body} {hit.drive_train}
             </p>
           </div>
-          {/* Price Section */}
-          <div className="flex  w-full justify-between mb-6">
-            <div className="w-full">
-              <span className=" text-[#69707C]">After all rebates</span>
-              <div className="flex items-center">
-                <span className="text-base font-bold text-[#374151] overflow-hidden line-clamp-2 text-ellipsis mb-1.5">
-                  {hit.sale_price != null
-                    ? formatPrice(hit.sale_price)
-                    : stripTrailingCents(
-                        hit.prices.dealer_sale_price_formatted
-                      )}
-                </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsPriceOpen(!isPriceOpen);
-                  }}
-                  className="ml-2 shadow px-4 py-2 bg-white cursor-pointer rounded-full hover:bg-gray-50 transition-colors"
-                >
-                  <ChevronDown
-                    color="black"
-                    className={cn(
-                      "size-4 transition-transform",
-                      isPriceOpen && "rotate-180"
-                    )}
-                  />
-                </button>
-              </div>
-            </div>
 
-            {/* Mileage */}
-            <div className="text-right">
-              <div className="text-[0.84rem] font-semibold text-[#374151] whitespace-nowrap">
+          {/* Meta & top-line prices */}
+          <div className="w-full flex flex-col mb-3">
+            <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
+              <span>Mile</span>
+              <span>
                 {hit.mileage
                   ? `${hit.mileage.toLocaleString()} miles`
                   : "8 miles"}
-              </div>
+              </span>
+            </div>
+
+            {/* <div className="w-full flex flex-row items-center justify-between mt-6">
+            
+
+              {canonical?.labels.sale.toLowerCase() === "after all rebates" &&
+                saleNode && <>{saleNode}</>}
+              {msrpNode}
+            </div> */}
+            <div className=" w-full">
+              <VehicleFinancing vehicle={hit} />
+            </div>
+
+            <div className="vehicle-default-theme__incentives-wrapper">
+              <VehicleOemIncentives incentives={hit.oem_incentives} />
             </div>
           </div>
-          {isPriceOpen && (
-            <div className=" text-gray-800 p-3 w-full  py-2">
-              {/* Prefer prices from hit if available */}
-              {((hit.prices && Object.keys(hit.prices).length > 0) || prices) &&
-                (() => {
-                  const p: any =
-                    hit.prices && Object.keys(hit.prices).length > 0
-                      ? hit.prices
-                      : prices;
 
-                  // helper to safely read formatted values
-                  const msrp = p.retail_price_formatted || p.msrp || null;
-                  const sale =
-                    p.dealer_sale_price_formatted ||
-                    p.sale_price_formatted ||
-                    null;
-                  const totalDiscounts =
-                    p.total_discounts_formatted ||
-                    (p.total_discounts ? `$${p.total_discounts}` : null);
+          {/* Price Section */}
 
-                  // gather discount detail lines if present
-                  const discountDetails: { title: string; value: string }[] =
-                    [];
-                  if (Array.isArray(p.dealer_discount_details)) {
-                    p.dealer_discount_details.forEach((d: any) => {
-                      if (d && (d.title || d.value)) {
-                        discountDetails.push({
-                          title: d.title || "Discount",
-                          value: d.value || "",
-                        });
-                      }
-                    });
-                  }
-
-                  return (
-                    <div className="w-full">
-                      {/* MSRP / Retail (struck-through when different from sale) */}
-                      {msrp && (
-                        <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                          <span className="font-medium text-sm">MSRP</span>
-                          <span className="text-sm text-gray-500 line-through">
-                            {stripTrailingCents(msrp)}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Individual discounts */}
-                      {discountDetails.map((d, idx) => (
-                        <div
-                          key={`disc-${idx}`}
-                          className="w-full flex items-center justify-between py-2 border-b border-gray-200"
-                        >
-                          <span className="font-medium text-sm capitalize">
-                            {d.title}
-                          </span>
-                          <span className="font-semibold text-sm text-gray-700">
-                            {stripTrailingCents(d.value)}
-                          </span>
-                        </div>
-                      ))}
-
-                      {/* Total discounts */}
-                      {totalDiscounts && (
-                        <div className="w-full flex items-center justify-between py-2 border-b border-gray-200">
-                          <span className="font-medium text-sm">
-                            Total Discounts
-                          </span>
-                          <span className="font-semibold text-sm text-gray-700">
-                            {stripTrailingCents(totalDiscounts)}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Sale price / final price */}
-                      {sale && (
-                        <div className="w-full flex items-center justify-between py-3">
-                          <span className="font-medium text-sm">
-                            Sale Price
-                          </span>
-                          <span className="font-bold text-base text-gray-900">
-                            {stripTrailingCents(sale)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-            </div>
-          )}
-          {/* CTA Button */}
+          {/* CTA */}
           <div className="w-full">
             <button
-              onClick={() => route.push(`/vehicle/${hit?.objectID}`)}
-              className="w-full py-2 cursor-pointer hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800 border-0"
+              onClick={() => router.push(`/vehicle/${hit?.objectID}`)}
+              className="w-full py-2 hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800"
             >
               View Details
             </button>
           </div>
-          {/* Closing tag for the div started at line 64 */}
         </div>
       </Card>
     </div>
   );
 });
+
+/** Small presentational helper for price rows */
+function Row({
+  label,
+  value,
+  strike,
+  bold,
+}: {
+  label: string;
+  value: string;
+  strike?: boolean;
+  bold?: boolean;
+}) {
+  return (
+    <div className="w-full flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+      <span className="font-medium text-sm">{label}</span>
+      <span
+        className={cn(
+          "text-sm",
+          strike && "line-through text-gray-500",
+          bold && "font-bold text-base text-gray-900",
+          !strike && !bold && "font-semibold text-gray-700"
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+/** Optional: keep only if you still need it somewhere else */
+export const getToPrice = (hit: { prices?: unknown }) => {
+  const c = normalizePrices(hit.prices ?? null);
+  if (!c?.sale) return null;
+  return (
+    <>
+      <span className="">{c.labels.sale}</span>
+      <span className="">{stripTrailingCents(c.sale)}</span>
+    </>
+  );
+};

@@ -145,3 +145,10 @@ export const generateImagePreviewData = (imagePreview: string) =>
 export const previewurl =
     "UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoMAAkAAUAmJYwCdAEOy+QpWgAA/uiU0K7BTDeyr8YIl1v3bADof4++we2QEribfwRCO5TAxCfxN3OOfMPrfCLqc6VyIzxpPcHCSLojeleYpuW5wuF5TzTFGEJb0oKDgAA=";
  import React from "react";
+export const formatNumber = (price?: number | string | null) => {
+	const numberValue = Number(price);
+	if (isNaN(numberValue)) {
+		return String(price);
+	}
+	return numberValue.toLocaleString('en-US');
+};

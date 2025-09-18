@@ -203,7 +203,10 @@ export default function CarouselComponents() {
                                   loading="eager"
                                   fetchPriority="high"
                                   fill
-                                  src={vdpData.photo}
+                                  src={
+                                    vdpData?.photo ||
+                                    "https://placehold.co/600x400"
+                                  }
                                   className="object-cover"
                                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
