@@ -105,7 +105,7 @@ function PriceDefaultTheme(props: Props) {
             className="price-default-additional-value flex items-center gap-1 text-neutral-600"
             isStrong
           >
-            {/* {formatUSD(dealer_additional_total)} */}
+            {formatUSD(dealer_additional_total)}
             <InfoCircledIcon
               className="price-default-additional-icon"
               color="#323232"
