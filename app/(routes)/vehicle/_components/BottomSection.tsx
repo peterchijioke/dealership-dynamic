@@ -8,7 +8,8 @@ import { VdpContextType } from "./VdpVehicleCard";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { getFormField } from "@/app/api/dynamic-forms";
+import { getFormField, submitForm } from "@/app/api/dynamic-forms";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 
 type Props = {
   onContinue?: (action: Action) => void; // optional callback
@@ -88,7 +89,7 @@ const MobileInlineForm: React.FC<{
   const fetchFormData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const result = await getFormField(formValues, formId, dealerDomain);
+      const result = await getFormField(formId, dealerDomain);
 
       if (result.success && result.data) {
         setFormData(result.data);
@@ -114,47 +115,18 @@ const MobileInlineForm: React.FC<{
     setSubmitting(true);
 
     try {
-      const response = await fetch(
-        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formValues),
-        }
-      );
-
-      if (response.ok) {
-        const result: FormSubmitResponse = await response.json();
-        console.log("Form submitted successfully:", result);
-
-        if (result.success && result.data) {
-          toast.success("Form submitted successfully!", {
-            description:
-              "Thank you for your submission. We'll get back to you soon.",
-            duration: 4000,
-          });
-
-          setTimeout(() => {
-            onBack();
-          }, 1500);
-        } else {
-          toast.error("Form submission failed", {
-            description: "Please check your information and try again.",
-          });
-        }
-      } else {
-        const errorData = await response.json();
-        console.error("Form submission failed:", errorData);
-
-        toast.error("Form submission failed", {
-          description: errorData.message || "Please try again later.",
+      const result = await submitForm(formValues, formId, dealerDomain);
+      if (result.success && result.data) {
+        toast.success("Form submitted successfully!", {
+          description:
+            "Thank you for your submission. We'll get back to you soon.",
+          duration: 4000,
         });
+        setTimeout(() => {
+          onBack();
+        }, 1500);
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-
       toast.error("Network error", {
         description: "Please check your connection and try again.",
       });
@@ -452,6 +424,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       document.body.style.overflow = original;
     };
   }, [open]);
+  const { site } = useGetCurrentSite();
 
   // Escape to close
   useEffect(() => {
@@ -553,9 +526,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
           {showForm && selectedFormId ? (
             <MobileInlineForm
               formId={selectedFormId}
-              dealerDomain={
-                vdpData?.dealer_domain || "www.nissanofportland.com"
-              }
+              dealerDomain={site}
               onBack={handleBackToSheet}
             />
           ) : (
