@@ -123,11 +123,11 @@ function PriceDefaultTheme(props: Props) {
 
       {/* Sale Price Row */}
       {sale_price_label && (
-        <div className="price-default-sale-row mt-2 flex justify-between bg-[#F8F8F8] rounded-2xl px-2 items-center">
-          <Label className="price-default-sale-label text-rose-700 " isStrong>
+        <div className="price-default-sale-row mt-2 flex justify-between  rounded-2xl px-2 items-center">
+          <Label className="price-default-sale-label " isStrong>
             {sale_price_label}
           </Label>
-          <p className="price-default-sale-value mt-2 text-rose-700 text-h3-extra">
+          <p className="price-default-sale-value mt-2  text-h3-extra">
             {sale_price_formatted}
           </p>
         </div>

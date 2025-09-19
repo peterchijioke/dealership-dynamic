@@ -58,7 +58,7 @@ export const getThemeImage = async (path: string): Promise<any> => {
   }
   const data = await response.json();
   console.log('==========getThemeImage==========================');
-  console.log(JSON.stringify(data, null, 2));
+  console.log(JSON.stringify({data,url:baseUrl + `/${getDynamicPath()}${path}`}, null, 2));
   console.log('=============getThemeImage=======================');
   return data;
 }
