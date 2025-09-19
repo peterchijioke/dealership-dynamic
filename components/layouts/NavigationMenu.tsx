@@ -22,7 +22,12 @@ const NavigationMenuComponent = ({
   imagesRaw: any;
 }) => {
   const navigationItems = headerData?.navigation;
+  // const navigationItems = headerData?.website_external_links;
   const images = imagesRaw;
+  console.log("=============navigation links=======================");
+  console.log(headerData);
+  console.log("==============navigation links======================");
+
   return (
     <nav className="w-screen py-0 shadow-md bg-[#e5e7eb] hidden md:block">
       <NavigationMenu className=" " viewport={false}>
@@ -153,8 +158,8 @@ const NavigationMenuComponent = ({
                   className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-transparent font-semibold px-4 py-3 capitalize`}
                   asChild
                 >
-                  <Link prefetch={true} href={item.link}>
-                    {item.label.toLowerCase()}
+                  <Link prefetch={true} href={item?.link}>
+                    {item?.label.toLowerCase()}
                   </Link>
                 </NavigationMenuLink>
               )}

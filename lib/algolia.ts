@@ -176,7 +176,6 @@ async function searchWithMultipleQueriesOld(options: SearchOptions) {
     facets: facetsResult.facets,
   };
 }
-
 /**
  * Fetch a single vehicle by objectID from Algolia
  */
