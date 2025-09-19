@@ -18,6 +18,8 @@ import VehicleOemIncentives from "@/app/(routes)/[...slug]/_components/vehicle-o
 import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 import { getHost } from "@/utils/site";
 import { ButtonDataWithFormHandler } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
+import { ShardSheetForm } from "@/components/ui/shard-sheet-form";
+import { baseUrl, getDynamicPath } from "@/configs/config";
 
 /** ---- Price types & normalization ---- */
 
@@ -127,6 +129,190 @@ interface VehicleCardProps {
   hit: Vehicle;
 }
 
+// --- InlineForm logic (adapted from VdpVehicleCard, simplified for SRP use) ---
+interface FormField {
+  name: string;
+  label: string;
+  field_type: string;
+  is_required?: boolean;
+  is_visible?: boolean;
+  default_value?: string;
+  options?: { label: string; value: string }[];
+  settings?: { display_grid?: string; tag_name?: string };
+}
+interface FormData {
+  title: string;
+  fields: FormField[];
+}
+interface FormApiResponse {
+  success: boolean;
+  data: FormData;
+}
+interface FormSubmitResponse {
+  success: boolean;
+  data?: any;
+  message?: string;
+}
+
+const InlineForm: React.FC<{
+  formId: string;
+  dealerDomain: string;
+  onClose: () => void;
+}> = ({ formId, dealerDomain, onClose }) => {
+  const [formData, setFormData] = React.useState<FormData | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [formValues, setFormValues] = React.useState<Record<string, string>>(
+    {}
+  );
+
+  React.useEffect(() => {
+    if (formId) fetchFormData();
+    // eslint-disable-next-line
+  }, [formId]);
+
+  const fetchFormData = async () => {
+    setLoading(true);
+    try {
+      const url = `${baseUrl + "/" + getDynamicPath()}/v1/form/${formId}`;
+      console.log("[InlineForm] Fetching form data from:", url);
+      const response = await fetch(url);
+      const data: FormApiResponse = await response.json();
+      console.log("[InlineForm] API response:", data);
+      if (data.success) setFormData(data.data);
+    } catch (error) {
+      console.error("[InlineForm] Error fetching form:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (fieldName: string, value: string) => {
+    setFormValues((prev) => ({ ...prev, [fieldName]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const response = await fetch(
+        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formValues),
+        }
+      );
+      if (response.ok) {
+        const result: FormSubmitResponse = await response.json();
+        if (result.success && result.data) {
+          // Optionally show toast
+          setTimeout(() => onClose(), 1200);
+        }
+      }
+    } catch (error) {
+      // Optionally handle error
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const renderField = (field: FormField): React.ReactNode => {
+    const gridClass =
+      field.settings?.display_grid === "12"
+        ? "col-span-12"
+        : field.settings?.display_grid === "6"
+        ? "col-span-6"
+        : field.settings?.display_grid === "4"
+        ? "col-span-4"
+        : "col-span-12";
+    const isRequired = field.is_required;
+    if (!field.is_visible) return null;
+    switch (field.field_type) {
+      case "text":
+      case "email":
+      case "tel":
+        return (
+          <div key={field.name} className={gridClass}>
+            <input
+              type={field.field_type}
+              name={field.name}
+              placeholder={`${field.label}${isRequired ? "*" : ""}`}
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              required={isRequired}
+              defaultValue={field.default_value || ""}
+              onChange={(e) => handleInputChange(field.name, e.target.value)}
+              disabled={submitting}
+            />
+          </div>
+        );
+      case "select":
+        return (
+          <div key={field.name} className={gridClass}>
+            <div className="relative">
+              <select
+                name={field.name}
+                className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 appearance-none bg-white"
+                required={isRequired}
+                defaultValue={field.default_value || ""}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                disabled={submitting}
+              >
+                <option value="">
+                  Select {field.label}
+                  {isRequired ? "*" : ""}
+                </option>
+                {field.options?.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        );
+      case "textarea":
+        return (
+          <div key={field.name} className={gridClass}>
+            <textarea
+              name={field.name}
+              placeholder={`${field.label}${isRequired ? "*" : ""}`}
+              rows={3}
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none transition-all duration-200"
+              required={isRequired}
+              defaultValue={field.default_value || ""}
+              onChange={(e) => handleInputChange(field.name, e.target.value)}
+              disabled={submitting}
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (loading) return <div className="py-8 text-center">Loading form...</div>;
+  if (!formData)
+    return <div className="py-8 text-center">Form unavailable.</div>;
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-12 gap-3">
+        {formData?.fields?.map((field) => renderField(field))}
+      </div>
+      <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          {submitting ? "Submitting..." : "Submit Application"}
+        </button>
+      </div>
+    </form>
+  );
+};
+
 export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
   const [isHydrating, setIsHydrating] = React.useState(true);
@@ -187,132 +373,157 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     }
   };
 
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
+  const [showForm, setShowForm] = React.useState(false);
+  const [selectedFormId, setSelectedFormId] = React.useState<string | null>(
+    null
+  );
+  const { site } = useGetCurrentSite();
   const handleFormCTA = (formId: string): void => {
     setSelectedFormId(formId);
     setShowForm(true);
   };
 
   return (
-    <div className="vehicle-grid__card-wrapper">
-      <Card
-        className={cn(
-          "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
-        )}
-      >
-        <div className="flex-1 ">
-          {hit.is_special && hit.tag && (
-            <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
+    <>
+      <div className="vehicle-grid__card-wrapper">
+        <Card
+          className={cn(
+            "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
           )}
+        >
+          <div className="flex-1 ">
+            {hit.is_special && hit.tag && (
+              <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
+            )}
 
-          {/* Vehicle Image */}
-          <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
-            <VehicleImage
-              hit={hit}
-              encryptedUrl={encryptedUrl}
-              isHydrating={isHydrating}
-            />
-          </Link>
+            {/* Vehicle Image */}
+            <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
+              <VehicleImage
+                hit={hit}
+                encryptedUrl={encryptedUrl}
+                isHydrating={isHydrating}
+              />
+            </Link>
 
-          {/* Top row: condition & stock */}
-          <div className="flex items-center justify-between px-3 space-y-3 pt-3">
-            <div
-              className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
-              data-target="srp-card-mileage"
-            >
-              {hit.condition}
-            </div>
-            <div className="flex items-center">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  void copyStock();
-                }}
-                aria-label={`Copy stock number ${hit.stock_number ?? ""}`}
-                className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
-                data-target="srp-card-price-ask"
+            {/* Top row: condition & stock */}
+            <div className="flex items-center justify-between px-3 space-y-3 pt-3">
+              <div
+                className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
+                data-target="srp-card-mileage"
               >
-                #{hit.stock_number}
-              </button>
-              <span
-                role="status"
-                aria-live="polite"
-                className="ml-2 text-sm text-green-600"
-              >
-                {copied ? "Copied" : ""}
-              </span>
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="px-3 flex flex-col">
-            <div className="w-full pb-3">
-              <Link
-                href={`/vehicle/${hit?.objectID}`}
-                prefetch={false}
-                aria-label="vdp"
-                className="vehicle-default-theme__title-link no-underline"
-              >
-                <h2
-                  data-target="srp-card-title"
-                  className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
-                  title={hit.title}
+                {hit.condition}
+              </div>
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void copyStock();
+                  }}
+                  aria-label={`Copy stock number ${hit.stock_number ?? ""}`}
+                  className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
+                  data-target="srp-card-price-ask"
                 >
-                  {hit.title}
-                </h2>
-              </Link>
-
-              <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
-                {hit.body} {hit.drive_train}
-              </p>
-            </div>
-            {/* Meta & top-line prices */}
-            <div className="w-full flex flex-col mb-3">
-              <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
-                <span>Mile</span>
-                <span>
-                  {hit.mileage
-                    ? `${hit.mileage.toLocaleString()} miles`
-                    : "8 miles"}
+                  #{hit.stock_number}
+                </button>
+                <span
+                  role="status"
+                  aria-live="polite"
+                  className="ml-2 text-sm text-green-600"
+                >
+                  {copied ? "Copied" : ""}
                 </span>
               </div>
+            </div>
 
-              {/* <div className="w-full flex flex-row items-center justify-between mt-6">
+            {/* Body */}
+            <div className="px-3 flex flex-col">
+              <div className="w-full pb-3">
+                <Link
+                  href={`/vehicle/${hit?.objectID}`}
+                  prefetch={false}
+                  aria-label="vdp"
+                  className="vehicle-default-theme__title-link no-underline"
+                >
+                  <h2
+                    data-target="srp-card-title"
+                    className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
+                    title={hit.title}
+                  >
+                    {hit.title}
+                  </h2>
+                </Link>
+
+                <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
+                  {hit.body} {hit.drive_train}
+                </p>
+              </div>
+              {/* Meta & top-line prices */}
+              <div className="w-full flex flex-col mb-3">
+                <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
+                  <span>Mile</span>
+                  <span>
+                    {hit.mileage
+                      ? `${hit.mileage.toLocaleString()} miles`
+                      : "8 miles"}
+                  </span>
+                </div>
+
+                {/* <div className="w-full flex flex-row items-center justify-between mt-6">
             
 
               {canonical?.labels.sale.toLowerCase() === "after all rebates" &&
                 saleNode && <>{saleNode}</>}
               {msrpNode}
             </div> */}
-              <div className=" w-full">
-                <VehicleFinancing vehicle={hit} />
-              </div>
+                <div className=" w-full">
+                  <VehicleFinancing vehicle={hit} />
+                </div>
 
-              <div className="vehicle-default-theme__incentives-wrapper">
-                <VehicleOemIncentives incentives={hit.oem_incentives} />
+                <div className="vehicle-default-theme__incentives-wrapper">
+                  <VehicleOemIncentives incentives={hit.oem_incentives} />
+                </div>
               </div>
+              {/* Price Section */}
+
+              {/* CTA */}
             </div>
-            {/* Price Section */}
-
-            {/* CTA */}
           </div>
-        </div>
-        <div className=" w-full px-3 py-2">
-          {hit.cta?.map((ctaItem, index) => (
-            <div key={index} className="flex items-center  w-full py-1">
-              {getButtonType({
-                ...ctaItem,
-                cta_type: ctaItem.cta_type,
-                onFormClick: handleFormCTA,
-              })}
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
+          <div className=" w-full px-3 py-2">
+            {hit.cta?.map((ctaItem, index) => (
+              <div key={index} className="flex items-center  w-full py-1">
+                {getButtonType({
+                  ...ctaItem,
+                  cta_type: ctaItem.cta_type,
+                  onFormClick: handleFormCTA,
+                })}
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <ShardSheetForm
+        open={showForm}
+        onOpenChange={(open) => {
+          setShowForm(open);
+          if (!open) setSelectedFormId(null);
+        }}
+        title="Application Form"
+      >
+        {selectedFormId && site ? (
+          <InlineForm
+            formId={selectedFormId}
+            dealerDomain={site}
+            onClose={() => {
+              setShowForm(false);
+              setSelectedFormId(null);
+            }}
+          />
+        ) : null}
+      </ShardSheetForm>
+    </>
   );
 });
 
