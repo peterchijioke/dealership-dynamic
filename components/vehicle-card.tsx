@@ -190,115 +190,117 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     <div className="vehicle-grid__card-wrapper">
       <Card
         className={cn(
-          "rounded-xl border pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
+          "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
         )}
       >
-        {hit.is_special && hit.tag && (
-          <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
-        )}
+        <div className="flex-1">
+          {hit.is_special && hit.tag && (
+            <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
+          )}
 
-        {/* Vehicle Image */}
-        <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
-          <VehicleImage
-            hit={hit}
-            encryptedUrl={encryptedUrl}
-            isHydrating={isHydrating}
-          />
-        </Link>
+          {/* Vehicle Image */}
+          <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
+            <VehicleImage
+              hit={hit}
+              encryptedUrl={encryptedUrl}
+              isHydrating={isHydrating}
+            />
+          </Link>
 
-        {/* Top row: condition & stock */}
-        <div className="flex items-center justify-between px-3">
-          <div
-            className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
-            data-target="srp-card-mileage"
-          >
-            {hit.condition}
-          </div>
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                void copyStock();
-              }}
-              aria-label={`Copy stock number ${hit.stock_number ?? ""}`}
-              className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
-              data-target="srp-card-price-ask"
+          {/* Top row: condition & stock */}
+          <div className="flex items-center justify-between px-3">
+            <div
+              className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
+              data-target="srp-card-mileage"
             >
-              #{hit.stock_number}
-            </button>
-            <span
-              role="status"
-              aria-live="polite"
-              className="ml-2 text-sm text-green-600"
-            >
-              {copied ? "Copied" : ""}
-            </span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="px-3 flex flex-col">
-          <div className="w-full pb-3">
-            <Link
-              href={`/vehicle/${hit?.objectID}`}
-              prefetch={false}
-              aria-label="vdp"
-              className="vehicle-default-theme__title-link no-underline"
-            >
-              <h2
-                data-target="srp-card-title"
-                className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
-                title={hit.title}
+              {hit.condition}
+            </div>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void copyStock();
+                }}
+                aria-label={`Copy stock number ${hit.stock_number ?? ""}`}
+                className="text-[0.84rem] font-normal text-[#000000] hover:underline focus:outline-none"
+                data-target="srp-card-price-ask"
               >
-                {hit.title}
-              </h2>
-            </Link>
-
-            <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
-              {hit.body} {hit.drive_train}
-            </p>
-          </div>
-
-          {/* Meta & top-line prices */}
-          <div className="w-full flex flex-col mb-3">
-            <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
-              <span>Mile</span>
-              <span>
-                {hit.mileage
-                  ? `${hit.mileage.toLocaleString()} miles`
-                  : "8 miles"}
+                #{hit.stock_number}
+              </button>
+              <span
+                role="status"
+                aria-live="polite"
+                className="ml-2 text-sm text-green-600"
+              >
+                {copied ? "Copied" : ""}
               </span>
             </div>
+          </div>
 
-            {/* <div className="w-full flex flex-row items-center justify-between mt-6">
+          {/* Body */}
+          <div className="px-3 flex flex-col">
+            <div className="w-full pb-3">
+              <Link
+                href={`/vehicle/${hit?.objectID}`}
+                prefetch={false}
+                aria-label="vdp"
+                className="vehicle-default-theme__title-link no-underline"
+              >
+                <h2
+                  data-target="srp-card-title"
+                  className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
+                  title={hit.title}
+                >
+                  {hit.title}
+                </h2>
+              </Link>
+
+              <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
+                {hit.body} {hit.drive_train}
+              </p>
+            </div>
+
+            {/* Meta & top-line prices */}
+            <div className="w-full flex flex-col mb-3">
+              <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
+                <span>Mile</span>
+                <span>
+                  {hit.mileage
+                    ? `${hit.mileage.toLocaleString()} miles`
+                    : "8 miles"}
+                </span>
+              </div>
+
+              {/* <div className="w-full flex flex-row items-center justify-between mt-6">
             
 
               {canonical?.labels.sale.toLowerCase() === "after all rebates" &&
                 saleNode && <>{saleNode}</>}
               {msrpNode}
             </div> */}
-            <div className=" w-full">
-              <VehicleFinancing vehicle={hit} />
+              <div className=" w-full">
+                <VehicleFinancing vehicle={hit} />
+              </div>
+
+              <div className="vehicle-default-theme__incentives-wrapper">
+                <VehicleOemIncentives incentives={hit.oem_incentives} />
+              </div>
             </div>
 
-            <div className="vehicle-default-theme__incentives-wrapper">
-              <VehicleOemIncentives incentives={hit.oem_incentives} />
-            </div>
-          </div>
+            {/* Price Section */}
 
-          {/* Price Section */}
-
-          {/* CTA */}
-          <div className="w-full">
-            <button
-              onClick={() => router.push(`/vehicle/${hit?.objectID}`)}
-              className="w-full py-2 hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800"
-            >
-              View Details
-            </button>
+            {/* CTA */}
           </div>
+        </div>
+        <div className="w-full px-3">
+          <button
+            onClick={() => router.push(`/vehicle/${hit?.objectID}`)}
+            className="w-full py-2 hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800"
+          >
+            View Details
+          </button>
         </div>
       </Card>
     </div>

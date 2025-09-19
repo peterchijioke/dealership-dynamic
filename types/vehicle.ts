@@ -354,7 +354,7 @@ export type PriceT = {
 	dealer_discount_details: PriceDetail[];
 	dealer_sale_price_label: string;
 	incentive_discount_label: string;
-	incentive_discount_total: 3000;
+	incentive_discount_total: number;
 	dealer_additional_details: PriceDetail[];
 	total_discounts_formatted: string;
 	incentive_additional_label: string;
