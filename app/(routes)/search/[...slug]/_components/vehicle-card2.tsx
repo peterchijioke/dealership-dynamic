@@ -138,10 +138,12 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           {hit.cta.length > 0 && (
             <Button
               className="mt-4 w-full"
-              style={{
-                backgroundColor: hit.cta[0].btn_styles.bg,
-                color: hit.cta[0].btn_styles.text_color,
-              }}
+              style={
+                {
+                  // backgroundColor: hit.cta[0].btn_styles.bg,
+                  // color: hit.cta[0].btn_styles.text_color,
+                }
+              }
             >
               {hit.cta[0].cta_label || "Confirm Availability"}
             </Button>

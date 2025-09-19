@@ -4,13 +4,15 @@ import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
 import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
+import Link from "next/link";
+import { baseUrl, getDynamicPath } from "@/configs/config";
 
 // Type definitions matching the context
 interface ButtonStyles {
   [key: string]: string | number;
 }
 
-interface CTAButton {
+export interface CTAButton {
   device: string;
   cta_type: "html" | "button" | "link" | "form";
   cta_label: string;
@@ -90,7 +92,7 @@ interface FormSubmitResponse {
 }
 
 // Extended button type for internal use
-interface ButtonDataWithFormHandler extends CTAButton {
+export interface ButtonDataWithFormHandler extends CTAButton {
   onFormClick?: (formId: string) => void;
 }
 
@@ -115,7 +117,7 @@ const InlineForm: React.FC<{
     setLoading(true);
     try {
       const response = await fetch(
-        `https://dealertower.app/api/${dealerDomain}/form/${formId}`
+        `${baseUrl + "/" + getDynamicPath()}/v1/form/${formId}`
       );
       const data: FormApiResponse = await response.json();
       if (data.success) {
@@ -410,9 +412,17 @@ const InlineForm: React.FC<{
 
           <div className="flex-1 overflow-y-auto pr-2 -mr-2">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-12 gap-3">
-                {formData.fields.map((field) => renderField(field))}
-              </div>
+              {Array.isArray(formData?.fields) &&
+              formData.fields &&
+              formData.fields.length > 0 ? (
+                <div className="grid grid-cols-12 gap-3">
+                  {formData.fields.map((field) => renderField(field))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  No form fields found.
+                </div>
+              )}
 
               <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
                 <button
@@ -609,12 +619,14 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
     cta_type,
     open_newtab = false,
     btn_classes = [],
+    device,
     btn_attributes = {},
     onFormClick,
   } = data;
 
-  const baseButtonClasses =
-    "active:opacity-90 bg-rose-700 cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full ";
+  const baseButtonClasses = `active:opacity-90 bg-rose-700 cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full ${
+    device === "mobile" ? "md:hidden" : "md:block"
+  } `;
 
   // Handle form type - show inline form
   if (cta_type === "form" && onFormClick) {
@@ -646,16 +658,16 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
   // Handle link type
   if (cta_type === "link" && btn_content) {
     return (
-      <a
+      <Link
         href={btn_content}
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")} text-center`}
         target={open_newtab ? "_blank" : "_self"}
         rel={open_newtab ? "noopener noreferrer" : undefined}
         aria-haspopup="false"
         {...btn_attributes}
       >
         {cta_label}
-      </a>
+      </Link>
     );
   }
 
