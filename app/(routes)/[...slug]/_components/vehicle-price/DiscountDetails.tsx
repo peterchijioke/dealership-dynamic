@@ -6,9 +6,6 @@ interface Props {
 }
 
 function DiscountDetails({ discountDetails }: Props) {
-  console.log("=============discountDetails=======================");
-  console.log(discountDetails);
-  console.log("============discountDetails========================");
   return (
     <div className="discount-details-root flex flex-col gap-1.5 overflow-hidden rounded bg-[#f0f6fb]  py-2 text-[#323232]">
       {discountDetails?.map((detail) => (
