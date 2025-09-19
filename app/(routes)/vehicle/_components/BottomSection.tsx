@@ -553,9 +553,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
           {showForm && selectedFormId ? (
             <MobileInlineForm
               formId={selectedFormId}
-              dealerDomain={
-                vdpData?.dealer_domain || "www.nissanofportland.com"
-              }
+              dealerDomain={process.env.NEXT_PUBLIC_HOST!}
               onBack={handleBackToSheet}
             />
           ) : (
