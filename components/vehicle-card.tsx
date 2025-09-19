@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ChevronDown, XIcon } from "lucide-react";
 import { stripTrailingCents, formatPrice } from "@/utils/utils";
-import VehicleImage from "./vehicle-image";
+import VehicleImage, { placeholderImage } from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
 import Link from "next/link";
 import VehicleFinancing from "@/app/(routes)/[...slug]/_components/vehicle-financing";
@@ -352,9 +352,14 @@ const InlineForm: React.FC<{
         <div className="w-full bg-[#f6f6f6] rounded-3xl flex flex-row items-center gap-6 px-6 py-6 mt-12 mb-2">
           <div className="flex-shrink-0">
             <img
-              src={encryptedUrl}
-              alt={vehicle.title}
               className="rounded-2xl object-cover w-32 h-28"
+              src={hit?.photo ? encryptedUrl : placeholderImage}
+              alt={hit.year + " " + hit.make + " " + hit.model}
+              fetchPriority={
+                hit.__position && hit.__position <= 3 ? "high" : "auto"
+              }
+              // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
+              loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
             />
           </div>
           <div className="flex flex-col flex-1 min-w-0">

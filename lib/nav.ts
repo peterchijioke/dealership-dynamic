@@ -13,9 +13,9 @@ export async function getSpecialBanner(payload: any) {
   );
 
   
-    console.log('==============getSpecialBanner======================');
-    console.log(response);
-    console.log('============getSpecialBanner========================');
+    // console.log('==============getSpecialBanner======================');
+    // console.log(response);
+    // console.log('============getSpecialBanner========================');
 
   return await response.json();
 }
@@ -29,10 +29,14 @@ export async function getPrimaryNav(): Promise<NavItem[]> {
     cache: 'force-cache'
   });
 
-
+  if (!res.ok) {
+    return [
+      { label: "Home", href: "/" },
+      { label: "Inventory", href: "/inventory" },
+      { label: "Contact", href: "/contact" },
+    ];
+  }
   const data = await res.json();
-
-
   return data as any[];
 }
 
