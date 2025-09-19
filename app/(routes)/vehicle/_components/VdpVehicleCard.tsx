@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
 import Link from "next/link";
+import { baseUrl, getDynamicPath } from "@/configs/config";
 
 // Type definitions matching the context
 interface ButtonStyles {
@@ -116,7 +117,7 @@ const InlineForm: React.FC<{
     setLoading(true);
     try {
       const response = await fetch(
-        `https://dealertower.app/api/${dealerDomain}/form/${formId}`
+        `${baseUrl + "/" + getDynamicPath()}/v1/form/${formId}`
       );
       const data: FormApiResponse = await response.json();
       if (data.success) {
@@ -411,9 +412,17 @@ const InlineForm: React.FC<{
 
           <div className="flex-1 overflow-y-auto pr-2 -mr-2">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-12 gap-3">
-                {formData.fields.map((field) => renderField(field))}
-              </div>
+              {Array.isArray(formData?.fields) &&
+              formData.fields &&
+              formData.fields.length > 0 ? (
+                <div className="grid grid-cols-12 gap-3">
+                  {formData.fields.map((field) => renderField(field))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  No form fields found.
+                </div>
+              )}
 
               <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
                 <button

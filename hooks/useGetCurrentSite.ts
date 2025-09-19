@@ -1,5 +1,6 @@
 'use client'
 
+import { getDynamicPath } from '@/configs/config';
 import { getHost, isSSR } from '@/utils/site';
 import { usePathname } from 'next/navigation';
 
@@ -15,7 +16,8 @@ export const useGetCurrentSite = () => {
 	const pathName = usePathname();
 
 	const url = isSSR ? '' : window.location.host;
-	const site = getHost(url);
+	const site = getDynamicPath()
+	// getHost(url);
 
 	const currentUrl = isSSR ? pathName : window.location.pathname + window.location.search;
 	const urlWithoutSearchParams = `${convertOriginToURL(site as string)}${pathName as string}`;
