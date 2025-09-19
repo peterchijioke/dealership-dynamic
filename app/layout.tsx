@@ -4,6 +4,7 @@ import "./globals.css";
 import PageWrapper from "@/components/layouts/PageWrapper";
 import MobileDock from "./(routes)/[...slug]/_components/MobileDock";
 import Script from "next/script";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "https://yourdealership.com"
   ),
   title: {
-    template: "%s | Dealership", 
+    template: "%s | Dealership",
     default: "Dealership - Quality Pre-Owned & New Vehicles",
   },
   description:
@@ -196,6 +197,7 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        <Toaster />
         <PageWrapper sticky>{children}</PageWrapper>
         <MobileDock />
       </body>

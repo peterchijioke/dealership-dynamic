@@ -9,7 +9,7 @@ interface VehicleImageProps {
   encryptedUrl: string | undefined;
   isHydrating: boolean;
 }
-const blurDataURL =
+export const placeholderImage =
   "https://dealertower.app/image/UuPD13gL_j3TIE57a2mSoOGLRxwnwl_PpZ0OOPDuQ1icAbVhR_62E7sfpRP7217gmQmnZGk2UQ_YGUIwA-8OVVbNXjhM1nntORyi1OhKFWu6LD2kslrksibGGIkol0mk7spFpJbIja2z0mpjuB2FLux6aOZKzArQNHRnVWXp3omIvBsiM1G9qOu0koZP06vG0mGrvanG1c6TVvPaihCMs2zfkzelz9ls_6cLDmKxDF05-fr642YaI6rrC9rtCQ.avif";
 
 export default function VehicleImage({
@@ -38,9 +38,11 @@ export default function VehicleImage({
             inset: "0px",
             color: "transparent",
           }}
-          src={blurDataURL}
+          src={placeholderImage}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
+          fetchPriority={
+            hit.__position && hit.__position <= 3 ? "high" : "auto"
+          }
           // Do not lazy-load the LCP candidate. Let the browser discover it in the initial document.
           loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn("w-full h-full rounded-t-2xl object-cover")}
@@ -58,7 +60,9 @@ export default function VehicleImage({
           }}
           src={encryptedUrl}
           alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
+          fetchPriority={
+            hit.__position && hit.__position <= 3 ? "high" : "auto"
+          }
           // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
           loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
           className={cn(

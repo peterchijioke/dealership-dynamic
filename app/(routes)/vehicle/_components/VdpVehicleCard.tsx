@@ -6,6 +6,7 @@ import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
 import Link from "next/link";
 import { baseUrl, getDynamicPath } from "@/configs/config";
+import { getFormField } from "@/app/api/dynamic-forms";
 
 // Type definitions matching the context
 interface ButtonStyles {
@@ -144,49 +145,26 @@ const InlineForm: React.FC<{
     setSubmitting(true);
 
     try {
-      const response = await fetch(
-        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formValues),
-        }
-      );
+      const result = await getFormField(formValues, formId, dealerDomain);
 
-      if (response.ok) {
-        const result: FormSubmitResponse = await response.json();
-        console.log("Form submitted successfully:", result);
+      if (result.success && result.data) {
+        toast.success("Form submitted successfully!", {
+          description:
+            "Thank you for your submission. We'll get back to you soon.",
+          duration: 4000,
+        });
 
-        if (result.success && result.data) {
-          toast.success("Form submitted successfully!", {
-            description:
-              "Thank you for your submission. We'll get back to you soon.",
-            duration: 4000,
-          });
-
-          setTimeout(() => {
-            onBack();
-          }, 1500);
-        } else {
-          toast.error("Form submission failed", {
-            description: "Please check your information and try again.",
-          });
-        }
+        setTimeout(() => {
+          onBack();
+        }, 1500);
       } else {
-        const errorData = await response.json();
-        console.error("Form submission failed:", errorData);
-
         toast.error("Form submission failed", {
-          description: errorData.message || "Please try again later.",
+          description: "Please check your information and try again.",
         });
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-
-      toast.error("Network error", {
-        description: "Please check your connection and try again.",
+    } catch (error: any) {
+      toast.error("Form submission failed", {
+        description: error.message,
       });
     } finally {
       setSubmitting(false);
@@ -411,24 +389,25 @@ const InlineForm: React.FC<{
           </h2>
 
           <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {Array.isArray(formData?.fields) &&
               formData.fields &&
               formData.fields.length > 0 ? (
-                <div className="grid grid-cols-12 gap-3">
-                  {formData.fields.map((field) => renderField(field))}
-                </div>
+                formData.fields.map((field, idx) => (
+                  <div key={field.name || idx} className="w-full">
+                    {renderField(field)}
+                  </div>
+                ))
               ) : (
                 <div className="text-center text-gray-500 py-8">
                   No form fields found.
                 </div>
               )}
-
               <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-black text-white py-3 rounded-full font-semibold text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {submitting ? (
                     <>

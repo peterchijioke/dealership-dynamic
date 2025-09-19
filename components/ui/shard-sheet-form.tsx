@@ -24,7 +24,7 @@ export function ShardSheetForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="max-w-md w-full z-50 md:min-w-xl px-3 rounded-3xl"
+        className="max-w-md w-full z-[1000] md:min-w-xl px-3 rounded-3xl"
       >
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>

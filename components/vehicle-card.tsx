@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ChevronDown, XIcon } from "lucide-react";
 import { stripTrailingCents, formatPrice } from "@/utils/utils";
-import VehicleImage from "./vehicle-image";
+import VehicleImage, { placeholderImage } from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
 import Link from "next/link";
 import VehicleFinancing from "@/app/(routes)/[...slug]/_components/vehicle-financing";
@@ -20,6 +20,8 @@ import { getHost } from "@/utils/site";
 import { ButtonDataWithFormHandler } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
 import { ShardSheetForm } from "@/components/ui/shard-sheet-form";
 import { baseUrl, getDynamicPath } from "@/configs/config";
+import { getFormField } from "@/app/api/dynamic-forms";
+import { toast } from "sonner";
 
 /** ---- Price types & normalization ---- */
 
@@ -196,20 +198,15 @@ const InlineForm: React.FC<{
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch(
-        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formValues),
-        }
-      );
-      if (response.ok) {
-        const result: FormSubmitResponse = await response.json();
-        if (result.success && result.data) {
-          // Optionally show toast
-          setTimeout(() => onClose(), 1200);
-        }
+      const result = await getFormField(formValues, formId, dealerDomain);
+
+      if (result.success && result.data) {
+        toast.success("Form submitted successfully!", {
+          description:
+            "Thank you for your submission. We'll get back to you soon.",
+          duration: 4000,
+        });
+        setTimeout(() => onClose(), 1200);
       }
     } catch (error) {
       // Optionally handle error
@@ -338,7 +335,7 @@ const InlineForm: React.FC<{
     <>
       {/* Vehicle summary card at the top of the form */}
       <div className="flex flex-col items-center mb-8">
-        <div className="relative w-full flex justify-end">
+        {/* <div className="relative w-full flex justify-end">
           <button
             type="button"
             onClick={onClose}
@@ -348,13 +345,18 @@ const InlineForm: React.FC<{
             <span className="sr-only">Close</span>
             <XIcon className="w-4 h-4" />
           </button>
-        </div>
-        <div className="w-full bg-[#f6f6f6] rounded-3xl flex flex-row items-center gap-6 px-6 py-6 mt-12 mb-2">
+        </div> */}
+        <div className="w-full bg-[#f6f6f6] rounded-3xl flex flex-row items-center gap-6 px-6 py-6 mb-2">
           <div className="flex-shrink-0">
             <img
-              src={encryptedUrl}
-              alt={vehicle.title}
               className="rounded-2xl object-cover w-32 h-28"
+              src={hit?.photo ? encryptedUrl : placeholderImage}
+              alt={hit.year + " " + hit.make + " " + hit.model}
+              fetchPriority={
+                hit.__position && hit.__position <= 3 ? "high" : "auto"
+              }
+              // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
+              loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
             />
           </div>
           <div className="flex flex-col flex-1 min-w-0">
@@ -381,15 +383,17 @@ const InlineForm: React.FC<{
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-12 gap-3">
-          {formData?.fields?.map((field) => renderField(field))}
-        </div>
-        <div className=" pt-0 md:pt-5 border-t bg-white sticky bottom-0">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {formData?.fields?.map((field, idx) => (
+          <div key={field.name || idx} className="w-full">
+            {renderField(field)}
+          </div>
+        ))}
+        <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-[#1E1E1E] text-white py-3 cursor-pointer rounded-full font-semibold text-sm hover:bg-[#1E1E1E] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full bg-black text-white py-3 rounded-full font-semibold text-sm  transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {submitting ? "Submitting..." : "Submit Application"}
           </button>
