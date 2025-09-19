@@ -138,7 +138,7 @@ export default function SearchClient({
   const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
 
   return (
-    <div className="w-full h-svh m:pt-28 md:pt-20 lg:pt-20">
+    <div className="w-full h-svh m:pt-28 md:pt-32">
       <div className="h-full flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0 bg-[#FAF9F7]">
           <ScrollArea className="h-full px-3">
@@ -157,7 +157,9 @@ export default function SearchClient({
 
         <main className="h-full">
           <ScrollArea className="h-full  ">
-            <CarouselBanner className=" rounded-2xl" />
+            <div className=" w-full px-3">
+              <CarouselBanner className=" rounded-2xl" />
+            </div>
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row gap-2">
