@@ -321,7 +321,7 @@ const MobileInlineForm: React.FC<{
   };
 
   return (
-    <div className="bg-gray-50 h-96 pt-4 w-full flex flex-col">
+    <div className="bg-gray-50 h-full pt-4 w-full flex flex-col">
       <div className="flex items-center justify-between mb-4 pb-3 border-b mx-4 flex-shrink-0">
         <button
           onClick={onBack}
@@ -465,12 +465,12 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
   };
 
   return (
-    <div ref={footerRef}>
+    <div ref={footerRef} className="relative h-svh">
       {/* Bottom gradient under the pill (mobile only) */}
-      <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-fit bg-gradient-to-t from-white to-transparent z-10" />
+      {/* <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-fit bg-gradient-to-t from-white to-transparent z-10" /> */}
 
       {!open && (
-        <div className="md:hidden fixed left-0 right-0 bottom-6 z-30 px-4">
+        <div className="md:hidden fixed  left-0 right-0 bottom-6 z-30 px-4 ">
           {!featureInView && (
             <button
               type="button"
@@ -497,7 +497,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       )}
 
       {/* Backdrop */}
-      <div
+      {/* <div
         onClick={handleBackdropClick}
         className={`md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px]
                     transition-opacity duration-200
@@ -507,7 +507,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
                         : "opacity-0 pointer-events-none"
                     }`}
         aria-hidden={!open}
-      />
+      /> */}
 
       {/* Bottom Sheet */}
       <section
@@ -515,13 +515,13 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="sheet-title"
-        className={`md:hidden fixed inset-x-0 bottom-0 grid z-[1000]
+        className={`md:hidden fixed h-full w-full   bottom-0 grid z-[1000]
                     transform transition-transform duration-300
                     ${open ? "translate-y-0" : "translate-y-full"}`}
       >
         <div
-          className=" pb-3 rounded-t-3xl bg-white shadow-2xl ring-1 ring-black/5
-                        max-h-svh  overflow-hidden flex flex-col"
+          className=" pb-3 h-full flex-1 bg-white shadow-2xl
+                          overflow-hidden flex flex-col"
         >
           {showForm && selectedFormId ? (
             <MobileInlineForm
@@ -538,7 +538,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
                 <FeaturesMobile action={action} setAction={setAction} />
               )}
 
-              <div className="flex items-center gap-2 px-3 mt-auto">
+              <div className="flex items-center  gap-2 px-3 mt-auto">
                 <button
                   type="button"
                   onClick={handleCloseSheet}
