@@ -19,7 +19,7 @@ import { getHost } from "@/utils/site";
 import { ButtonDataWithFormHandler } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
 import { ShardSheetForm } from "@/components/ui/shard-sheet-form";
 import { baseUrl, getDynamicPath } from "@/configs/config";
-import { getFormField } from "@/app/api/dynamic-forms";
+import { getFormField, submitForm } from "@/app/api/dynamic-forms";
 import { toast } from "sonner";
 
 /** ---- Price types & normalization ---- */
@@ -176,12 +176,8 @@ const InlineForm: React.FC<{
   const fetchFormData = async () => {
     setLoading(true);
     try {
-      const url = `${baseUrl + "/" + getDynamicPath()}/v1/form/${formId}`;
-      console.log("[InlineForm] Fetching form data from:", url);
-      const response = await fetch(url);
-      const data: FormApiResponse = await response.json();
-      console.log("[InlineForm] API response:", data);
-      if (data.success) setFormData(data.data);
+      const response = await getFormField(formId, dealerDomain);
+      if (response.success) setFormData(response.data);
     } catch (error) {
       console.error("[InlineForm] Error fetching form:", error);
     } finally {
@@ -197,7 +193,7 @@ const InlineForm: React.FC<{
     e.preventDefault();
     setSubmitting(true);
     try {
-      const result = await getFormField(formValues, formId, dealerDomain);
+      const result = await submitForm(formValues, formId, dealerDomain);
 
       if (result.success && result.data) {
         toast.success("Form submitted successfully!", {

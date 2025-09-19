@@ -6,7 +6,9 @@ import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
 import Link from "next/link";
 import { baseUrl, getDynamicPath } from "@/configs/config";
-import { getFormField } from "@/app/api/dynamic-forms";
+import { getFormField, submitForm } from "@/app/api/dynamic-forms";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Type definitions matching the context
 interface ButtonStyles {
@@ -117,12 +119,14 @@ const InlineForm: React.FC<{
   const fetchFormData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${baseUrl + "/" + getDynamicPath()}/v1/form/${formId}`
-      );
-      const data: FormApiResponse = await response.json();
-      if (data.success) {
-        setFormData(data.data);
+      const response = await getFormField(formId, dealerDomain);
+
+      console.log("===========fetchFormData=========================");
+      console.log("Form fetch result:", response);
+      console.log("============fetchFormData========================");
+
+      if (response.success && response.data) {
+        setFormData(response.data);
       }
     } catch (error) {
       console.error("Error fetching form:", error);
@@ -145,8 +149,7 @@ const InlineForm: React.FC<{
     setSubmitting(true);
 
     try {
-      const result = await getFormField(formValues, formId, dealerDomain);
-
+      const result = await submitForm(formValues, formId, dealerDomain);
       if (result.success && result.data) {
         toast.success("Form submitted successfully!", {
           description:
@@ -363,7 +366,7 @@ const InlineForm: React.FC<{
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col ">
       <div className="flex items-center justify-between mb-4 pb-3 border-b flex-shrink-0">
         <button
           onClick={onBack}
@@ -388,7 +391,7 @@ const InlineForm: React.FC<{
             {formData.title}
           </h2>
 
-          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <ScrollArea className="  max-h-96 pr-2 -mr-2">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {Array.isArray(formData?.fields) &&
               formData.fields &&
@@ -420,7 +423,7 @@ const InlineForm: React.FC<{
                 </button>
               </div>
             </form>
-          </div>
+          </ScrollArea>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 flex-1">
@@ -471,6 +474,7 @@ export default function VdpVehicleCard(): JSX.Element {
     setShowForm(false);
     setSelectedFormId(null);
   };
+  const { site } = useGetCurrentSite();
 
   return (
     <>
@@ -577,9 +581,7 @@ export default function VdpVehicleCard(): JSX.Element {
               selectedFormId && (
                 <InlineForm
                   formId={selectedFormId}
-                  dealerDomain={
-                    vdpData?.dealer_domain || "www.nissanofportland.com"
-                  }
+                  dealerDomain={site}
                   onBack={handleBackToCard}
                 />
               )
