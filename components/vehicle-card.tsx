@@ -15,6 +15,8 @@ import VehicleCardLabel from "./labels/VehicleCardLabel";
 import Link from "next/link";
 import VehicleFinancing from "@/app/(routes)/[...slug]/_components/vehicle-financing";
 import VehicleOemIncentives from "@/app/(routes)/[...slug]/_components/vehicle-oem-incentives";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { getHost } from "@/utils/site";
 
 /** ---- Price types & normalization ---- */
 
@@ -239,13 +241,20 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
         {/* Body */}
         <div className="px-3 flex flex-col">
           <div className="w-full pb-3">
-            <h2
-              data-target="srp-card-title"
-              className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
-              title={hit.title}
+            <Link
+              href={`/vehicle/${hit?.objectID}`}
+              prefetch={false}
+              aria-label="vdp"
+              className="vehicle-default-theme__title-link no-underline"
             >
-              {hit.title}
-            </h2>
+              <h2
+                data-target="srp-card-title"
+                className="text-base font-medium text-[#000000] overflow-hidden line-clamp-1"
+                title={hit.title}
+              >
+                {hit.title}
+              </h2>
+            </Link>
 
             <p className="text-[#72777E] text-xs line-clamp-2 mb-1.5">
               {hit.body} {hit.drive_train}

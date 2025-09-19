@@ -116,6 +116,7 @@ import React, { useState } from "react";
 import VehiclePrice from "../vehicle-price";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Label from "../vehicle-price/Label";
 
 type Props = {
   vehicle: any;
@@ -143,11 +144,6 @@ function VehicleFinancing({ vehicle }: Props) {
     dealer_discount_details,
     incentive_discount_details,
   } = prices;
-
-  const isAfterAllRebates =
-    sale_price_label &&
-    (retail_price_label || dealer_discount_label) &&
-    incentive_discount_label;
 
   return (
     <div className="vehicle-financing vehicle-financing--container">
@@ -223,10 +219,22 @@ function VehicleFinancing({ vehicle }: Props) {
         )}
       </div> */}
 
+      {retail_price_label && (
+        <div className="price-default-retail-row flex items-center my-5  rounded-2xl py-1 justify-between text-neutral-600">
+          <Label className="price-default-retail-label" isStrong>
+            {retail_price_label}
+          </Label>
+          {/* <div className={lineClassName} /> */}
+          <Label className="price-default-retail-value" isStrong>
+            {retail_price_formatted}
+          </Label>
+        </div>
+      )}
+
       <div className="flex w-full items-center justify-between ">
         <div className=" flex items-center  gap-2">
-          <span className="vehicle-financing__buy-label capitalize text-[#69707C]0">
-            Sale price
+          <span className="vehicle-financing__buy-label  capitalize text-[#69707C]0">
+            {sale_price_label}
           </span>
           <button
             type="button"
@@ -243,7 +251,7 @@ function VehicleFinancing({ vehicle }: Props) {
             />
           </button>
         </div>
-        <span className="vehicle-financing__buy-price text-lg font-semibold text-[#374151]">
+        <span className="vehicle-financing__buy-price stroke-1 stroke-black text-lg line-through font-semibold text-[#374151]">
           {sale_price_formatted}
         </span>
       </div>
