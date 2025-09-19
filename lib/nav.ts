@@ -39,9 +39,6 @@ export async function getPrimaryNav(): Promise<NavItem[]> {
 
   const data = await res.json();
 
-   console.log('==========NAV==========================');
-  console.log(JSON.stringify({data,url:baseUrl + getWebsiteInformationPath()}, null, 2));
-  console.log('=============NAV=======================');
 
   return data as any[];
 }
@@ -57,9 +54,7 @@ export const getThemeImage = async (path: string): Promise<any> => {
     return null;
   }
   const data = await response.json();
-  console.log('==========getThemeImage==========================');
-  console.log(JSON.stringify({data,url:baseUrl + `/${getDynamicPath()}${path}`}, null, 2));
-  console.log('=============getThemeImage=======================');
+
   return data;
 }
   
