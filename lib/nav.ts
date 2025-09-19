@@ -1,8 +1,13 @@
 
 'use server'
+
+
+
+import { baseUrl, getDynamicPath, getWebsiteInformationPath, specialBanner } from "@/configs/config";
+
 export async function getSpecialBanner(payload: any) {
   const response = await fetch(
-    `${baseUrl}/${getDynamicPath()}/get-specials`,
+    baseUrl + specialBanner,
     {
       method: "POST",
       headers: {
@@ -19,7 +24,6 @@ export async function getSpecialBanner(payload: any) {
 
   return await response.json();
 }
-import { baseUrl, getDynamicPath, getWebsiteInformationPath } from "@/configs/config";
 
 export type NavItem = { label: string; href: string };
 

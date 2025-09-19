@@ -20,6 +20,7 @@ export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!
 export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST!
 export const baseUrl=process.env.NEXT_PUBLIC_API_BASE_URL!
 export const getWebsiteInformationPath: () => string = () => `/${getDynamicPath()}/v1/get-website-information`
+export const specialBanner = `/${getDynamicPath()}/v1/get-specials`
 export const algoliaSortOptions = [
   {
     label: "Relevance",

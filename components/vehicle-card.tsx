@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import type { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
@@ -651,7 +650,7 @@ export const getToPrice = (hit: { prices?: unknown }) => {
   );
 };
 
-export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
+export const getButtonType = (data: ButtonDataWithFormHandler): any => {
   const {
     btn_content,
     cta_label,
@@ -670,58 +669,65 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
 
   // Handle form type - show inline form
   if (cta_type === "form" && onFormClick) {
-    return (
-      <button
-        type="button"
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
-        onClick={() => onFormClick(btn_content)}
-        aria-haspopup="false"
-        {...btn_attributes}
-      >
-        {cta_label}
-      </button>
-    );
+    if (
+      cta_label.toLowerCase().trim() ===
+      "Confirm Availibility".toLowerCase().trim()
+    ) {
+      return (
+        <button
+          type="button"
+          className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+          onClick={() => onFormClick(btn_content)}
+          aria-haspopup="false"
+          {...btn_attributes}
+        >
+          {cta_label}
+        </button>
+      );
+    } else {
+      return <></>;
+    }
   }
 
   // Handle HTML content type
-  if (cta_type === "html" && btn_content) {
-    return (
-      <div
-        dangerouslySetInnerHTML={{ __html: btn_content }}
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
-        aria-haspopup="false"
-        {...btn_attributes}
-      />
-    );
-  }
+  // if (cta_type === "html" && btn_content) {
+  //   return (
+  //     <div
+  //       dangerouslySetInnerHTML={{ __html: btn_content }}
+  //       className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+  //       aria-haspopup="false"
+  //       {...btn_attributes}
+  //     />
+  //   );
+  // }
 
   // Handle link type
-  if (cta_type === "link" && btn_content) {
-    return (
-      <Link
-        href={btn_content}
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}, text-center`}
-        target={open_newtab ? "_blank" : "_self"}
-        rel={open_newtab ? "noopener noreferrer" : undefined}
-        aria-haspopup="false"
-        {...btn_attributes}
-      >
-        {cta_label}
-      </Link>
-    );
-  }
+  // if (cta_type === "link" && btn_content) {
+  //   return (
+  //     <Link
+  //       href={btn_content}
+  //       className={`${baseButtonClasses} ${btn_classes.join(" ")}, text-center`}
+  //       target={open_newtab ? "_blank" : "_self"}
+  //       rel={open_newtab ? "noopener noreferrer" : undefined}
+  //       aria-haspopup="false"
+  //       {...btn_attributes}
+  //     >
+  //       {cta_label}
+  //     </Link>
+  //   );
+  // }
 
   // Default button type
-  return (
-    <button
-      type="button"
-      className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
-      aria-haspopup="false"
-      {...btn_attributes}
-    >
-      {cta_label}
-    </button>
-  );
+  // return (
+  //   <button
+  //     type="button"
+  //     className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+  //     aria-haspopup="false"
+  //     {...btn_attributes}
+  //   >
+  //     {cta_label}
+  //   </button>
+  // );
 };
 
 export default React.memo(VehicleCard);
