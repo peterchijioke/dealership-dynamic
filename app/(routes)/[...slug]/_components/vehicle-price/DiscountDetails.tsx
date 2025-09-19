@@ -7,7 +7,7 @@ interface Props {
 
 function DiscountDetails({ discountDetails }: Props) {
   return (
-    <div className="discount-details-root flex flex-col gap-1.5 overflow-hidden rounded-2xl bg-[#f0f6fb] px-4 py-2 text-[#323232]">
+    <div className="discount-details-root flex flex-col gap-1.5 overflow-hidden rounded bg-[#f0f6fb]  py-2 text-[#323232]">
       {discountDetails?.map((detail) => (
         <div
           key={detail.title}

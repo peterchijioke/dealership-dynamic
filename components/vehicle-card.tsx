@@ -193,7 +193,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
         )}
       >
-        <div className="flex-1">
+        <div className="flex-1 ">
           {hit.is_special && hit.tag && (
             <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
           )}
@@ -208,7 +208,7 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
           </Link>
 
           {/* Top row: condition & stock */}
-          <div className="flex items-center justify-between px-3">
+          <div className="flex items-center justify-between px-3 space-y-3 pt-3">
             <div
               className="text-[0.84rem] px-4 py-2 rounded-full bg-[#F8EBEE] text-rose-700 font-semibold"
               data-target="srp-card-mileage"

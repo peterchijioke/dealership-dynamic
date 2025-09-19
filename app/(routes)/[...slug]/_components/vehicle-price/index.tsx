@@ -36,9 +36,11 @@ function VehiclePrice(props: Props) {
 
   return (
     <div className={cn(className)}>
-      {theme === "default_theme" && (
+      {/* {theme === "default_theme" && (
         <PriceDefaultTheme price={priceDetail} cond={condition} />
-      )}
+      )} */}
+      <PriceDefaultTheme price={priceDetail} cond={condition} />
+
       {/* {theme === "theme1" && <PriceTheme1 price={priceDetail} />}
       {theme === "theme2" && <PriceTheme2 price={priceDetail} />}
       {theme === "theme3" && <PriceTheme3 price={priceDetail} />}
