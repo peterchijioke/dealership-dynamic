@@ -19,7 +19,6 @@ import {
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
-import SpecialBanner from "@/components/layouts/SpecialBanner";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
@@ -64,30 +63,6 @@ export default function SearchClient({
     },
     [selectedFacets]
   );
-
-  // Sync state with URL back/forward
-  useEffect(() => {
-    const handlePopState = () => {
-      console.log("Popstate detected, syncing state with URL");
-      const searchParamsObj = new URLSearchParams(window.location.search);
-      const { params: newRefinements } = urlParser2(
-        window.location.pathname,
-        searchParamsObj
-      );
-      setSelectedFacets(newRefinements);
-
-      // Refetch facets counts
-      searchWithMultipleQueries({
-        hitsPerPage: HITS_PER_PAGE,
-        facetFilters: refinementToFacetFilters(newRefinements),
-        sortIndex,
-        facets: CATEGORICAL_FACETS,
-      }).then((res) => setFacets(res.facets));
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [sortIndex]);
 
   // Toggle a facet
   const updateFacet = async (facet: string, value: string) => {
