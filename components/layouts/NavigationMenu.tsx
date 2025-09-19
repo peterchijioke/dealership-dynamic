@@ -21,10 +21,11 @@ const NavigationMenuComponent = ({
   headerData: any;
   imagesRaw: any;
 }) => {
-  const navigationItems = headerData?.navigation;
+  // const navigationItems = headerData?.navigation;
+  const navigationItems = headerData?.website_external_links;
   const images = imagesRaw;
   console.log("=============navigation links=======================");
-  console.log(navigationItems);
+  console.log(headerData);
   console.log("==============navigation links======================");
 
   return (

@@ -29,13 +29,6 @@ export async function getPrimaryNav(): Promise<NavItem[]> {
     cache: 'force-cache'
   });
 
-  if (!res.ok) {
-    return [
-      { label: "Home", href: "/" },
-      { label: "Inventory", href: "/inventory" },
-      { label: "Contact", href: "/contact" },
-    ];
-  }
 
   const data = await res.json();
 
