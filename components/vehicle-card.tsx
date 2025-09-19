@@ -8,7 +8,7 @@ import type { Vehicle } from "@/types/vehicle";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, XIcon } from "lucide-react";
 import { stripTrailingCents, formatPrice } from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
 import VehicleCardLabel from "./labels/VehicleCardLabel";
@@ -158,7 +158,8 @@ const InlineForm: React.FC<{
   formId: string;
   dealerDomain: string;
   onClose: () => void;
-}> = ({ formId, dealerDomain, onClose }) => {
+  hit: Vehicle;
+}> = ({ formId, dealerDomain, onClose, hit }) => {
   const [formData, setFormData] = React.useState<FormData | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -231,7 +232,6 @@ const InlineForm: React.FC<{
     switch (field.field_type) {
       case "text":
       case "email":
-      case "tel":
         return (
           <div key={field.name} className={gridClass}>
             <input
@@ -244,6 +244,32 @@ const InlineForm: React.FC<{
               onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
             />
+          </div>
+        );
+      case "tel":
+        return (
+          <div key={field.name} className={gridClass}>
+            <input
+              type="tel"
+              name={field.name}
+              placeholder={
+                field.label
+                  ? `${field.label}${isRequired ? "*" : ""}`
+                  : "Phone (9 digits)"
+              }
+              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              required={isRequired}
+              defaultValue={field.default_value || ""}
+              onChange={(e) => handleInputChange(field.name, e.target.value)}
+              disabled={submitting}
+              pattern="[0-9]{9}"
+              inputMode="numeric"
+              maxLength={9}
+              minLength={9}
+            />
+            <span className="block text-xs text-gray-500 mt-1">
+              Enter 9 digit phone number
+            </span>
           </div>
         );
       case "select":
@@ -292,36 +318,103 @@ const InlineForm: React.FC<{
     }
   };
 
+  // Vehicle summary data
+  const vehicle = {
+    image: hit.photo || "https://placehold.co/300x200",
+    title: hit.title,
+    subtitle: hit.drive_train,
+    msrp: hit.prices?.retail_price_formatted,
+    sale:
+      hit.prices?.dealer_sale_price_formatted ||
+      hit.prices?.sale_price_formatted,
+  };
+  const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
+
   if (loading) return <div className="py-8 text-center">Loading form...</div>;
   if (!formData)
     return <div className="py-8 text-center">Form unavailable.</div>;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-12 gap-3">
-        {formData?.fields?.map((field) => renderField(field))}
+    <>
+      {/* Vehicle summary card at the top of the form */}
+      <div className="flex flex-col items-center mb-8">
+        <div className="relative w-full flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-0 top-0 z-10 p-2 flex items-center justify-center rounded-full bg-black text-white text-2xl focus:outline-none"
+            aria-label="Close"
+          >
+            <span className="sr-only">Close</span>
+            <XIcon className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="w-full bg-[#f6f6f6] rounded-3xl flex flex-row items-center gap-6 px-6 py-6 mt-12 mb-2">
+          <div className="flex-shrink-0">
+            <img
+              src={encryptedUrl}
+              alt={vehicle.title}
+              className="rounded-2xl object-cover w-32 h-28"
+            />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <div className=" text-base font-bold text-black leading-tight truncate">
+              {vehicle.title}
+            </div>
+            <div className="text-sm text-[#7c818b] font-medium mb-2">
+              {vehicle.subtitle}
+            </div>
+            <div className="flex flex-row items-end gap-4 mt-2">
+              {vehicle.msrp && (
+                <span className="text-xl text-[#7c818b] line-through">
+                  {vehicle.msrp}
+                </span>
+              )}
+              <div className="flex flex-col items-end">
+                <span className="text-xs text-[#7c818b] tracking-widest font-semibold uppercase">
+                  Sale Price
+                </span>
+                <span className=" font-bold text-black">{vehicle.sale}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-        >
-          {submitting ? "Submitting..." : "Submit Application"}
-        </button>
-      </div>
-    </form>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-12 gap-3">
+          {formData?.fields?.map((field) => renderField(field))}
+        </div>
+        <div className=" pt-0 md:pt-5 border-t bg-white sticky bottom-0">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-[#1E1E1E] text-white py-3 cursor-pointer rounded-full font-semibold text-sm hover:bg-[#1E1E1E] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          >
+            {submitting ? "Submitting..." : "Submit Application"}
+          </button>
+        </div>
+      </form>
+    </>
   );
 };
 
-export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
+const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   const [isPriceOpen, setIsPriceOpen] = React.useState(false);
   const [isHydrating, setIsHydrating] = React.useState(true);
   const [copied, setCopied] = React.useState(false);
+  const [showForm, setShowForm] = React.useState(false);
+  const [selectedFormId, setSelectedFormId] = React.useState<string | null>(
+    null
+  );
+
   console.log("============hit.prices========================");
   console.log(JSON.stringify(hit.prices, null, 2));
   console.log("==============hit.prices======================");
+
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
   const router = useRouter();
+  const { site } = useGetCurrentSite();
 
   React.useEffect(() => setIsHydrating(false), []);
 
@@ -373,11 +466,6 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     }
   };
 
-  const [showForm, setShowForm] = React.useState(false);
-  const [selectedFormId, setSelectedFormId] = React.useState<string | null>(
-    null
-  );
-  const { site } = useGetCurrentSite();
   const handleFormCTA = (formId: string): void => {
     setSelectedFormId(formId);
     setShowForm(true);
@@ -470,13 +558,6 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                   </span>
                 </div>
 
-                {/* <div className="w-full flex flex-row items-center justify-between mt-6">
-            
-
-              {canonical?.labels.sale.toLowerCase() === "after all rebates" &&
-                saleNode && <>{saleNode}</>}
-              {msrpNode}
-            </div> */}
                 <div className=" w-full">
                   <VehicleFinancing vehicle={hit} />
                 </div>
@@ -485,9 +566,6 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                   <VehicleOemIncentives incentives={hit.oem_incentives} />
                 </div>
               </div>
-              {/* Price Section */}
-
-              {/* CTA */}
             </div>
           </div>
           <div className=" w-full px-3 py-2">
@@ -520,12 +598,13 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
               setShowForm(false);
               setSelectedFormId(null);
             }}
+            hit={hit}
           />
         ) : null}
       </ShardSheetForm>
     </>
   );
-});
+};
 
 /** Small presentational helper for price rows */
 function Row({
@@ -567,6 +646,7 @@ export const getToPrice = (hit: { prices?: unknown }) => {
     </>
   );
 };
+
 export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
   const {
     btn_content,
@@ -639,3 +719,5 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
     </button>
   );
 };
+
+export default React.memo(VehicleCard);

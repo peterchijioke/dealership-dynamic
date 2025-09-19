@@ -22,14 +22,14 @@ export function ShardSheetForm({
 }: ShardSheetFormProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="max-w-md w-full">
+      <SheetContent
+        side="right"
+        className="max-w-md w-full z-50 md:min-w-xl px-3 rounded-3xl"
+      >
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
         <div className="py-2 px-1 overflow-y-auto max-h-[80vh]">{children}</div>
-        <SheetClose className="mt-4 w-full bg-gray-200 py-2 rounded text-center font-semibold">
-          Close
-        </SheetClose>
       </SheetContent>
     </Sheet>
   );
