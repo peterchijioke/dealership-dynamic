@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import VehicleFinancing from "@/app/(routes)/[...slug]/_components/vehicle-finan
 import VehicleOemIncentives from "@/app/(routes)/[...slug]/_components/vehicle-oem-incentives";
 import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 import { getHost } from "@/utils/site";
+import { ButtonDataWithFormHandler } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
 
 /** ---- Price types & normalization ---- */
 
@@ -186,6 +187,13 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
     }
   };
 
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
+  const handleFormCTA = (formId: string): void => {
+    setSelectedFormId(formId);
+    setShowForm(true);
+  };
+
   return (
     <div className="vehicle-grid__card-wrapper">
       <Card
@@ -261,7 +269,6 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                 {hit.body} {hit.drive_train}
               </p>
             </div>
-
             {/* Meta & top-line prices */}
             <div className="w-full flex flex-col mb-3">
               <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
@@ -288,19 +295,21 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
                 <VehicleOemIncentives incentives={hit.oem_incentives} />
               </div>
             </div>
-
             {/* Price Section */}
 
             {/* CTA */}
           </div>
         </div>
-        <div className="w-full px-3">
-          <button
-            onClick={() => router.push(`/vehicle/${hit?.objectID}`)}
-            className="w-full py-2 hover:bg-rose-700 text-base hover:text-white font-semibold rounded-full shadow bg-[#EFEEEE] text-gray-800"
-          >
-            View Details
-          </button>
+        <div className=" w-full px-3 py-2">
+          {hit.cta?.map((ctaItem, index) => (
+            <div key={index} className="flex items-center  w-full py-1">
+              {getButtonType({
+                ...ctaItem,
+                cta_type: ctaItem.cta_type,
+                onFormClick: handleFormCTA,
+              })}
+            </div>
+          ))}
         </div>
       </Card>
     </div>
@@ -345,5 +354,77 @@ export const getToPrice = (hit: { prices?: unknown }) => {
       <span className="">{c.labels.sale}</span>
       <span className="">{stripTrailingCents(c.sale)}</span>
     </>
+  );
+};
+export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
+  const {
+    btn_content,
+    cta_label,
+    cta_type,
+    open_newtab = false,
+    btn_classes = [],
+    device,
+    btn_attributes = {},
+    onFormClick,
+  } = data;
+
+  const baseButtonClasses = `cursor-pointer flex items-center justify-center border-2 font-semibold  py-2 py-1 rounded-full text-black w-full w-full text-base w-full
+            font-semibold rounded-full bg-[#EFEEEE] ${
+              device === "mobile" ? "md:hidden" : "md:block"
+            } `;
+
+  // Handle form type - show inline form
+  if (cta_type === "form" && onFormClick) {
+    return (
+      <button
+        type="button"
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+        onClick={() => onFormClick(btn_content)}
+        aria-haspopup="false"
+        {...btn_attributes}
+      >
+        {cta_label}
+      </button>
+    );
+  }
+
+  // Handle HTML content type
+  if (cta_type === "html" && btn_content) {
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: btn_content }}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+        aria-haspopup="false"
+        {...btn_attributes}
+      />
+    );
+  }
+
+  // Handle link type
+  if (cta_type === "link" && btn_content) {
+    return (
+      <Link
+        href={btn_content}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")}, text-center`}
+        target={open_newtab ? "_blank" : "_self"}
+        rel={open_newtab ? "noopener noreferrer" : undefined}
+        aria-haspopup="false"
+        {...btn_attributes}
+      >
+        {cta_label}
+      </Link>
+    );
+  }
+
+  // Default button type
+  return (
+    <button
+      type="button"
+      className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+      aria-haspopup="false"
+      {...btn_attributes}
+    >
+      {cta_label}
+    </button>
   );
 };

@@ -1,3 +1,5 @@
+import { CTAButton } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
+
 export type AlgoliaMatchLevel = "none" | "partial" | "full";
 
 export interface AlgoliaHighlight {
@@ -33,21 +35,6 @@ export type DeepHighlight<T> = T extends string | number | boolean
     text_hover_color: string;
   }
   
-  export interface CTAButton {
-    device: CTADevice;
-    cta_type: CTAType;
-    cta_label: string;
-    btn_styles: ButtonStyles;
-    btn_classes: string[];
-    /**
-     * For "link": a URL (e.g. tel:..., https://...).
-     * For "form": an ID/template reference.
-     */
-    btn_content: string;
-    open_newtab: boolean;
-    cta_location: CTALocation;
-    btn_attributes: Record<string, string | number | boolean>;
-  }
 
 export interface PriceBreakdown {
   total_discounts: number;
@@ -120,22 +107,7 @@ export interface Vehicle {
   vehicle_dealer_id: string[];
   drive_train: string;
   fuel_type: string;
-  cta: {
-    device: string;
-    cta_type: string;
-    cta_label: string;
-    btn_styles: {
-      bg: string;
-      bg_hover: string;
-      text_color: string;
-      text_hover_color: string;
-    };
-    btn_classes: any[];
-    btn_content: string;
-    open_newtab: boolean;
-    cta_location: string;
-    btn_attributes: Record<string, any>;
-  }[];
+  cta: CTAButton[];
   ext_color: string;
   tag: any[];
   ext_color_raw: string;
