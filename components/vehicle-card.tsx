@@ -189,7 +189,6 @@ export default React.memo(function VehicleCard({ hit }: VehicleCardProps) {
 
   const [showForm, setShowForm] = useState<boolean>(false);
   const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
-  const [showCtaButtons, setShowCtaButtons] = useState<boolean>(false);
   const handleFormCTA = (formId: string): void => {
     setSelectedFormId(formId);
     setShowForm(true);
