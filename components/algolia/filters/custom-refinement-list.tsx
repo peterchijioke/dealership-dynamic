@@ -50,8 +50,8 @@ export default function CustomRefinementList({
   function toggle(value: string) {
     // Update state
     updateFacet(attribute, value);
-    const updated = updateFacetFilter(selectedFacets, attribute, value);
-    stateToRoute(updated);
+    // const updated = updateFacetFilter(selectedFacets, attribute, value);
+    // stateToRoute(updated);
   }
 
   return (

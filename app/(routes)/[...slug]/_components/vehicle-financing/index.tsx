@@ -144,9 +144,9 @@ function VehicleFinancing({ vehicle }: Props) {
     dealer_discount_details,
     incentive_discount_details,
   } = prices;
-  console.log("==========dealerDiscountLabel==========================");
-  console.log(dealer_discount_label);
-  console.log("===========dealerDiscountLabel=========================");
+  // console.log("==========dealerDiscountLabel==========================");
+  // console.log(dealer_discount_label);
+  // console.log("===========dealerDiscountLabel=========================");
   const isRetail =
     String(sale_price_label).toUpperCase() !== "msrp".toUpperCase() ||
     "Retail Price".toUpperCase() !== String(sale_price_label).toUpperCase();

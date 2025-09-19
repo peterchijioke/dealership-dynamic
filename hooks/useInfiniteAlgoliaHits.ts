@@ -1,11 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import type { VehicleHit } from "@/types/vehicle";
-import { refinementToFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
+import {
+  refinementToFacetFilters,
+  searchWithMultipleQueries,
+} from "@/lib/algolia";
 import { CATEGORICAL_FACETS } from "@/configs/config";
 
 type UseInfiniteAlgoliaHitsProps = {
   initialHits: VehicleHit[];
   initialTotalHits?: number;
+  initialFacets?: { [key: string]: { [key: string]: number } };
   initialPage?: number;
   refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
   sortIndex?: string;
@@ -15,6 +19,7 @@ type UseInfiniteAlgoliaHitsProps = {
 export function useInfiniteAlgoliaHits({
   initialHits,
   initialTotalHits = 0,
+  initialFacets = {},
   initialPage = 0,
   refinements = {},
   hitsPerPage = 12,
@@ -26,6 +31,7 @@ export function useInfiniteAlgoliaHits({
   const [isLastPage, setIsLastPage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [facets, setFacets] = useState(initialFacets);
 
   // Build facetFilters for Algolia
   const buildFacetFilters = useCallback(() => {
@@ -49,16 +55,18 @@ export function useInfiniteAlgoliaHits({
         const response = await searchWithMultipleQueries({
           page: 0,
           hitsPerPage,
-          facetFilters: buildFacetFilters(),
+          facetFilters: refinementToFacetFilters(refinements),
           sortIndex,
           facets: CATEGORICAL_FACETS,
         });
-        // console.log("Reset hits response:", response);
+        
+        console.log("useEffect:", response);
 
         if (!active) return;
 
         setTotalHits(response.nbHits ?? 0);
         setHits(response.hits as VehicleHit[]);
+        setFacets(response.facets);
         setPage(0);
         setIsLastPage((response?.page ?? 0) + 1 >= (response?.nbPages ?? 0));
       } finally {
@@ -82,7 +90,7 @@ export function useInfiniteAlgoliaHits({
       const response = await searchWithMultipleQueries({
         page: nextPage,
         hitsPerPage,
-        facetFilters: buildFacetFilters(),
+        facetFilters: refinementToFacetFilters(refinements),
         sortIndex,
         facets: CATEGORICAL_FACETS,
       });
@@ -92,6 +100,7 @@ export function useInfiniteAlgoliaHits({
       } else {
         setTotalHits(response.nbHits ?? 0);
         setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
+        setFacets(response.facets);
         setPage(nextPage);
         setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
       }
@@ -100,5 +109,5 @@ export function useInfiniteAlgoliaHits({
     }
   }, [page, loading, isLastPage, buildFacetFilters, hitsPerPage, sortIndex]);
 
-  return { hits, totalHits, isLastPage, showMore, loading };
+  return { hits, totalHits, facets, setFacets, isLastPage, showMore, loading };
 }
