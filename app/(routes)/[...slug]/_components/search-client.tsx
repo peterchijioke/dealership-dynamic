@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
 import {
-  refinementToFacetFilters,
   searchWithMultipleQueries,
 } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,7 +39,6 @@ export default function SearchClient({
   const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
   const [isSearchOpen, setSearchOpen] = useState(false);
 
-  const { refinements: filterRefinements } = useAllRefinements();
   const { stateToRoute } = useAlgolia();
 
   // Infinite hits hook
