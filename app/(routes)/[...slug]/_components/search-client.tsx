@@ -180,7 +180,7 @@ export default function SearchClient({
           </ScrollArea>
         </aside>
 
-        <main className="h-full">
+        <main className="h-full flex-1 flex flex-col">
           <ScrollArea className="h-full  ">
             <div className=" w-full px-3">
               <CarouselBanner className=" rounded-2xl" />

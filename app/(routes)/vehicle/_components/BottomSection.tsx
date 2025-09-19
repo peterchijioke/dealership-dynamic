@@ -8,6 +8,7 @@ import { VdpContextType } from "./VdpVehicleCard";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { getFormField } from "@/app/api/dynamic-forms";
 
 type Props = {
   onContinue?: (action: Action) => void; // optional callback
@@ -87,12 +88,10 @@ const MobileInlineForm: React.FC<{
   const fetchFormData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://dealertower.app/api/${dealerDomain}/form/${formId}`
-      );
-      const data: FormApiResponse = await response.json();
-      if (data.success) {
-        setFormData(data.data);
+      const result = await getFormField(formValues, formId, dealerDomain);
+
+      if (result.success && result.data) {
+        setFormData(result.data);
       }
     } catch (error) {
       console.error("Error fetching form:", error);
@@ -495,7 +494,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
   return (
     <div ref={footerRef}>
       {/* Bottom gradient under the pill (mobile only) */}
-      <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent z-10" />
+      <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-fit bg-gradient-to-t from-white to-transparent z-10" />
 
       {!open && (
         <div className="md:hidden fixed left-0 right-0 bottom-6 z-30 px-4">
@@ -543,13 +542,13 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="sheet-title"
-        className={`md:hidden fixed inset-x-0 bottom-0 z-50 grid
+        className={`md:hidden fixed inset-x-0 bottom-0 grid z-[1000]
                     transform transition-transform duration-300
                     ${open ? "translate-y-0" : "translate-y-full"}`}
       >
         <div
           className=" pb-3 rounded-t-3xl bg-white shadow-2xl ring-1 ring-black/5
-                        max-h-[85vh] overflow-hidden flex flex-col"
+                        max-h-svh  overflow-hidden flex flex-col"
         >
           {showForm && selectedFormId ? (
             <MobileInlineForm
