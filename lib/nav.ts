@@ -36,8 +36,14 @@ export async function getPrimaryNav(): Promise<NavItem[]> {
       { label: "Contact", href: "/contact" },
     ];
   }
-  
-  return (await res.json()) as NavItem[];
+
+  const data = await res.json();
+
+   console.log('==========NAV==========================');
+  console.log(JSON.stringify({data,url:baseUrl + getWebsiteInformationPath()}, null, 2));
+  console.log('=============NAV=======================');
+
+  return data as any[];
 }
 
 export const getThemeImage = async (path: string): Promise<any> => {
@@ -50,6 +56,10 @@ export const getThemeImage = async (path: string): Promise<any> => {
   if (!response.ok) {
     return null;
   }
+  const data = await response.json();
+  console.log('==========getThemeImage==========================');
+  console.log(JSON.stringify(data, null, 2));
+  console.log('=============getThemeImage=======================');
+  return data;
+}
   
-  return (await response.json()) as any;
-};
