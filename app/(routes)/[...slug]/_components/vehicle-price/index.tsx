@@ -39,12 +39,12 @@ function VehiclePrice(props: Props) {
       {theme === "default_theme" && (
         <PriceDefaultTheme price={priceDetail} cond={condition} />
       )}
-      {theme === "theme1" && <PriceTheme1 price={priceDetail} />}
+      {/* {theme === "theme1" && <PriceTheme1 price={priceDetail} />}
       {theme === "theme2" && <PriceTheme2 price={priceDetail} />}
       {theme === "theme3" && <PriceTheme3 price={priceDetail} />}
       {theme === "theme4" && <PriceTheme4 price={priceDetail} />}
       {theme === "theme5" && <PriceTheme5 price={priceDetail} />}
-      {theme === "theme7" && <PriceTheme7 price={priceDetail} />}
+      {theme === "theme7" && <PriceTheme7 price={priceDetail} />} */}
     </div>
   );
 }

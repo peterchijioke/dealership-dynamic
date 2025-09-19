@@ -4,7 +4,6 @@ import React, { useState, useEffect, Fragment, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import CustomImage from "./CustomImage";
 import { getSpecialBanner } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { generateImagePreviewData } from "@/helpers/image-preview";
@@ -20,7 +19,7 @@ interface Slide {
 // Array of paths where the carousel should be shown
 const SHOW_CAROUSEL_PATHS = ["/new-vehicles/", "/used-vehicles/"];
 
-const CarouselBanner = () => {
+const CarouselBanner = ({ className }: { className?: string }) => {
   const pathname = usePathname();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -116,7 +115,7 @@ const CarouselBanner = () => {
   if (isLoading) {
     return (
       <Fragment>
-        <div className="relative w-full overflow-hidden mt-5">
+        <div className={cn("relative w-full overflow-hidden mt-5", className)}>
           <div className="relative w-full h-28 overflow-hidden bg-gray-300 ">
             <div className="w-full h-full bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 animate-pulse"></div>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -140,7 +139,8 @@ const CarouselBanner = () => {
     <Fragment>
       <div
         className={cn(
-          "relative w-full overflow-hidden h-36   bg-gray-400"
+          "relative w-full overflow-hidden h-36   bg-gray-400",
+          className
           // shouldShowCarousel ? "rounded-md" : ""
         )}
       >

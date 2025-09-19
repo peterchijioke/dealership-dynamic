@@ -124,14 +124,34 @@ type Props = {
 function VehicleFinancing({ vehicle }: Props) {
   const [activeTab, setActiveTab] = useState("buy");
   const { prices, default_payment } = vehicle;
-  const { sale_price_formatted } = prices;
 
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
+  const {
+    dealer_additional_details,
+    dealer_additional_label,
+    dealer_additional_total,
+    retail_price_formatted,
+    retail_price_label,
+    sale_price_formatted,
+    sale_price_label,
+    total_discounts_formatted,
+    total_discounts_label,
+    dealer_discount_label,
+    incentive_discount_label,
+    dealer_discount_details,
+    incentive_discount_details,
+  } = prices;
+
+  const isAfterAllRebates =
+    sale_price_label &&
+    (retail_price_label || dealer_discount_label) &&
+    incentive_discount_label;
+
   return (
     <div className="vehicle-financing vehicle-financing--container">
-      {default_payment && vehicle.default_payment?.apr_value ? (
+      {/* {default_payment && vehicle.default_payment?.apr_value ? (
         <div className="vehicle-financing__tabs-wrapper flex items-center justify-center">
           <div className="vehicle-financing__tabs mt-2 flex h-12 w-full overflow-hidden rounded-lg border border-gray-300">
             <button
@@ -160,10 +180,10 @@ function VehicleFinancing({ vehicle }: Props) {
         </div>
       ) : (
         <div className="vehicle-financing__placeholder mt-2 h-12" />
-      )}
+      )} */}
 
-      <div className="vehicle-financing__details">
-        {/* {activeTab === "buy" && (
+      {/* <div className="vehicle-financing__details">
+        {activeTab === "buy" && (
           <p className="vehicle-financing__buy-details mt-3 flex flex-col items-center text-center">
             <span className="vehicle-financing__buy-price text-4xl font-semibold">
               {sale_price_formatted}
@@ -172,7 +192,7 @@ function VehicleFinancing({ vehicle }: Props) {
               Best price
             </span>
           </p>
-        )} */}
+        )}
         {activeTab === "finance" && (
           <div className="vehicle-financing__finance-details my-3 flex justify-between text-center">
             <div className="vehicle-financing__finance-item flex flex-col items-center text-center">
@@ -201,7 +221,7 @@ function VehicleFinancing({ vehicle }: Props) {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
 
       <div className="flex w-full items-center justify-between ">
         <div className=" flex items-center  gap-2">

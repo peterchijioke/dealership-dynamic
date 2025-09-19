@@ -10,13 +10,19 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
-import { algoliaSortOptions, CATEGORICAL_FACETS, searchClient, srpIndex } from "@/configs/config";
+import {
+  algoliaSortOptions,
+  CATEGORICAL_FACETS,
+  searchClient,
+  srpIndex,
+} from "@/configs/config";
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import { urlParser2 } from "@/lib/url-formatter";
 import SpecialBanner from "@/components/layouts/SpecialBanner";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
+import CarouselBanner from "@/components/inventory/CarouselBanner";
 
 interface Props {
   initialResults: any;
@@ -39,13 +45,14 @@ export default function SearchClient({
   const { stateToRoute } = useAlgolia();
 
   // Infinite hits hook
-  const { hits, totalHits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
-    initialHits: initialResults.hits,
-    initialTotalHits: initialResults.nbHits,
-    refinements: selectedFacets,
-    sortIndex,
-    hitsPerPage: HITS_PER_PAGE,
-  });
+  const { hits, totalHits, showMore, isLastPage, loading } =
+    useInfiniteAlgoliaHits({
+      initialHits: initialResults.hits,
+      initialTotalHits: initialResults.nbHits,
+      refinements: selectedFacets,
+      sortIndex,
+      hitsPerPage: HITS_PER_PAGE,
+    });
 
   // Helper: build Algolia facetFilters array from selected facets
   const buildFacetFilters = useCallback(
@@ -156,11 +163,8 @@ export default function SearchClient({
   const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
 
   return (
-    <div
-      className="w-full m:pt-28 md:pt-28 lg:pt-28">
-      <SpecialBanner />
-
-      <div className="h-[calc(100vh-7rem)]x flex overflow-hidden">
+    <div className="w-full h-svh m:pt-28 md:pt-20 lg:pt-20">
+      <div className="h-full flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0 bg-[#FAF9F7]">
           <ScrollArea className="h-full px-3">
             <div className="p-4">
@@ -176,18 +180,25 @@ export default function SearchClient({
           </ScrollArea>
         </aside>
 
-        <main className="flex-1 ">
+        <main className="h-full">
           <ScrollArea className="h-full  ">
+            <CarouselBanner className=" rounded-2xl" />
             <div className="p-4 space-y-4">
               <div className="w-full flex py-4  flex-col gap-2">
                 <div className="w-full flex items-center md:flex-row gap-2">
                   <div className="hidden md:block w-1/3">
                     <span>{totalHits} vehicles found for sale</span>
                   </div>
-                  <InstantSearch indexName={srpIndex} searchClient={searchClient}>
+                  <InstantSearch
+                    indexName={srpIndex}
+                    searchClient={searchClient}
+                  >
                     <div className="relative w-full z-50 pointer-events-auto">
                       <CustomSearchBox setSearchOpen={setSearchOpen} />
-                      <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+                      <SearchDropdown
+                        isOpen={isSearchOpen}
+                        onClose={() => setSearchOpen(false)}
+                      />
                     </div>
                   </InstantSearch>
                   {/* Sort dropdown */}
