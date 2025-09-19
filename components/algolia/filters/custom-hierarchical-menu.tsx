@@ -1,120 +1,74 @@
-"use client";
+import React, { useState } from "react";
 
-import { cn } from "@/lib/utils";
-import { useAlgolia } from "@/hooks/useAlgolia";
-import { useState } from "react";
-import { updateFacetFilter } from "@/lib/algolia";
-
-type HierarchicalFacet = Record<string, number>;
-
-type Props = {
-    attribute: string; // should be "hierarchicalCategories:model_trim"
-    values: Record<string, HierarchicalFacet | number>;
-    selectedFacets: Record<string, string[]>;
-    updateFacet: (attribute: string, value: string) => void;
-    className?: string;
+type HierarchyNode = {
+    name: string;
+    count: number;
+    children?: HierarchyNode[];
 };
 
-/**
- * Custom hierarchical menu for Algolia hierarchical facet like:
- * hierarchicalCategories.model_trim: ["Camry > SE", "Camry > XLE", "Civic > LX"]
- */
-export default function CustomHierarchicalMenu({
-    attribute,
-    values,
-    selectedFacets,
-    updateFacet,
-    className,
-}: Props) {
-    const { stateToRoute } = useAlgolia();
-    const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+type Props = {
+    items: HierarchyNode[];
+    selected?: { model?: string; trim?: string };
+    onSelect: (selection: { model?: string; trim?: string }) => void;
+};
 
-    const selected = selectedFacets[attribute] || [];
+export default function CustomHierarchicalMenu({ items, selected, onSelect }: Props) {
+    const [expanded, setExpanded] = useState<string | null>(null);
 
-    function toggle(value: string) {
-        updateFacet(attribute, value);
-        const updated = updateFacetFilter(selectedFacets, attribute, value);
-        stateToRoute(updated);
-    }
-
-    function toggleExpand(model: string) {
-        setExpanded((prev) => ({ ...prev, [model]: !prev[model] }));
-    }
-
-    // Values come in flattened hierarchical format (e.g. "Camry > SE")
-    const models: Record<string, { trims: { name: string; count: number }[]; count: number }> = {};
-
-    Object.entries(values).forEach(([path, count]) => {
-        const parts = path.split(" > ");
-        const model = parts[0];
-        const trim = parts[1];
-
-        if (!models[model]) {
-            models[model] = { trims: [], count: 0 };
-        }
-
-        if (trim) {
-            models[model].trims.push({ name: path, count: count as number });
-        }
-
-        models[model].count += count as number;
-    });
+    const toggleExpand = (name: string) => {
+        setExpanded(expanded === name ? null : name);
+    };
 
     return (
-        <div className={cn("w-full", className)}>
-            <ul className="space-y-1">
-                {Object.entries(models).map(([model, data]) => {
-                    const isExpanded = expanded[model] || false;
-                    const modelSelected = selected.includes(model);
+        <ul className="space-y-2">
+            {items.map((item) => {
+                const isExpanded = expanded === item.name;
+                const isSelectedModel = selected?.model === item.name;
 
-                    return (
-                        <li key={model}>
-                            {/* Model row */}
-                            <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    className="flex items-center gap-2 text-left w-full"
-                                    onClick={() => toggleExpand(model)}
-                                >
-                                    <span className="font-medium">{model}</span>
-                                    <span className="text-xs text-gray-500">{data.count}</span>
-                                </button>
-                                <input
-                                    type="checkbox"
-                                    checked={modelSelected}
-                                    onChange={() => toggle(model)}
-                                    className="h-4 w-4 ml-2"
-                                />
-                            </div>
+                return (
+                    <li key={item.name}>
+                        <div
+                            className={`flex justify-between cursor-pointer p-2 rounded-lg ${isSelectedModel ? "bg-blue-100 font-bold" : "hover:bg-gray-100"
+                                }`}
+                            onClick={() => {
+                                if (item.children) {
+                                    toggleExpand(item.name);
+                                }
+                                onSelect({ model: item.name }); // always select model first
+                            }}
+                        >
+                            <span>{item.name}</span>
+                            <span className="text-gray-500">{item.count}</span>
+                        </div>
 
-                            {/* Trim list */}
-                            {isExpanded && data.trims.length > 0 && (
-                                <ul className="ml-4 mt-1 space-y-1">
-                                    {data.trims.map((trim) => {
-                                        const trimSelected = selected.includes(trim.name);
-                                        return (
-                                            <li key={trim.name}>
-                                                <label className="flex items-center justify-between gap-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={trimSelected}
-                                                            onChange={() => toggle(trim.name)}
-                                                            className="h-4 w-4"
-                                                        />
-                                                        <span className="text-sm">{trim.name.split(" > ")[1]}</span>
-                                                    </div>
-                                                    <span className="text-xs text-gray-500">{trim.count}</span>
-                                                </label>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            )}
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
+                        {item.children && isExpanded && (
+                            <ul className="ml-4 mt-1 space-y-1 border-l pl-3">
+                                {item.children.map((child) => {
+                                    const isSelectedTrim =
+                                        selected?.model === item.name &&
+                                        selected?.trim === child.name;
+
+                                    return (
+                                        <li
+                                            key={child.name}
+                                            className={`flex justify-between cursor-pointer p-2 rounded-md ${isSelectedTrim
+                                                    ? "bg-blue-50 font-semibold"
+                                                    : "hover:bg-gray-50"
+                                                }`}
+                                            onClick={() =>
+                                                onSelect({ model: item.name, trim: child.name })
+                                            }
+                                        >
+                                            <span>{child.name}</span>
+                                            <span className="text-gray-500">{child.count}</span>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+                    </li>
+                );
+            })}
+        </ul>
     );
 }

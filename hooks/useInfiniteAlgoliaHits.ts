@@ -60,7 +60,7 @@ export function useInfiniteAlgoliaHits({
           facets: CATEGORICAL_FACETS,
         });
         
-        // console.log("useEffect:", response);
+        console.log("useEffect:", response);
 
         if (!active) return;
 

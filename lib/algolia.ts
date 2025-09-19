@@ -6,6 +6,7 @@ import {
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
+import { buildModelTrimHierarchy } from "./helpers";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -123,7 +124,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
       (a, b) => Number(b) - Number(a)
     );
     for (const key of keys) {
-      sortedYears[key] = mergedFacets.year[key];
+      sortedYears[` ${key}`] = mergedFacets.year[key];
     }
     mergedFacets.year = sortedYears;
   }
