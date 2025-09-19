@@ -1,7 +1,7 @@
 import { baseUrl } from "@/configs/config";
 import axios from "axios";
 
-  export const getFormField = async (formValues: Record<string, any>, formId: string, dealerDomain: string) => {
+  export const submitForm = async (formValues: Record<string, any>, formId: string, dealerDomain: string) => {
 
     try {
       const response = await axios.post(
@@ -12,6 +12,20 @@ import axios from "axios";
             "Content-Type": "application/json",
           },
         }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      throw error;
+    }
+
+  }
+     
+
+  export const getFormField = async ( formId: string, site: string) => {
+    try {
+      const response = await axios.get(
+       `${baseUrl + "/" + site}/v1/form/${formId}`
       );
       return response.data;
     } catch (error) {
