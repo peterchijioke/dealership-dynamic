@@ -216,7 +216,8 @@ export default function AppFooter() {
             The #1 family-owned dealer serving the Virginia, Maryland &
             Washington, DC area for over 25 years.
             <br />
-            Copyright © {new Date().getFullYear()} Koons. Powered by{" "}
+            Copyright © {new Date().getFullYear()} Nissan of portland. Powered
+            by{" "}
             <a href="#" target="_blank" rel="noopener noreferrer">
               Dealertower
             </a>

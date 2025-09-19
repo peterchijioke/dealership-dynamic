@@ -95,13 +95,7 @@ export default function AppFooter() {
                   Support & FAQ
                 </Link>
                 <Link className="w-fit font-medium text-white" href="/about">
-                  About Koons
-                </Link>
-                <Link
-                  className="w-fit font-medium text-white"
-                  href="/koons-customer-buying-car-reviews"
-                >
-                  Koons Reviews
+                  About Us
                 </Link>
               </div>
             </div>
@@ -197,7 +191,7 @@ export default function AppFooter() {
 
         {/* Bottom Section */}
         <div className="flex flex-col gap-4 justify-between items-center lg:gap-8 lg:flex-row mt-9">
-          <Link aria-label="Home page Koons" href="/">
+          <Link aria-label="Home page nissan of portland  " href="/">
             <svg
               className="max-w-[150px] h-9"
               fill="none"
@@ -220,7 +214,7 @@ export default function AppFooter() {
             The #1 family-owned dealer serving the Virginia, Maryland &
             Washington, DC area for over 25 years.
             <br />
-            Copyright © 2000-2025 Koons. Powered by{" "}
+            Copyright © 2000-2025 Nissan of portland. Powered by{" "}
             <a
               href="https://calendly.com/touchlesscode/30min"
               target="_blank"
