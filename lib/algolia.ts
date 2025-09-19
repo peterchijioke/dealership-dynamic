@@ -62,7 +62,7 @@ async function search(options: SearchOptions) {
 async function searchWithMultipleQueries(options: SearchOptions) {
   const { sortIndex, ...searchParams } = options;
   const indexName = sortIndex || srpIndex;
-  console.log("Searching:", searchParams.facetFilters);
+  // console.log("Searching:", searchParams.facetFilters);
 
   // Main query (strict)
   const mainQuery = {
