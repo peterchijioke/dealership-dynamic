@@ -38,6 +38,7 @@ export default function VdpClient() {
           <VdpBodySection />
           <VdpVehicleCard />
         </div>
+        <div className="w-full"></div>
       </main>
 
       <BottomSection footerRef={footerRef} />
