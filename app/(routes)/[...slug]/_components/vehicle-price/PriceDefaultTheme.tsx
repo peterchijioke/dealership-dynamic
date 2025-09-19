@@ -43,25 +43,14 @@ function PriceDefaultTheme(props: Props) {
   const lineClassName = "price-default-line grow h-[1px] mx-2 bg-[#ebebeb]";
 
   return (
-    <div className="price-default-root">
+    <div className="price-default-root bg-[#F8F8F8] p-4 rounded-2xl text-sm text-[#585656]">
       {/* Retail Price Row */}
-      {retail_price_label && (
-        <div className="price-default-retail-row flex items-center bg-[#F8F8F8] px-2 rounded-2xl py-1 justify-between text-neutral-600">
-          <Label className="price-default-retail-label" isStrong>
-            {retail_price_label}
-          </Label>
-          {/* <div className={lineClassName} /> */}
-          <Label className="price-default-retail-value" isStrong>
-            {retail_price_formatted}
-          </Label>
-        </div>
-      )}
 
       {/* Total Discounts Row */}
       {total_discounts_label && (
         <div
           onClick={() => setShowDiscountList(!showDiscountList)}
-          className="price-default-discount-row mt-2 flex cursor-pointer justify-between items-center bg-[#F8F8F8] px-2 rounded-2xl py-1"
+          className="price-default-discount-row mt-2 flex cursor-pointer justify-between items-center rounded-2xl py-1"
         >
           <Label className="price-default-discount-label">
             {total_discounts_label}
@@ -95,12 +84,12 @@ function PriceDefaultTheme(props: Props) {
       {dealer_additional_label && (
         <div
           onClick={() => setShowAdditionalList(!showAdditionalList)}
-          className="price-default-additional-row mt-2 flex cursor-pointer items-center"
+          className="price-default-additional-row mt-2 flex cursor-pointer justify-between items-center"
         >
           <Label className="price-default-additional-label">
             {dealer_additional_label}
           </Label>
-          <div className={lineClassName} />
+          {/* <div className={lineClassName} /> */}
           <Label
             className="price-default-additional-value flex items-center gap-1 text-neutral-600"
             isStrong
@@ -118,18 +107,6 @@ function PriceDefaultTheme(props: Props) {
       {showAdditionalList && (
         <div className="price-default-additional-details">
           <DiscountDetails discountDetails={dealer_additional_details} />
-        </div>
-      )}
-
-      {/* Sale Price Row */}
-      {sale_price_label && (
-        <div className="price-default-sale-row mt-2 flex justify-between  rounded-2xl px-2 items-center">
-          <Label className="price-default-sale-label " isStrong>
-            {sale_price_label}
-          </Label>
-          <p className="price-default-sale-value mt-2  text-h3-extra">
-            {sale_price_formatted}
-          </p>
         </div>
       )}
     </div>

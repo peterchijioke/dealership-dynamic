@@ -116,6 +116,7 @@ import React, { useState } from "react";
 import VehiclePrice from "../vehicle-price";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Label from "../vehicle-price/Label";
 
 type Props = {
   vehicle: any;
@@ -143,12 +144,9 @@ function VehicleFinancing({ vehicle }: Props) {
     dealer_discount_details,
     incentive_discount_details,
   } = prices;
-
-  const isAfterAllRebates =
-    sale_price_label &&
-    (retail_price_label || dealer_discount_label) &&
-    incentive_discount_label;
-
+  const isRetail =
+    String(sale_price_label).toUpperCase() !== "msrp".toUpperCase() ||
+    "Retail Price".toUpperCase() !== String(sale_price_label).toUpperCase();
   return (
     <div className="vehicle-financing vehicle-financing--container">
       {/* {default_payment && vehicle.default_payment?.apr_value ? (
@@ -223,27 +221,41 @@ function VehicleFinancing({ vehicle }: Props) {
         )}
       </div> */}
 
+      {retail_price_label && retail_price_formatted && (
+        <div className="price-default-retail-row flex items-center  rounded-2xl py-1 justify-between text-neutral-600">
+          <Label className="price-default-retail-label" isStrong>
+            {retail_price_label}
+          </Label>
+          {/* <div className={lineClassName} /> */}
+          <Label className="price-default-retail-value line-through" isStrong>
+            {retail_price_formatted}
+          </Label>
+        </div>
+      )}
+
       <div className="flex w-full items-center justify-between ">
         <div className=" flex items-center  gap-2">
-          <span className="vehicle-financing__buy-label capitalize text-[#69707C]0">
-            Sale price
+          <span className="vehicle-financing__buy-label font-bold text-base capitalize text-[#69707C]">
+            {sale_price_label}
           </span>
-          <button
-            type="button"
-            onClick={toggleExpand}
-            aria-expanded={isExpanded}
-            aria-controls={`price-breakdown-${vehicle.objectID}`}
-            className=" cursor-pointer shadow px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors"
-          >
-            <ChevronDown
-              className={cn(
-                "size-4 transition-transform",
-                isExpanded && "rotate-180"
-              )}
-            />
-          </button>
+          {isRetail && (
+            <button
+              type="button"
+              onClick={toggleExpand}
+              aria-expanded={isExpanded}
+              aria-controls={`price-breakdown-${vehicle.objectID}`}
+              className=" cursor-pointer shadow px-4 py-1 bg-white rounded-full hover:bg-gray-50 transition-colors"
+            >
+              <ChevronDown
+                className={cn(
+                  "size-4 transition-transform",
+                  isExpanded && "rotate-180"
+                )}
+              />
+            </button>
+          )}
         </div>
-        <span className="vehicle-financing__buy-price text-lg font-semibold text-[#374151]">
+        <span className="vehicle-financing__buy-price text-base line-through font-semibold text-rose-700">
           {sale_price_formatted}
         </span>
       </div>
