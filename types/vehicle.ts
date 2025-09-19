@@ -273,7 +273,6 @@ export type VehicleBaseT = {
 	mileage: number;
 	length_unit: string;
 	price: number;
-	is_special: boolean;
 	vdp_url: string;
 	carfax_url: string;
 	carfax_icon_url: string;
@@ -281,6 +280,7 @@ export type VehicleBaseT = {
 	vin_number: string;
 	key_features: string[];
 	srp_cards_items: { value: string; label: string }[];
+	is_special: boolean;
 	tag: TagT[];
 	model: string;
 	make: string;

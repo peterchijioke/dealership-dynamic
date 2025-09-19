@@ -361,17 +361,19 @@ const InlineForm: React.FC<{
             <div className="text-sm text-[#7c818b] font-medium mb-2">
               {vehicle.subtitle}
             </div>
-            <div className="flex flex-row items-end gap-4 mt-2">
+            <div className="flex items-end  flex-row w-full justify-end gap-4 mt-2">
               {vehicle.msrp && (
-                <span className="text-xl text-[#7c818b] line-through">
+                <span className="text-sm text-[#7c818b] line-through">
                   {vehicle.msrp}
                 </span>
               )}
               <div className="flex flex-col items-end">
-                <span className="text-xs text-[#7c818b] tracking-widest font-semibold uppercase">
+                <span className="text-xs text-[#7c818b] font-semibold uppercase">
                   Sale Price
                 </span>
-                <span className=" font-bold text-black">{vehicle.sale}</span>
+                <span className=" font-bold text-lg text-black">
+                  {vehicle.sale}
+                </span>
               </div>
             </div>
           </div>
@@ -479,7 +481,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
           )}
         >
           <div className="flex-1 ">
-            {hit.is_special && hit.tag && (
+            {hit.tag && (
               <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
             )}
 
@@ -549,12 +551,10 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
               {/* Meta & top-line prices */}
               <div className="w-full flex flex-col mb-3">
                 <div className="flex items-center gap-1 text-[#9CA6B8] text-base">
-                  <span>Mile</span>
                   <span>
-                    {hit.mileage
-                      ? `${hit.mileage.toLocaleString()} miles`
-                      : "8 miles"}
+                    {hit.mileage ? `${hit.mileage.toLocaleString()}` : ""}
                   </span>
+                  <span>Miles</span>
                 </div>
 
                 <div className=" w-full">

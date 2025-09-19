@@ -58,7 +58,7 @@ function VehicleCardLabel(props: Props) {
           ))}
 
         {isSpecial && (
-          <div className="vehicle-grid-card-label__badge vehicle-grid-card-label__badge--special w-fit rounded-sm bg-rose-700 px-1.5 py-0.5 uppercase text-white">
+          <div className="vehicle-grid-card-label__badge vehicle-grid-card-label__badge--special w-fit  mt-2  rounded-sm bg-rose-700 px-1.5 py-0.5 uppercase text-white">
             special
           </div>
         )}
