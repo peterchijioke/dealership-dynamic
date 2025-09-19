@@ -18,11 +18,12 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
   const groupCTAOptions = () => {
     if (!vdpData.cta) return { primary: [], secondary: [] };
 
-    const primary = vdpData.cta.filter((cta) =>
-      cta.cta_label.toLowerCase().includes("schedule") ||
-      cta.cta_label.toLowerCase().includes("test drive") ||
-      cta.cta_label.toLowerCase().includes("finance") ||
-      cta.cta_label.toLowerCase().includes("apply")
+    const primary = vdpData.cta.filter(
+      (cta) =>
+        cta.cta_label.toLowerCase().includes("schedule") ||
+        cta.cta_label.toLowerCase().includes("test drive") ||
+        cta.cta_label.toLowerCase().includes("finance") ||
+        cta.cta_label.toLowerCase().includes("apply")
     );
 
     const secondary = vdpData.cta.filter((cta) => !primary.includes(cta));
@@ -34,7 +35,11 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
   const hasMultipleOptions = vdpData.cta && vdpData.cta.length > 3;
   const shouldUseDropdown = hasMultipleOptions && secondary.length > 0;
 
-  const renderCTAOption = (ctaItem: any, idx: number, keyPrefix: string = '') => {
+  const renderCTAOption = (
+    ctaItem: any,
+    idx: number,
+    keyPrefix: string = ""
+  ) => {
     const id = `vdp-${keyPrefix}${idx + 1}`;
     const selected = action === ctaItem.btn_content;
 
@@ -48,10 +53,7 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
             : "border-gray-300 hover:border-gray-400 bg-white",
         ].join(" ")}
       >
-        <label
-          htmlFor={id}
-          className="flex items-center gap-3 cursor-pointer"
-        >
+        <label htmlFor={id} className="flex items-center gap-3 cursor-pointer">
           {/* Radio visual */}
           <span
             aria-hidden="true"
@@ -62,9 +64,7 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
                 : "border-gray-300 bg-white hover:border-gray-400",
             ].join(" ")}
           >
-            {selected && (
-              <div className="h-2 w-2 bg-white rounded-full"></div>
-            )}
+            {selected && <div className="h-2 w-2 bg-white rounded-full"></div>}
           </span>
 
           <div className="flex-1">
@@ -98,7 +98,7 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
   };
 
   return (
-    <ScrollArea className="bg-gradient-to-b from-gray-50 to-white h-96 w-full">
+    <ScrollArea className="bg-gradient-to-b from-gray-50 h-[90dvh] to-white w-full">
       {/* Header */}
       <div className="px-4 w-full py-4">
         <div className="flex justify-between gap-4 mb-6">
@@ -143,7 +143,9 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
                 <h3 className="text-sm font-medium text-gray-700 uppercase tracking-wide">
                   Popular Actions
                 </h3>
-                {primary.map((ctaItem, idx) => renderCTAOption(ctaItem, idx, 'primary-'))}
+                {primary.map((ctaItem, idx) =>
+                  renderCTAOption(ctaItem, idx, "primary-")
+                )}
               </div>
             )}
 
@@ -160,7 +162,8 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
                       More Options
                     </span>
                     <span className="text-xs text-gray-500 block mt-0.5">
-                      {secondary.length} additional action{secondary.length !== 1 ? 's' : ''} available
+                      {secondary.length} additional action
+                      {secondary.length !== 1 ? "s" : ""} available
                     </span>
                   </div>
                   {showAllOptions ? (
@@ -172,7 +175,9 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
 
                 {showAllOptions && (
                   <div className="p-3 bg-white space-y-3">
-                    {secondary.map((ctaItem, idx) => renderCTAOption(ctaItem, idx, 'secondary-'))}
+                    {secondary.map((ctaItem, idx) =>
+                      renderCTAOption(ctaItem, idx, "secondary-")
+                    )}
                   </div>
                 )}
               </div>
