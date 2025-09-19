@@ -4,7 +4,7 @@ import { parsePathRefinements } from "@/lib/algolia";
 import { urlToRefinement } from "@/lib/helpers";
 import { refinementToUrl } from "@/lib/url-formatter";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 export function useAlgolia() {
   // const router = useRouter();
