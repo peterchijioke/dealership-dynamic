@@ -121,9 +121,9 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
 
             {/* Contact Info */}
             {(phones[0]?.value || headerData?.address) && (
-              <div className="flex-col gap-1 hidden md:flex">
+              <div className="flex-col gap-1 hidden md:flex items-end">
                 {phones[0]?.value && (
-                  <div className="flex items-center space-x-2 text-rose-700">
+                  <div className="flex space-x-2 text-rose-700">
                     <a
                       href={`tel:${phones[0].value.replace(/\D/g, "")}`}
                       className="font-semibold text-lg hover:underline"
@@ -134,7 +134,7 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                   </div>
                 )}
                 {(headerData?.address || headerData?.city) && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-xs text-gray-600 ">
                     {headerData?.address}
                     {headerData?.address && headerData?.city && ", "}
                     {headerData?.city}
