@@ -6,6 +6,8 @@ import WarrantyForLife from "./WarrantyForLife";
 import VehicleFeatures from "./VehicleFeatures";
 import { useVehicleDetails } from "./VdpContextProvider";
 import { stripTrailingCents } from "@/utils/utils";
+import VehicleFinancing from "../../[...slug]/_components/vehicle-financing";
+import VehicleOemIncentives from "../../[...slug]/_components/vehicle-oem-incentives";
 
 export type VehicleDetailsProps = {
   onGoBack?: () => void;
@@ -64,6 +66,13 @@ export default function VehicleDetails({
               </button>
             </div>
           </div>
+        </div>
+        <div className=" w-full">
+          <VehicleFinancing vehicle={vdpData} />
+        </div>
+
+        <div className="vehicle-default-theme__incentives-wrapper">
+          <VehicleOemIncentives incentives={vdpData.oem_incentives} />
         </div>
         <div className="hidden md:flex flex-row items-center justify-start mb-6">
           <button
