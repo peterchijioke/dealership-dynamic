@@ -225,31 +225,45 @@ const InlineForm: React.FC<{
       case "text":
       case "email":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+              {isRequired && <span className="text-[#B3132B]">*</span>}
+            </label>
             <input
+              id={field.name}
               type={field.field_type}
               name={field.name}
-              placeholder={`${field.label}${isRequired ? "*" : ""}`}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              placeholder={
+                field.field_type === "email" ? "example@email.com" : ""
+              }
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
+              autoComplete={field.field_type === "email" ? "email" : undefined}
             />
           </div>
         );
       case "tel":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+            </label>
             <input
+              id={field.name}
               type="tel"
               name={field.name}
-              placeholder={
-                field.label
-                  ? `${field.label}${isRequired ? "*" : ""}`
-                  : "Phone (9 digits)"
-              }
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              placeholder="xxx-xxx-xxxx"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -258,10 +272,8 @@ const InlineForm: React.FC<{
               inputMode="numeric"
               maxLength={9}
               minLength={9}
+              autoComplete="tel"
             />
-            <span className="block text-xs text-gray-500 mt-1">
-              Enter 9 digit phone number
-            </span>
           </div>
         );
       case "select":
@@ -292,12 +304,19 @@ const InlineForm: React.FC<{
         );
       case "textarea":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+            </label>
             <textarea
+              id={field.name}
               name={field.name}
-              placeholder={`${field.label}${isRequired ? "*" : ""}`}
+              placeholder="Enter Your Comment Here"
               rows={3}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none transition-all duration-200"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2 resize-none"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -386,7 +405,7 @@ const InlineForm: React.FC<{
             {renderField(field)}
           </div>
         ))}
-        <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
+        <div className="pt-4 mt-6  bg-white sticky bottom-0">
           <button
             type="submit"
             disabled={submitting}
@@ -475,12 +494,12 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   return (
     <>
       <div className="vehicle-grid__card-wrapper">
-        <Card
+        <div
           className={cn(
-            "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
+            "rounded-xl border pt-0 pb-0 text-card-foreground shadow vehicle-grid__card relative flex max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
           )}
         >
-          <div className="flex-1 ">
+          <div className="flex-1  ">
             {hit.tag && (
               <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
             )}
@@ -567,7 +586,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
               </div>
             </div>
           </div>
-          <div className=" w-full px-3 py-2">
+          <div className=" w-full px-3 h-fit ">
             {hit.cta?.map((ctaItem, index) => (
               <div key={index} className="flex items-center  w-full py-1">
                 {getButtonType({
@@ -578,7 +597,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
 
       <ShardSheetForm
@@ -605,35 +624,6 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   );
 };
 
-/** Small presentational helper for price rows */
-function Row({
-  label,
-  value,
-  strike,
-  bold,
-}: {
-  label: string;
-  value: string;
-  strike?: boolean;
-  bold?: boolean;
-}) {
-  return (
-    <div className="w-full flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
-      <span className="font-medium text-sm">{label}</span>
-      <span
-        className={cn(
-          "text-sm",
-          strike && "line-through text-gray-500",
-          bold && "font-bold text-base text-gray-900",
-          !strike && !bold && "font-semibold text-gray-700"
-        )}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
 /** Optional: keep only if you still need it somewhere else */
 export const getToPrice = (hit: { prices?: unknown }) => {
   const c = normalizePrices(hit.prices ?? null);
@@ -658,7 +648,7 @@ export const getButtonType = (data: ButtonDataWithFormHandler): any => {
     onFormClick,
   } = data;
 
-  const baseButtonClasses = `cursor-pointer flex items-center justify-center border-2 font-semibold  py-2 py-1 rounded-full text-black w-full w-full text-base w-full
+  const baseButtonClasses = `cursor-pointer flex items-center justify-center border-2 font-semibold py-1 rounded-full text-black w-full w-full text-base w-full
             font-semibold rounded-full bg-[#EFEEEE] ${
               device === "mobile" ? "md:hidden" : "md:block"
             } `;
@@ -681,7 +671,7 @@ export const getButtonType = (data: ButtonDataWithFormHandler): any => {
         </button>
       );
     } else {
-      return <></>;
+      return null;
     }
   }
 

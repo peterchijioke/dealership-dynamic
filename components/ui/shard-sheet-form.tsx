@@ -6,6 +6,7 @@ import {
   SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet";
+import { ScrollArea, ScrollBar } from "./scroll-area";
 
 interface ShardSheetFormProps {
   open: boolean;
@@ -29,7 +30,7 @@ export function ShardSheetForm({
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
-        <div className="py-2 px-1 overflow-y-auto max-h-[80vh]">{children}</div>
+        <ScrollArea className="py-2 px-1 h-svh">{children}</ScrollArea>
       </SheetContent>
     </Sheet>
   );

@@ -144,14 +144,14 @@ function VehicleFinancing({ vehicle }: Props) {
     dealer_discount_details,
     incentive_discount_details,
   } = prices;
-  // console.log("==========dealerDiscountLabel==========================");
-  // console.log(dealer_discount_label);
-  // console.log("===========dealerDiscountLabel=========================");
+  console.log("==========dealerDiscountLabel==========================");
+  console.log(sale_price_label);
+  console.log("===========dealerDiscountLabel=========================");
   const isRetail =
-    String(sale_price_label).toUpperCase().trim() !==
+    String(sale_price_label).toUpperCase().trim() ==
       "MSRP".toUpperCase().trim() ||
-    String(sale_price_label).toUpperCase().trim() !==
-      "RETAIL".toUpperCase().trim();
+    String(sale_price_label).toUpperCase().trim() ==
+      "Sale price".toUpperCase().trim();
   return (
     <div className="vehicle-financing vehicle-financing--container">
       {/* {default_payment && vehicle.default_payment?.apr_value ? (
@@ -243,7 +243,7 @@ function VehicleFinancing({ vehicle }: Props) {
           <span className="vehicle-financing__buy-label font-medium text-lg capitalize text-[#374151]">
             {sale_price_label}
           </span>
-          {isRetail && (
+          {!isRetail && (
             <button
               type="button"
               onClick={toggleExpand}
