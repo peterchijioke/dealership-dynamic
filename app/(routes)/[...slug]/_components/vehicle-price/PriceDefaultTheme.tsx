@@ -43,14 +43,14 @@ function PriceDefaultTheme(props: Props) {
   const lineClassName = "price-default-line grow h-[1px] mx-2 bg-[#ebebeb]";
 
   return (
-    <div className="price-default-root bg-[#F8F8F8] p-4 rounded-2xl text-sm text-[#585656]">
+    <div className="price-default-root bg-[#F8F8F8] px-2 py-1 rounded-2xl text-sm text-[#585656]">
       {/* Retail Price Row */}
 
       {/* Total Discounts Row */}
       {total_discounts_label && (
         <div
           onClick={() => setShowDiscountList(!showDiscountList)}
-          className="price-default-discount-row mt-2 flex cursor-pointer justify-between items-center rounded-2xl py-1"
+          className="price-default-discount-row flex cursor-pointer justify-between items-center rounded-2xl py-1"
         >
           <Label className="price-default-discount-label">
             {total_discounts_label}

@@ -11,6 +11,8 @@ import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import VehicleCardLabel from "@/components/labels/VehicleCardLabel";
 import { TagT } from "@/types/vehicle";
+import VehicleFinancing from "../../[...slug]/_components/vehicle-financing";
+import VehicleOemIncentives from "../../[...slug]/_components/vehicle-oem-incentives";
 
 // Type definitions matching the context
 interface ButtonStyles {
@@ -34,6 +36,7 @@ export interface VdpContextType {
   vdpData: {
     title?: string;
     sale_price?: number;
+    oem_incentives: any;
     prices?: {
       dealer_sale_price_formatted?: string;
     };
@@ -546,7 +549,13 @@ export default function VdpVehicleCard(): JSX.Element {
                     <span>{vdpData?.stock_number}</span>
                   </div>
                 </div>
+                <div className=" w-full">
+                  <VehicleFinancing vehicle={vdpData} />
+                </div>
 
+                <div className="vehicle-default-theme__incentives-wrapper">
+                  <VehicleOemIncentives incentives={vdpData.oem_incentives} />
+                </div>
                 <div className=" hidden md:block py-2">
                   {vdpData.cta?.map((ctaItem, index) => (
                     <div key={index} className="flex items-center  w-full py-1">
@@ -556,20 +565,6 @@ export default function VdpVehicleCard(): JSX.Element {
                       })}
                     </div>
                   ))}
-
-                  {/* {!showCtaButtons && (
-                    <button
-                      onClick={() => {
-                        setShowCtaButtons(!showCtaButtons);
-                      }}
-                      className=" bg-rose-700 cursor-pointer text-white active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
-                      aria-haspopup="false"
-                    >
-                      <div className="w-full text-[0.96rem]">
-                        I&apos;m Interested
-                      </div>
-                    </button>
-                  )} */}
                 </div>
 
                 <div className=" flex-row flex items-center">

@@ -225,31 +225,45 @@ const InlineForm: React.FC<{
       case "text":
       case "email":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+              {isRequired && <span className="text-[#B3132B]">*</span>}
+            </label>
             <input
+              id={field.name}
               type={field.field_type}
               name={field.name}
-              placeholder={`${field.label}${isRequired ? "*" : ""}`}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              placeholder={
+                field.field_type === "email" ? "example@email.com" : ""
+              }
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
+              autoComplete={field.field_type === "email" ? "email" : undefined}
             />
           </div>
         );
       case "tel":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+            </label>
             <input
+              id={field.name}
               type="tel"
               name={field.name}
-              placeholder={
-                field.label
-                  ? `${field.label}${isRequired ? "*" : ""}`
-                  : "Phone (9 digits)"
-              }
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              placeholder="xxx-xxx-xxxx"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -258,10 +272,8 @@ const InlineForm: React.FC<{
               inputMode="numeric"
               maxLength={9}
               minLength={9}
+              autoComplete="tel"
             />
-            <span className="block text-xs text-gray-500 mt-1">
-              Enter 9 digit phone number
-            </span>
           </div>
         );
       case "select":
@@ -292,12 +304,19 @@ const InlineForm: React.FC<{
         );
       case "textarea":
         return (
-          <div key={field.name} className={gridClass}>
+          <div key={field.name} className="mb-6 w-full">
+            <label
+              htmlFor={field.name}
+              className="block text-[16px] font-bold text-black tracking-wide uppercase mb-2"
+            >
+              {field.label}
+            </label>
             <textarea
+              id={field.name}
               name={field.name}
-              placeholder={`${field.label}${isRequired ? "*" : ""}`}
+              placeholder="Enter Your Comment Here"
               rows={3}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none transition-all duration-200"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-[18px] text-black placeholder-gray-400 focus:ring-0 focus:border-black px-0 py-2 resize-none"
               required={isRequired}
               defaultValue={field.default_value || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -386,7 +405,7 @@ const InlineForm: React.FC<{
             {renderField(field)}
           </div>
         ))}
-        <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
+        <div className="pt-4 mt-6  bg-white sticky bottom-0">
           <button
             type="submit"
             disabled={submitting}

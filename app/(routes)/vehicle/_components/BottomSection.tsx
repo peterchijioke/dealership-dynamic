@@ -465,7 +465,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
   };
 
   return (
-    <div ref={footerRef} className="relative h-svh">
+    <div ref={footerRef} className="relative">
       {/* Bottom gradient under the pill (mobile only) */}
       {/* <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-fit bg-gradient-to-t from-white to-transparent z-10" /> */}
 
