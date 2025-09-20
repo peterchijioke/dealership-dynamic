@@ -6,6 +6,7 @@ import {
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
+import { buildModelTrimHierarchy } from "./helpers";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -62,18 +63,19 @@ async function search(options: SearchOptions) {
 async function searchWithMultipleQueries(options: SearchOptions) {
   const { sortIndex, ...searchParams } = options;
   const indexName = sortIndex || srpIndex;
+  // console.log("Searching:", searchParams.facetFilters);
 
+  // Main query (strict)
   const mainQuery = {
     indexName,
     params: {
       ...searchParams,
-      facets: ["*"], // hits with their own facets (for current facet display)
+      facets: ["*"],
     },
   };
 
-  // Generate one facet query per facet (adaptive behavior)
+  // Adaptive facet queries
   const facetQueries = CATEGORICAL_FACETS.map((facet) => {
-    // Exclude this facet’s refinements from its facet query
     const otherFacetFilters = (searchParams.facetFilters || []).filter(
       (filter) =>
         !(Array.isArray(filter)
@@ -82,7 +84,7 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     );
 
     return {
-      indexName: srpIndex,
+      indexName,
       params: {
         ...searchParams,
         hitsPerPage: 0,
@@ -92,38 +94,47 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     };
   });
 
+  // Execute batch
   const response = await client.search([mainQuery, ...facetQueries]);
 
   const [hitsResult, ...facetResults] = response.results as [
     SearchResponse<VehicleHit>,
     ...SearchResponse<VehicleHit>[]
   ];
-  // console.log("Searching index:", indexName, hitsResult);
 
-  // Merge facets into a single object
-  const mergedFacets = facetResults.reduce<Record<string, any>>(
-    (acc, result) => {
-      return { ...acc, ...result.facets };
-    },
-    {}
-  );
+  // Start with strict facets (all refinements applied)
+  const mergedFacets = { ...(hitsResult.facets || {}) };
 
-  // Sort year facet descending
+  // Replace each facet with its adaptive distribution
+  facetResults.forEach((result, i) => {
+    const facetName = CATEGORICAL_FACETS[i];
+    if (!result.facets || !result.facets[facetName]) return;
+
+    mergedFacets[facetName] = Object.fromEntries(
+      Object.entries(result.facets[facetName]).filter(
+        ([, count]) => count > 0 // remove dead-ends
+      )
+    );
+  });
+
+  // Optional: sort year descending
   if (mergedFacets.year) {
-    const reversedData: Record<string, any> = {};
-    const keys = Object.keys(mergedFacets.year).reverse();
-
+    const sortedYears: Record<string, number> = {};
+    const keys = Object.keys(mergedFacets.year).sort(
+      (a, b) => Number(b) - Number(a)
+    );
     for (const key of keys) {
-      reversedData[` ${key}`] = mergedFacets.year[key];
+      sortedYears[` ${key}`] = mergedFacets.year[key];
     }
-
-    // console.log("reversedData", keys, reversedData);
-    mergedFacets.year = reversedData;
+    mergedFacets.year = sortedYears;
   }
 
   return {
-    ...hitsResult,
+    hits: hitsResult.hits,
+    nbHits: hitsResult.nbHits,
     facets: mergedFacets,
+    page: hitsResult.page,
+    nbPages: hitsResult.nbPages,
   };
 }
 

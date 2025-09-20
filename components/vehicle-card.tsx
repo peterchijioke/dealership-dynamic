@@ -409,9 +409,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
     null
   );
 
-  console.log("============hit.prices========================");
-  console.log(JSON.stringify(hit.prices, null, 2));
-  console.log("==============hit.prices======================");
+  // console.log("============hit.prices========================");
+  // console.log(JSON.stringify(hit.prices, null, 2));
+  // console.log("==============hit.prices======================");
 
   const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
   const router = useRouter();

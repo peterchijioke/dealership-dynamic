@@ -1,3 +1,5 @@
+import type { HierarchyNode } from "@/types/vehicle";
+
 export function slugify(str: string) {
   if (!str) return "";
   return str
@@ -206,3 +208,26 @@ export function urlToRefinement(url: string): Record<string, string[]> {
   return refinements;
 }
 
+export function buildModelTrimHierarchy(
+  modelFacet: Record<string, number>,
+  modelTrimFacet: Record<string, number>
+): HierarchyNode[] {
+  return Object.entries(modelFacet).map(([modelName, modelCount]) => {
+    // Find all trims belonging to this model
+    const children = Object.entries(modelTrimFacet)
+      .filter(([key]) => key.startsWith(`${modelName} >`))
+      .map(([key, trimCount]) => {
+        const [, trimName] = key.split(" > ");
+        return {
+          name: trimName,
+          count: trimCount,
+        };
+      });
+
+    return {
+      name: modelName,
+      count: modelCount,
+      ...(children.length > 0 ? { children } : {}),
+    };
+  });
+}

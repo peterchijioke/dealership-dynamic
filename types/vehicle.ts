@@ -244,13 +244,6 @@ interface HighlightResult {
   matchedWords: any[];
 }
 
-
-
-
-
-
-
-
 export type VehicleBaseT = {
 	vehicle_id: string;
 	photo: string;
@@ -411,4 +404,10 @@ export type OemIncentiveT = {
 	finance_monthly_payment: any;
 	is_price_applied_default: boolean;
 	is_price_applied_adjusted: boolean;
+};
+
+export type HierarchyNode = {
+  name: string;
+  count: number;
+  children?: HierarchyNode[];
 };

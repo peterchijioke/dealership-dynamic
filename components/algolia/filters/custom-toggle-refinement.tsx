@@ -20,14 +20,14 @@ export default function CustomToggleRefinement({ attribute, label, labelPosition
 
     function toggle() {
         updateFacet(attribute, "true");
-        const updated = { ...selectedFacets };
-        if (isChecked) {
-            updated[attribute] = [];
-        } else {
-            updated[attribute] = ["true"];
-        }
+        // const updated = { ...selectedFacets };
+        // if (isChecked) {
+        //     updated[attribute] = [];
+        // } else {
+        //     updated[attribute] = ["true"];
+        // }
 
-        stateToRoute(updated);
+        // stateToRoute(updated);
     }
 
     return (

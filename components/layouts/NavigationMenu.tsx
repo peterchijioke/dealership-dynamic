@@ -24,9 +24,9 @@ const NavigationMenuComponent = ({
   const navigationItems = headerData?.navigation;
   // const navigationItems = headerData?.website_external_links;
   const images = imagesRaw;
-  console.log("=============navigation links=======================");
-  console.log(headerData);
-  console.log("==============navigation links======================");
+  // console.log("=============navigation links=======================");
+  // console.log(headerData);
+  // console.log("==============navigation links======================");
 
   return (
     <nav className="w-screen py-0 shadow-md bg-[#e5e7eb] hidden md:block">

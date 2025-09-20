@@ -21,7 +21,7 @@ export default function SortDropdown({
 }: SortDropdownProps) {
   return (
     <Select value={currentSort} onValueChange={onChange}>
-      <SelectTrigger className="md:w-[150px] w-fit flex items-center gap-2 border shadow-none rounded-lg px-3 py-2 border-none cursor-pointer">
+      <SelectTrigger className="md:w-[180px] w-fit flex items-center gap-2 border shadow-none rounded-lg px-3 py-2 border-none cursor-pointer">
         <ArrowUpDown className="h-4 w-4 text-rose-700" />
         <SelectValue className=" md:block hidden" placeholder="Sort by" />
       </SelectTrigger>
