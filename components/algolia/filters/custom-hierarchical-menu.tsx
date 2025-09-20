@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+"use client";
+
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 type HierarchyNode = {
     name: string;
@@ -7,68 +10,92 @@ type HierarchyNode = {
 };
 
 type Props = {
-    items: HierarchyNode[];
-    selected?: { model?: string; trim?: string };
-    onSelect: (selection: { model?: string; trim?: string }) => void;
+    attribute1: string; // e.g. "model"
+    attribute2: string; // e.g. "trim"
+    values: HierarchyNode[]; // from buildModelTrimHierarchy()
+    selectedFacets: Record<string, string[]>;
+    updateFacet: (attribute: string, value: string) => void;
+    className?: string;
 };
 
-export default function CustomHierarchicalMenu({ items, selected, onSelect }: Props) {
-    const [expanded, setExpanded] = useState<string | null>(null);
+export default function CustomHierarchicalMenu({
+    attribute1,
+    attribute2,
+    values,
+    selectedFacets,
+    updateFacet,
+    className,
+}: Props) {
+    const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+    const selectedModels = selectedFacets[attribute1] || [];
+    const selectedTrims = selectedFacets[attribute2] || [];
 
-    const toggleExpand = (name: string) => {
-        setExpanded(expanded === name ? null : name);
+    const toggleExpand = (model: string, checked: boolean) => {
+        setExpanded((prev) => ({
+            ...prev,
+            [model]: checked ? true : false, // expand on check, collapse on uncheck
+        }));
     };
 
     return (
-        <ul className="space-y-2">
-            {items.map((item) => {
-                const isExpanded = expanded === item.name;
-                const isSelectedModel = selected?.model === item.name;
+        <div className={cn("w-full", className)}>
+            <ul className="space-y-2">
+                {values.map((node) => {
+                    const isChecked = selectedModels.includes(node.name);
+                    const isExpanded = expanded[node.name] || isChecked;
 
-                return (
-                    <li key={item.name}>
-                        <div
-                            className={`flex justify-between cursor-pointer p-2 rounded-lg ${isSelectedModel ? "bg-blue-100 font-bold" : "hover:bg-gray-100"
-                                }`}
-                            onClick={() => {
-                                if (item.children) {
-                                    toggleExpand(item.name);
-                                }
-                                onSelect({ model: item.name }); // always select model first
-                            }}
-                        >
-                            <span>{item.name}</span>
-                            <span className="text-gray-500">{item.count}</span>
-                        </div>
+                    return (
+                        <li key={node.name}>
+                            <div className="flex items-center justify-between">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => {
+                                            updateFacet(attribute1, node.name);
+                                            toggleExpand(node.name, !isChecked);
+                                        }}
+                                        className="h-4 w-4 cursor-pointer"
+                                    />
+                                    <span className="text-sm font-medium">{node.name}</span>
+                                </label>
 
-                        {item.children && isExpanded && (
-                            <ul className="ml-4 mt-1 space-y-1 border-l pl-3">
-                                {item.children.map((child) => {
-                                    const isSelectedTrim =
-                                        selected?.model === item.name &&
-                                        selected?.trim === child.name;
+                                <span className="text-xs text-gray-500">{node.count}</span>
+                            </div>
 
-                                    return (
-                                        <li
-                                            key={child.name}
-                                            className={`flex justify-between cursor-pointer p-2 rounded-md ${isSelectedTrim
-                                                    ? "bg-blue-50 font-semibold"
-                                                    : "hover:bg-gray-50"
-                                                }`}
-                                            onClick={() =>
-                                                onSelect({ model: item.name, trim: child.name })
-                                            }
-                                        >
-                                            <span>{child.name}</span>
-                                            <span className="text-gray-500">{child.count}</span>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        )}
-                    </li>
-                );
-            })}
-        </ul>
+                            {/* Show children when expanded */}
+                            {node.children && isExpanded && (
+                                <ul className="ml-6 mt-1 space-y-1">
+                                    {node.children.map((child) => {
+                                        const isChildChecked = selectedTrims.includes(child.name);
+
+                                        return (
+                                            <li key={child.name}>
+                                                <label className="flex items-center justify-between gap-2 cursor-pointer">
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isChildChecked}
+                                                            onChange={() =>
+                                                                updateFacet(attribute2, child.name)
+                                                            }
+                                                            className="h-4 w-4 cursor-pointer"
+                                                        />
+                                                        <span className="text-sm">{child.name}</span>
+                                                    </div>
+                                                    <span className="text-xs text-gray-500">
+                                                        {child.count}
+                                                    </span>
+                                                </label>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
     );
 }

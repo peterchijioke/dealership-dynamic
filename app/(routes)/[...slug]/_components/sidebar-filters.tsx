@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Accordion, AccordionItem } from "@/components/ui/custom-accordion";
 import CustomRefinementList from "@/components/algolia/filters/custom-refinement-list";
 import CustomToggleRefinement from "@/components/algolia/filters/custom-toggle-refinement";
+import { buildModelTrimHierarchy } from "@/lib/helpers";
+import CustomHierarchicalMenu from "@/components/algolia/filters/custom-hierarchical-menu";
 
 type Props = {
   facets: { [key: string]: { [key: string]: number } } | undefined; // { facetName: { value: count } }
@@ -16,7 +18,9 @@ export default function SidebarFilters({
 }: Props) {
   const [selectedFacets, setSelectedFacets] = useState<
     Record<string, string[]>
-  >(currentRefinements || {});
+    >(currentRefinements || {});
+  
+  const items = buildModelTrimHierarchy(facets?.model || {}, facets?.model_trim || {});
 
   const updateFacet = (attribute: string, value: string) => {
     setSelectedFacets((prev) => {
@@ -89,13 +93,20 @@ export default function SidebarFilters({
           title="Model & Trim"
           count={currentRefinements?.model?.length ?? 0}
         >
-          <CustomRefinementList
+          {/* <CustomRefinementList
             attribute="model"
             values={facets?.model || {}}
             selectedFacets={currentRefinements}
             updateFacet={updateFacet}
             searchable
             className="px-2 pb-3"
+          /> */}
+          <CustomHierarchicalMenu
+            attribute1="model"
+            attribute2="trim"
+            values={items}
+            selectedFacets={currentRefinements}
+            updateFacet={updateFacet}
           />
         </AccordionItem>
         <AccordionItem
