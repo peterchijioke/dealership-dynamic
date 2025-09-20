@@ -475,12 +475,12 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   return (
     <>
       <div className="vehicle-grid__card-wrapper">
-        <Card
+        <div
           className={cn(
-            "rounded-xl border pb-3 pt-0 text-card-foreground shadow vehicle-grid__card relative flex min-h-100 max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
+            "rounded-xl border pt-0 pb-0 text-card-foreground shadow vehicle-grid__card relative flex max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
           )}
         >
-          <div className="flex-1 ">
+          <div className="flex-1  ">
             {hit.tag && (
               <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
             )}
@@ -567,7 +567,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
               </div>
             </div>
           </div>
-          <div className=" w-full px-3 py-2">
+          <div className=" w-full px-3 h-fit ">
             {hit.cta?.map((ctaItem, index) => (
               <div key={index} className="flex items-center  w-full py-1">
                 {getButtonType({
@@ -578,7 +578,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
 
       <ShardSheetForm
@@ -605,35 +605,6 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   );
 };
 
-/** Small presentational helper for price rows */
-function Row({
-  label,
-  value,
-  strike,
-  bold,
-}: {
-  label: string;
-  value: string;
-  strike?: boolean;
-  bold?: boolean;
-}) {
-  return (
-    <div className="w-full flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
-      <span className="font-medium text-sm">{label}</span>
-      <span
-        className={cn(
-          "text-sm",
-          strike && "line-through text-gray-500",
-          bold && "font-bold text-base text-gray-900",
-          !strike && !bold && "font-semibold text-gray-700"
-        )}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
 /** Optional: keep only if you still need it somewhere else */
 export const getToPrice = (hit: { prices?: unknown }) => {
   const c = normalizePrices(hit.prices ?? null);
@@ -658,7 +629,7 @@ export const getButtonType = (data: ButtonDataWithFormHandler): any => {
     onFormClick,
   } = data;
 
-  const baseButtonClasses = `cursor-pointer flex items-center justify-center border-2 font-semibold  py-2 py-1 rounded-full text-black w-full w-full text-base w-full
+  const baseButtonClasses = `cursor-pointer flex items-center justify-center border-2 font-semibold py-1 rounded-full text-black w-full w-full text-base w-full
             font-semibold rounded-full bg-[#EFEEEE] ${
               device === "mobile" ? "md:hidden" : "md:block"
             } `;
@@ -681,7 +652,7 @@ export const getButtonType = (data: ButtonDataWithFormHandler): any => {
         </button>
       );
     } else {
-      return <></>;
+      return null;
     }
   }
 
