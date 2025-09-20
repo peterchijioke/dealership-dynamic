@@ -3,6 +3,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { orderFacets } from "@/lib/helpers";
 
 interface ActiveFiltersBarProps {
   refinements: Record<string, string[]>;
@@ -19,10 +20,12 @@ export default function ActiveFiltersBar({
 
   if (!hasFilters) return null;
 
+  const orderedFacets = orderFacets(refinements);
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Clear All (only appears if query refinements exist) */}
-      {Object.keys(refinements).length > 0 && (
+      {Object.keys(orderedFacets).length > 0 && (
         <Button
           variant="ghost"
           size="sm"
@@ -33,7 +36,7 @@ export default function ActiveFiltersBar({
         </Button>
       )}
 
-      {Object.entries(refinements).map(([facet, values]) =>
+      {Object.entries(orderedFacets).map(([facet, values]) =>
         values.map((value) => (
           <span
             key={`${facet}-${value}`}
