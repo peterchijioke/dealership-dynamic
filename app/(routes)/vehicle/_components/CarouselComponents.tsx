@@ -14,6 +14,7 @@ import Image from "next/image";
 import ClipLoader from "react-spinners/ClipLoader";
 import HoverVideoPlayer from "react-hover-video-player";
 import { cn } from "@/lib/utils";
+import { TagT } from "@/types/vehicle";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -473,6 +474,8 @@ export type DeepHighlight<T> = T extends string | number | boolean
 export interface VDPType {
   key_features: string[];
   inventory_date: ISODateString;
+  is_special: boolean;
+  tag: TagT[];
 
   prices: PriceBreakdown;
 

@@ -9,6 +9,8 @@ import { baseUrl, getDynamicPath } from "@/configs/config";
 import { getFormField, submitForm } from "@/app/api/dynamic-forms";
 import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import VehicleCardLabel from "@/components/labels/VehicleCardLabel";
+import { TagT } from "@/types/vehicle";
 
 // Type definitions matching the context
 interface ButtonStyles {
@@ -40,6 +42,8 @@ export interface VdpContextType {
     stock_number?: string;
     dealer_city?: string;
     dealer_state?: string;
+    is_special: boolean;
+    tag: TagT[];
     dealer_zip_code?: string;
     dealer_domain?: string;
     carfax_url?: string;
@@ -391,7 +395,7 @@ const InlineForm: React.FC<{
             {formData.title}
           </h2>
 
-          <ScrollArea className="  max-h-96 pr-2 -mr-2">
+          <ScrollArea className=" overflow-hidden  h-96 pr-2 -mr-2">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {Array.isArray(formData?.fields) &&
               formData.fields &&
@@ -487,8 +491,16 @@ export default function VdpVehicleCard(): JSX.Element {
             bottom: "unset",
             top: "unset",
           }}
-          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
+          className="max-h-[calc(100vh-62px)]   bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
         >
+          {vdpData.tag && (
+            <div className=" w-full mb-14">
+              <VehicleCardLabel
+                isSpecial={vdpData.is_special}
+                tags={vdpData.tag}
+              />
+            </div>
+          )}
           <div>
             {/* Price section - always visible */}
             <div className="flex flex-row gap-1 justify-between mb-6">

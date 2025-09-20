@@ -1,4 +1,4 @@
-import { baseUrl } from "@/configs/config";
+import { baseUrl, similarVehicleUrl } from "@/configs/config";
 import axios from "axios";
 
   export const submitForm = async (formValues: Record<string, any>, formId: string, dealerDomain: string) => {
@@ -26,6 +26,18 @@ import axios from "axios";
     try {
       const response = await axios.get(
        `${baseUrl + "/" + site}/v1/form/${formId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      throw error;
+    }
+
+  }
+  export const getSimilarVehicles = async (vehicleId: string) => {
+    try {
+      const response = await axios.get(
+       `${similarVehicleUrl}?vehicle_id=${vehicleId}`
       );
       return response.data;
     } catch (error) {
