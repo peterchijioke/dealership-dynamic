@@ -101,7 +101,7 @@ export function CustomSearchBox({
 
   return (
     <div className="relative w-full flex-1 z-[3000]">
-      <div className="rounded-full flex items-center z-[9000] bg-[#E4E6E8]">
+      <div className="rounded-md flex items-center z-[9000] bg-[#E4E6E8]">
         <Search className="w-4 h-4 ml-2 my-2 text-gray-600" />
         <input
           type="text"
@@ -359,7 +359,7 @@ export default function SearchDropdown({
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelId}
-        className="absolute right-0 inset-y-4 z-[2000] md:mt-[3%] mt-[6%] rounded-t-2xl bg-white  shadow-2xl outline-none max-w-full md:max-w-7xl w-full mx-auto flex flex-col"
+        className="absolute right-0 inset-y-4 z-[2000] md:mt-5 mt-[4%] rounded-t-2xl bg-white  shadow-2xl outline-none max-w-full md:max-w-7xl w-full mx-auto flex flex-col"
         style={{
           touchAction: "none",
           overscrollBehavior: "none",
