@@ -1,12 +1,10 @@
 "use client";
+import "./search-client-scroll-lock.css";
 
 import { useState, useMemo, useCallback } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import {
-  generateFacetFilters,
-  searchWithMultipleQueries,
-} from "@/lib/algolia";
+import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
@@ -42,16 +40,23 @@ export default function SearchClient({
   const { stateToRoute } = useAlgolia();
 
   // Infinite hits hook
-  const { hits, totalHits, facets: latestFacets, setFacets, showMore, isLastPage, loading } =
-    useInfiniteAlgoliaHits({
-      initialHits: initialResults.hits,
-      initialTotalHits: initialResults.nbHits,
-      initialFacets: initialResults.facets,
-      // initialPage: initialResults.page,
-      refinements: selectedFacets,
-      sortIndex,
-      hitsPerPage: HITS_PER_PAGE,
-    });
+  const {
+    hits,
+    totalHits,
+    facets: latestFacets,
+    setFacets,
+    showMore,
+    isLastPage,
+    loading,
+  } = useInfiniteAlgoliaHits({
+    initialHits: initialResults.hits,
+    initialTotalHits: initialResults.nbHits,
+    initialFacets: initialResults.facets,
+    // initialPage: initialResults.page,
+    refinements: selectedFacets,
+    sortIndex,
+    hitsPerPage: HITS_PER_PAGE,
+  });
 
   // Toggle a facet
   const updateFacet = async (facet: string, value: string) => {
@@ -135,70 +140,83 @@ export default function SearchClient({
     <div className="w-full h-svh m:pt-28 md:pt-32">
       <div className="h-full flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0 bg-[#FAF9F7]">
-          <ScrollArea className="h-full px-3">
-            <div className="p-4">
-              <h2 className="font-bold text-center uppercase">
-                Search Filters
-              </h2>
-            </div>
-            <SidebarFilters
-              facets={latestFacets}
-              currentRefinements={selectedFacets}
-              onToggleFacet={updateFacet}
-            />
-          </ScrollArea>
+          <div
+            className="h-full"
+            {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
+          >
+            <ScrollArea className="h-full px-3">
+              <div className="p-4">
+                <h2 className="font-bold text-center uppercase">
+                  Search Filters
+                </h2>
+              </div>
+              <SidebarFilters
+                facets={latestFacets}
+                currentRefinements={selectedFacets}
+                onToggleFacet={updateFacet}
+              />
+            </ScrollArea>
+          </div>
         </aside>
 
         <main className="h-full flex-1 flex flex-col">
-          <ScrollArea className="h-full  ">
-            <div className=" w-full px-3">
-              <CarouselBanner className=" rounded-2xl" />
-            </div>
-            <div className="p-4 space-y-4">
-              <div className="w-full flex py-4  flex-col gap-2">
-                <div className="w-full flex items-center md:flex-row gap-2">
-                  <div className="hidden md:block w-1/3">
-                    <span>{totalHits} vehicles found for sale</span>
-                  </div>
-                  <InstantSearch
-                    indexName={srpIndex}
-                    searchClient={searchClient}
-                  >
-                    <div className="relative w-full z-50 pointer-events-auto">
-                      <CustomSearchBox setSearchOpen={setSearchOpen} />
-                      <SearchDropdown
-                        isOpen={isSearchOpen}
-                        onClose={() => setSearchOpen(false)}
-                      />
+          <div
+            className="h-full"
+            {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
+          >
+            <ScrollArea className="h-full  ">
+              <div className=" w-full px-3 pt-20">
+                <CarouselBanner className=" rounded-2xl" />
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="w-full flex py-4  flex-col gap-2">
+                  <div className="w-full flex flex-col items-start  md:items-center md:flex-row gap-2">
+                    <div className="hidden md:block w-1/3">
+                      <span>{totalHits} vehicles found for sale</span>
                     </div>
-                  </InstantSearch>
-                  {/* Sort dropdown */}
-                  <SortDropdown
-                    currentSort={sortIndex}
-                    onChange={handleSortChange}
+                    <InstantSearch
+                      indexName={srpIndex}
+                      searchClient={searchClient}
+                    >
+                      <div className="relative w-full z-50 pointer-events-auto">
+                        <CustomSearchBox
+                          onClose={() => setSearchOpen(false)}
+                          setSearchOpen={setSearchOpen}
+                        />
+                        <SearchDropdown
+                          isOpen={isSearchOpen}
+                          onClose={() => setSearchOpen(false)}
+                        />
+                      </div>
+                    </InstantSearch>
+                    {/* Sort dropdown */}
+                    <SortDropdown
+                      currentSort={sortIndex}
+                      onChange={handleSortChange}
+                    />
+                  </div>
+                  <div className="block md:hidden">
+                    <span className=" text-sm ">
+                      1438 vehicles found for sale
+                    </span>
+                  </div>
+                  <ActiveFiltersBar
+                    refinements={selectedFacets}
+                    onRemove={handleRemoveFilter}
+                    onClearAll={handleReset}
                   />
                 </div>
-                <div className="block md:hidden">
-                  <span className=" text-sm ">
-                    1438 vehicles found for sale
-                  </span>
-                </div>
-                <ActiveFiltersBar
+
+                <InfiniteHits
+                  hits={hits}
                   refinements={selectedFacets}
-                  onRemove={handleRemoveFilter}
-                  onClearAll={handleReset}
+                  showMore={showMore}
+                  isLastPage={isLastPage}
+                  loading={loading}
                 />
               </div>
-
-              <InfiniteHits
-                hits={hits}
-                refinements={selectedFacets}
-                showMore={showMore}
-                isLastPage={isLastPage}
-                loading={loading}
-              />
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         </main>
       </div>
     </div>
