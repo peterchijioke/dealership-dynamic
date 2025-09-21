@@ -418,24 +418,10 @@ export default function SearchDropdown({
                     <ViewAllLink href="/new-vehicles" />
                   </div>
                   <div className="space-y-3">
-                    {NEW_INDEX_NAME ? (
-                      <Index indexName={NEW_INDEX_NAME}>
-                        <Configure
-                          facetFilters={[`${CONDITION_FACET}:new`]}
-                          hitsPerPage={resultsLimit}
-                        />
-                        <Hits
-                          classNames={{ root: "grid grid-cols-1 gap-4" }}
-                          hitComponent={NewInventoryHit}
-                        />
-                      </Index>
-                    ) : (
-                      <FilteredHitsSection
-                        condition="new"
-                        hitComponent={NewInventoryHit}
-                        hitsPerPage={resultsLimit}
-                      />
-                    )}
+                    <Hits
+                      classNames={{ root: "grid grid-cols-1 gap-4" }}
+                      hitComponent={NewInventoryHit}
+                    />
                   </div>
                 </section>
 
@@ -448,21 +434,7 @@ export default function SearchDropdown({
                     <ViewAllLink href="/used-vehicles" />
                   </div>
                   <div className="space-y-3">
-                    {USED_INDEX_NAME ? (
-                      <Index indexName={USED_INDEX_NAME}>
-                        <Configure
-                          facetFilters={[`${CONDITION_FACET}:used`]}
-                          hitsPerPage={resultsLimit}
-                        />
-                        <Hits hitComponent={PreOwnedHit} />
-                      </Index>
-                    ) : (
-                      <FilteredHitsSection
-                        condition="used"
-                        hitComponent={PreOwnedHit}
-                        hitsPerPage={resultsLimit}
-                      />
-                    )}
+                    <Hits hitComponent={PreOwnedHit} />
                   </div>
                 </section>
               </div>
@@ -470,6 +442,7 @@ export default function SearchDropdown({
           </ScrollArea>
         </div>
       </div>
+      {/* <Configure hitsPerPage={resultsLimit} /> */}
     </>
   );
 }
@@ -488,10 +461,10 @@ function FilteredHitsSection({
 }) {
   return (
     <>
-      <Configure
+      {/* <Configure
         hitsPerPage={hitsPerPage}
         filters={`${CONDITION_FACET}:"${condition}"`}
-      />
+      /> */}
       <Hits hitComponent={hitComponent} />
     </>
   );
@@ -545,7 +518,10 @@ function SuggestionItem({
   );
 }
 
-function NewInventoryHit({ hit }: { hit: Vehicle & { objectID: string } }) {
+function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
+  if (hit.condition.toLowerCase() !== "new") {
+    return null; // Skip rendering if the condition is "used"
+  }
   return (
     <Link
       href={`/vehicle/${hit.objectID}`}
@@ -587,6 +563,9 @@ function NewInventoryHit({ hit }: { hit: Vehicle & { objectID: string } }) {
 }
 
 function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
+  if (hit.condition.toLowerCase() === "new") {
+    return null; // Skip rendering if the condition is "new"
+  }
   return (
     <Link
       href={`/vehicle/${hit.objectID}`}
