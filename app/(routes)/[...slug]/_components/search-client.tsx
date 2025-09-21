@@ -183,7 +183,10 @@ export default function SearchClient({
                           onClose={() => setSearchOpen(false)}
                           setSearchOpen={setSearchOpen}
                         />
-                        <SearchDropdown isOpen={isSearchOpen} />
+                        <SearchDropdown
+                          isOpen={isSearchOpen}
+                          onClose={() => setSearchOpen(false)}
+                        />
                       </div>
                     </InstantSearch>
                     {/* Sort dropdown */}

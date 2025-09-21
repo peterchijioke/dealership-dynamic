@@ -151,8 +151,10 @@ const CONDITION_FACET = "condition"; // used when single index (values: "new" | 
 export default function SearchDropdown({
   isOpen,
   resultsLimit = 6,
+  onClose,
 }: {
   isOpen: boolean;
+  onClose: () => void;
   resultsLimit?: number;
 }) {
   const { query } = useSearchBox();
@@ -359,7 +361,7 @@ export default function SearchDropdown({
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelId}
-        className="absolute right-0 inset-y-4 z-[2000] md:mt-5 mt-[4%] rounded-t-2xl bg-white  shadow-2xl outline-none max-w-full md:max-w-7xl w-full mx-auto flex flex-col"
+        className="absolute right-0 inset-y-4 z-[2000] md:mt-[3%] mt-[4%] rounded-t-2xl bg-white  shadow-2xl outline-none max-w-full md:max-w-7xl w-full mx-auto flex flex-col"
         style={{
           touchAction: "none",
           overscrollBehavior: "none",
@@ -415,7 +417,7 @@ export default function SearchDropdown({
                     <h3 id="new-inventory" className="text-lg font-semibold">
                       See ALL New Inventory
                     </h3>
-                    <ViewAllLink href="/new-vehicles" />
+                    <ViewAllLink close={() => onClose()} href="/new-vehicles" />
                   </div>
                   <div className="space-y-3">
                     <Hits
@@ -431,7 +433,10 @@ export default function SearchDropdown({
                     <h3 id="used-inventory" className="text-lg font-semibold">
                       See ALL Pre-Owned Inventory
                     </h3>
-                    <ViewAllLink href="/used-vehicles" />
+                    <ViewAllLink
+                      close={() => onClose()}
+                      href="/used-vehicles"
+                    />
                   </div>
                   <div className="space-y-3">
                     <Hits hitComponent={PreOwnedHit} />
@@ -474,9 +479,10 @@ function FilteredHitsSection({
  * --- Subcomponents ---
  */
 
-function ViewAllLink({ href }: { href: string }) {
+function ViewAllLink({ href, close }: { href: string; close?: () => void }) {
   return (
     <Link
+      onClick={close}
       href={href}
       className="text-sm font-medium text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
     >
