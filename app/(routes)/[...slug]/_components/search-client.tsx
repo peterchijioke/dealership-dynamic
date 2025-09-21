@@ -165,7 +165,7 @@ export default function SearchClient({
             {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
           >
             <ScrollArea className="h-full  ">
-              <div className=" w-full px-3 pt-20">
+              <div className=" w-full px-3 md:pt-0 pt-20">
                 <CarouselBanner className=" rounded-2xl" />
               </div>
               <div className="p-4 space-y-4">
