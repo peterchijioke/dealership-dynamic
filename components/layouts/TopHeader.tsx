@@ -59,14 +59,14 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                 quality={90} // Slightly reduce quality for faster loading
               />
             </Link> */}
-            <div className="header-theme3-logo-container flex items-center">
-              <div className="flex items-center header-theme3-logo">
-                <Link aria-label="logo" href="/">
-                  <div style={{ width: 240, height: 60 }} className="relative">
-                    <img
-                      alt="logo"
-                      loading="eager"
-                      decoding="async"
+            <div className="header-theme3-logo-container justify-start flex ">
+              <div className=" header-theme3-logo w-full">
+                <Link aria-label="logo" href="/" className=" w-fit h-fit">
+                  <div
+                    style={{ width: 100, height: 60 }}
+                    className="relative  "
+                  >
+                    <div
                       data-nimg="fill"
                       style={{
                         position: "absolute",
@@ -75,11 +75,18 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                         left: 0,
                         top: 0,
                         right: 0,
+                        backgroundSize: "contain",
+                        backgroundColor: "transparent",
                         bottom: 0,
                         objectFit: "contain",
+                        flex: 1,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                        backgroundImage: `url(${
+                          headerData?.logo_url ?? "/logoLink.svg"
+                        })`,
                         color: "transparent",
                       }}
-                      src={headerData?.logo_url ?? "/logoLink.svg"}
                     />
                   </div>
                 </Link>
