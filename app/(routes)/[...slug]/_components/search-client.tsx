@@ -22,6 +22,12 @@ import { InstantSearch } from "react-instantsearch";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface Props {
   initialResults: any;
@@ -38,6 +44,7 @@ export default function SearchClient({
     useState<Record<string, string[]>>(refinements);
   const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
   const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isFilterSheetOpen, setFilterSheetOpen] = useState(false);
 
   const { stateToRoute } = useAlgolia();
 
@@ -206,7 +213,10 @@ export default function SearchClient({
                       </span>
                     </div>
                     <div className="flex flex-1 items-center gap-2">
-                      <Button className=" rounded-xs  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300">
+                      <Button
+                        className=" rounded-xs  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300"
+                        onClick={() => setFilterSheetOpen(true)}
+                      >
                         Filter
                         <Filter className="mr-2 h-4 w-4" />
                       </Button>
@@ -216,6 +226,24 @@ export default function SearchClient({
                       />
                     </div>
                   </div>
+                  {/* Mobile Filter Sheet using shadcn/ui Sheet */}
+                  <Sheet
+                    open={isFilterSheetOpen}
+                    onOpenChange={setFilterSheetOpen}
+                  >
+                    <SheetContent side="left" className="p-0 w-72 max-w-[80vw]">
+                      <SheetHeader className="border-b">
+                        <SheetTitle>Filters</SheetTitle>
+                      </SheetHeader>
+                      <div className="overflow-y-auto h-[calc(100vh-56px)] p-4">
+                        <SidebarFilters
+                          facets={latestFacets}
+                          currentRefinements={selectedFacets}
+                          onToggleFacet={updateFacet}
+                        />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                   <ActiveFiltersBar
                     refinements={selectedFacets}
                     onRemove={handleRemoveFilter}
