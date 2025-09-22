@@ -126,7 +126,7 @@ function SpecialsSlider(props: Props) {
             <>
               <button
                 onClick={() => api?.scrollPrev()}
-                className="absolute top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white shadow-lg border rounded-full flex items-center justify-center transition-all duration-200"
+                className="absolute top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white shadow-lg border rounded-full hidden md:flex items-center justify-center transition-all duration-200"
                 style={{
                   // Mobile: smaller and closer to edge
                   left: isMdScreen ? "2px" : "8px",
@@ -154,7 +154,7 @@ function SpecialsSlider(props: Props) {
               </button>
               <button
                 onClick={() => api?.scrollNext()}
-                className="absolute top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white shadow-lg border rounded-full flex items-center justify-center transition-all duration-200"
+                className="absolute top-1/2 -translate-y-1/2 z-30 bg-white/90 hover:bg-white shadow-lg border rounded-full hidden md:flex items-center justify-center transition-all duration-200"
                 style={{
                   // Mobile: smaller and closer to edge
                   right: isMdScreen ? "2px" : "8px",
