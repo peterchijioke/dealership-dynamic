@@ -14,14 +14,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+import type { NavigationItem } from "./TopHeader";
+
+interface NavigationMenuComponentProps {
+  headerData: {
+    navigation: NavigationItem[];
+    [key: string]: any;
+  };
+  imagesRaw: any;
+}
+
 const NavigationMenuComponent = ({
   headerData,
   imagesRaw,
-}: {
-  headerData: any;
-  imagesRaw: any;
-}) => {
-  const navigationItems = headerData?.navigation;
+}: NavigationMenuComponentProps) => {
+  const navigationItems: NavigationItem[] = headerData?.navigation;
   // const navigationItems = headerData?.website_external_links;
   const images = imagesRaw;
   // console.log("=============navigation links=======================");

@@ -323,18 +323,18 @@ export default function CarouselComponents() {
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#808080]">
-          {/* Photo counter - positioned absolutely */}
-          <span className="absolute top-6 left-6 z-20 bg-[#a6a6a6] text-white px-4 py-2 rounded-full backdrop-blur-sm">
+        <div className="fixed inset-0  bg-white   z-[1000] ">
+          {/* Photo counter - positioned absolutely, responsive */}
+          <span className="absolute top-2 left-2 md:top-6 md:left-6 z-20 bg-[#a6a6a6] text-white px-3 py-1 md:px-4 md:py-2 rounded-full backdrop-blur-sm text-xs md:text-base">
             Photo {modalCurrentSlide + 1}/{images.length}
           </span>
 
-          {/* Close Button - positioned absolutely */}
+          {/* Close Button - positioned absolutely, responsive */}
           <Button
             onClick={closeModal}
             variant="ghost"
             size="icon"
-            className="absolute cursor-pointer top-6 right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-10 w-10"
+            className="absolute cursor-pointer top-2 right-2 md:top-6 md:right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-8 w-8 md:h-10 md:w-10"
             aria-label="Close gallery"
           >
             <X className="h-5 w-5 text-white" />
@@ -342,7 +342,7 @@ export default function CarouselComponents() {
 
           {/* Main scrollable container */}
           <div
-            className="modal-scroll-container w-full h-full overflow-y-auto scroll-smooth snap-y snap-mandatory"
+            className="modal-scroll-container w-full flex-1 overflow-y-auto scroll-smooth snap-y snap-mandatory"
             style={{
               width: "100vw",
               height: "100vh",
@@ -361,15 +361,16 @@ export default function CarouselComponents() {
                     width: "100vw",
                   }}
                 >
-                  <div className="relative w-full h-full flex items-center justify-center p-4">
+                  <div className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
                     <img
                       src={image?.url || generateImagePreviewData(previewurl)}
                       alt={`Car image ${index + 1}`}
-                      className="w-full h-full object-contain"
+                      fetchPriority="high"
+                      className="w-full h-full object-contain max-w-full max-h-[80vh] md:max-h-[90vh]"
                       loading="eager"
                       style={{
-                        maxWidth: "95vw",
-                        maxHeight: "90vh",
+                        maxWidth: "100vw",
+                        maxHeight: "80vh",
                       }}
                     />
                   </div>
@@ -410,10 +411,6 @@ export interface CTAButton {
   cta_label: string;
   btn_styles: ButtonStyles;
   btn_classes: string[];
-  /**
-   * For "link": a URL (e.g. tel:..., https://...).
-   * For "form": an ID/template reference.
-   */
   btn_content: string;
   open_newtab: boolean;
   cta_location: CTALocation;
@@ -456,12 +453,6 @@ export interface AlgoliaHighlight {
   matchedWords: string[];
 }
 
-/**
- * Maps a data shape T to its Algolia `_highlightResult` equivalent:
- * - primitives (string | number | boolean) -> AlgoliaHighlight
- * - arrays -> array of DeepHighlight of the element
- * - objects -> keyed object of DeepHighlight
- */
 export type DeepHighlight<T> = T extends string | number | boolean
   ? AlgoliaHighlight
   : T extends (infer U)[]

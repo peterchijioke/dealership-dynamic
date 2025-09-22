@@ -1,18 +1,27 @@
 import React, { useMemo, useState } from "react";
 import { Calendar, Menu, Scroll, Search } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "../ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "../ui/sheet";
-import NavigationMenuComponent from "./NavigationMenu";
 import MobileNavigation from "./MobileNavigation";
 import { ScrollArea } from "../ui/scroll-area";
 // import GlobalSearchAutocomplete from "./GlobalSearchAutocomplete";
 
+export interface NavigationItem {
+  guid: string | null;
+  link: string;
+  label: string;
+  children: NavigationItem[];
+  template: string | null;
+  custom_id: string;
+  custom_class: string;
+  open_new_tab: boolean;
+}
+
 interface HeaderData {
   phone_numbers?: { label: string; value: string }[];
   logo_url?: string;
-  navigation: any[];
+  navigation: NavigationItem[];
   address?: string;
   city?: string;
 }
@@ -28,8 +37,6 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
     [headerData?.phone_numbers]
   );
   const navigationItems = headerData?.navigation;
-  // const navigationItems = headerData?.website_external_links;
-  const images = imagesRaw;
 
   return (
     <div className="bg-white border-b border-gray-200">
