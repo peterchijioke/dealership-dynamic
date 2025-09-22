@@ -20,6 +20,8 @@ import { urlParser2 } from "@/lib/url-formatter";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
+import { Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   initialResults: any;
@@ -164,7 +166,7 @@ export default function SearchClient({
             className="h-full"
             {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
           >
-            <ScrollArea className="h-full  ">
+            <ScrollArea className="h-full pb-8  ">
               <div className=" w-full px-3 md:pt-0 pt-20">
                 <CarouselBanner className=" rounded-2xl" />
               </div>
@@ -190,15 +192,29 @@ export default function SearchClient({
                       </div>
                     </InstantSearch>
                     {/* Sort dropdown */}
-                    <SortDropdown
-                      currentSort={sortIndex}
-                      onChange={handleSortChange}
-                    />
+                    <div className="md:block hidden">
+                      <SortDropdown
+                        currentSort={sortIndex}
+                        onChange={handleSortChange}
+                      />
+                    </div>
                   </div>
-                  <div className="block md:hidden">
-                    <span className=" text-sm ">
-                      1438 vehicles found for sale
-                    </span>
+                  <div className=" md:hidden flex items-center justify-between">
+                    <div className=" flex-1">
+                      <span className=" text-sm font-semibold ">
+                        {totalHits} vehicles
+                      </span>
+                    </div>
+                    <div className="flex flex-1 items-center gap-2">
+                      <Button className=" rounded-xs  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300">
+                        Filter
+                        <Filter className="mr-2 h-4 w-4" />
+                      </Button>
+                      <SortDropdown
+                        currentSort={sortIndex}
+                        onChange={handleSortChange}
+                      />
+                    </div>
                   </div>
                   <ActiveFiltersBar
                     refinements={selectedFacets}
