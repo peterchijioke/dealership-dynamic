@@ -90,7 +90,9 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
               side="left"
               className="p-0 z-[1000] w-[85vw] max-w-xs bg-white"
             >
-              <div className="">{/* <MobileNavigation /> */}</div>
+              <div className="">
+                <MobileNavigation />
+              </div>
             </SheetContent>
           </Sheet>
 
