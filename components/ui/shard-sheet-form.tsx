@@ -25,12 +25,12 @@ export function ShardSheetForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="max-w-md w-full z-[1000] md:min-w-xl px-3 rounded-3xl"
+        className="max-w-md w-full overflow-auto pb-5 z-[1000] md:min-w-xl px-3 rounded-3xl"
       >
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
-        <ScrollArea className="py-2 px-1 h-svh">{children}</ScrollArea>
+        {children}
       </SheetContent>
     </Sheet>
   );

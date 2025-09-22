@@ -127,11 +127,6 @@ const InlineForm: React.FC<{
     setLoading(true);
     try {
       const response = await getFormField(formId, dealerDomain);
-
-      console.log("===========fetchFormData=========================");
-      console.log("Form fetch result:", response);
-      console.log("============fetchFormData========================");
-
       if (response.success && response.data) {
         setFormData(response.data);
       }
