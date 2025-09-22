@@ -16,9 +16,10 @@ interface HeaderData {
 
 interface TopHeaderProps {
   headerData: HeaderData;
+  imagesRaw: any;
 }
 
-const TopHeader = ({ headerData }: TopHeaderProps) => {
+const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
   const phones: { label: string; value: string }[] = useMemo(
     () => headerData?.phone_numbers || [],
     [headerData?.phone_numbers]
@@ -88,7 +89,7 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
               <div className="p-4">
                 <NavigationMenuComponent
                   headerData={headerData}
-                  imagesRaw={[]}
+                  imagesRaw={imagesRaw}
                 />
               </div>
             </SheetContent>
