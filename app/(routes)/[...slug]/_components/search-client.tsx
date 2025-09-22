@@ -231,7 +231,10 @@ export default function SearchClient({
                     open={isFilterSheetOpen}
                     onOpenChange={setFilterSheetOpen}
                   >
-                    <SheetContent side="left" className="p-0 w-72 max-w-[80vw]">
+                    <SheetContent
+                      side="left"
+                      className="p-0 w-72 max-w-[80vw] z-[1000]"
+                    >
                       <SheetHeader className="border-b">
                         <SheetTitle>Filters</SheetTitle>
                       </SheetHeader>

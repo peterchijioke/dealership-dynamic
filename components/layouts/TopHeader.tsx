@@ -1,8 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Calendar, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
+import NavigationMenuComponent from "./NavigationMenu";
 // import GlobalSearchAutocomplete from "./GlobalSearchAutocomplete";
 
 interface HeaderData {
@@ -27,38 +29,8 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
       <div className=" mx-auto px-4  lg:px-11">
         <div className="flex items-center justify-between h-16">
           {/* Left section with mobile menu and logo */}
-          <div className="flex items-center gap-2">
-            {/* Mobile menu button - hidden on desktop */}
-            <Button
-              variant="outline"
-              size="icon"
-              className="items-center justify-center flex md:hidden shadow-none"
-              aria-label="Open mobile menu"
-              style={{
-                minWidth: "44px",
-                minHeight: "44px",
-              }}
-            >
-              <Menu size={20} aria-hidden="true" />
-            </Button>
 
-            {/* Logo with optimizations */}
-            {/* <Link
-              href="/"
-              className="flex cursor-pointer"
-              aria-label="Go to homepage"
-            >
-              <Image
-                alt="Company logo"
-                src={headerData?.logo_url ?? "/logoLink.svg"}
-                width={240}
-                height={60}
-                priority // Critical for LCP since logo is above-the-fold
-                className="h-auto w-auto max-h-[60px]" // Prevent layout shift
-                sizes="(max-width: 768px) 180px, 240px" // Responsive sizing
-                quality={90} // Slightly reduce quality for faster loading
-              />
-            </Link> */}
+          <div className="flex items-center md:justify-start justify-between">
             <div className="header-theme3-logo-container justify-start flex ">
               <div className=" header-theme3-logo w-full">
                 <Link aria-label="logo" href="/" className=" w-fit h-fit">
@@ -92,8 +64,35 @@ const TopHeader = ({ headerData }: TopHeaderProps) => {
                 </Link>
               </div>
             </div>
-            {/* <GlobalSearchAutocomplete /> */}
           </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="items-center justify-center flex md:hidden shadow-none"
+                aria-label="Open mobile menu"
+                style={{
+                  minWidth: "44px",
+                  minHeight: "44px",
+                }}
+              >
+                <Menu size={20} aria-hidden="true" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="p-0 z-[1000] w-[85vw] max-w-xs bg-white"
+            >
+              {/* Render navigation items for mobile */}
+              <div className="p-4">
+                <NavigationMenuComponent
+                  headerData={headerData}
+                  imagesRaw={[]}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
 
           {/* Right section - desktop only */}
           <div className="items-center space-x-6 hidden md:flex">
