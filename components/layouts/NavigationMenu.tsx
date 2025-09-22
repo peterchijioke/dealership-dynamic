@@ -45,7 +45,7 @@ const NavigationMenuComponent = ({
                 <>
                   <NavigationMenuTrigger
                     className={cn(
-                      "bg-transparent rounded-none  cursor-pointer hover:bg-transparent font-semibold px-4 py-3 capitalize"
+                      "bg-transparent rounded-none  cursor-pointer hover:bg-transparent font-semibold px-4 py-3 uppercase"
                     )}
                   >
                     <Link href={`/inventory/${item.link}`}>

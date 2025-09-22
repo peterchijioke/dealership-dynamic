@@ -496,7 +496,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
       <div className="vehicle-grid__card-wrapper">
         <div
           className={cn(
-            "rounded-xl border pt-0 pb-0 text-card-foreground shadow vehicle-grid__card relative flex max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
+            "rounded-xl border pt-0 pb-0 text-card-foreground shadow vehicle-grid__card bg-white relative flex max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
           )}
         >
           <div className="flex-1  ">
