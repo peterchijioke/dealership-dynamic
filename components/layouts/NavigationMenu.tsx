@@ -67,7 +67,7 @@ const NavigationMenuComponent = ({
                                   target={
                                     child.open_new_tab ? "_blank" : "_self"
                                   }
-                                  className="block text-base font-medium hover:underline underline-offset-2 text-black"
+                                  className="block text-base font-medium hover:underline underline-offset-2 uppercase text-black"
                                 >
                                   {child.label}
                                 </Link>
