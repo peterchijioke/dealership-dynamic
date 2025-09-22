@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Calendar, Menu, Search } from "lucide-react";
+import { Calendar, Menu, Scroll, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
 import NavigationMenuComponent from "./NavigationMenu";
 import MobileNavigation from "./MobileNavigation";
+import { ScrollArea } from "../ui/scroll-area";
 // import GlobalSearchAutocomplete from "./GlobalSearchAutocomplete";
 
 interface HeaderData {
@@ -88,11 +89,11 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="p-0 z-[1000] w-[85vw] max-w-xs bg-white"
+              className="p-0 z-[1000] w-[85vw] max-w-full bg-white"
             >
-              <div className="">
-                <MobileNavigation />
-              </div>
+              <ScrollArea className=" h-screen flex flex-col pt-16 w-full">
+                <MobileNavigation menu={navigationItems || []} />
+              </ScrollArea>
             </SheetContent>
           </Sheet>
 

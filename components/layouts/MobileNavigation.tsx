@@ -173,109 +173,90 @@ const shopByModelGrid = (
 );
 
 // ——— Full Menu Tree (truncated for brevity) ———
-const MENU: NavItem[] = [
-  {
-    label: "New",
-    href: "/new-vehicles/",
-    children: [
-      { label: "New Nissan Vehicles", href: "/new-vehicles/nissan/" },
-      { label: "New Car Specials", href: "/new-vehicles/?is_special=true" },
-      { label: "Schedule a Test Drive", href: "/schedule-test-drive/" },
-      { label: "Find Your Vehicle", href: "/find-your-vehicle/" },
-      { label: "Shop by Model", content: shopByModelGrid },
-    ],
-  },
-  // ... add remaining menu items as needed
-];
+// Remove hardcoded MENU, use prop instead
 
 // ——— Component ———
-export default function MobileNavigation({
-  ariaLabel = "Primary Mobile Navigation",
-}: {
+
+interface MobileNavigationProps {
+  menu: NavItem[];
   ariaLabel?: string;
-}) {
+}
+
+export default function MobileNavigation({
+  menu,
+  ariaLabel = "Primary Mobile Navigation",
+}: MobileNavigationProps) {
   const rootId = useId();
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const toggle = (key: string) => setOpen((s) => ({ ...s, [key]: !s[key] }));
 
   return (
-    <div className="site-header-item site-header-focus-item site-header-item-mobile-navigation">
-      <nav
-        id={`mobile-site-navigation-${rootId}`}
-        role="navigation"
-        aria-label={ariaLabel}
-        className="w-full"
-      >
-        <ul id="mobile-menu" className="divide-y divide-slate-200">
-          {MENU.map((item, idx) => {
-            const key = `${item.label}-${idx}`;
-            const expanded = !!open[key];
-            const hasChildren = !!(item.children?.length || item.content);
-            return (
-              <li key={key} className="bg-white">
-                <div className="flex items-center justify-between gap-3 px-4 py-3">
-                  <Anchor
-                    href={item.href}
-                    aria-current={idx === 0 ? "page" : undefined}
-                    className="text-slate-900 font-semibold hover:text-slate-700"
+    <div className="site-header-item h-full site-header-focus-item site-header-item-mobile-navigation">
+      <ul id="mobile-menu" className="divide-y divide-slate-200">
+        {menu.map((item, idx) => {
+          const key = `${item.label}-${idx}`;
+          const expanded = !!open[key];
+          const hasChildren = !!(item.children?.length || item.content);
+          return (
+            <li key={key} className="bg-white">
+              <div className="flex items-center justify-between gap-3 px-4 py-3">
+                <Anchor
+                  href={item.href}
+                  aria-current={idx === 0 ? "page" : undefined}
+                  className="text-slate-900 font-semibold hover:text-slate-700"
+                >
+                  {item.label}
+                </Anchor>
+                {hasChildren && (
+                  <button
+                    className="inline-flex items-center rounded-md border border-slate-200 px-2 py-1 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    aria-expanded={expanded}
+                    aria-controls={`submenu-${idx}`}
+                    onClick={() => toggle(key)}
                   >
-                    {item.label}
-                  </Anchor>
-                  {hasChildren && (
-                    <button
-                      className="inline-flex items-center rounded-md border border-slate-200 px-2 py-1 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
-                      aria-expanded={expanded}
-                      aria-controls={`submenu-${idx}`}
-                      onClick={() => toggle(key)}
-                    >
-                      <span className="sr-only">
-                        {expanded ? "Collapse" : "Expand"} child menu
-                      </span>
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${
-                          expanded ? "rotate-180" : "rotate-0"
-                        }`}
-                      />
-                    </button>
+                    <span className="sr-only">
+                      {expanded ? "Collapse" : "Expand"} child menu
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        expanded ? "rotate-180" : "rotate-0"
+                      }`}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {hasChildren && (
+                <div
+                  id={`submenu-${idx}`}
+                  role="region"
+                  aria-label={`${item.label} submenu`}
+                  className={`${expanded ? "block" : "hidden"}`}
+                >
+                  {item.children && item.children.length > 0 && (
+                    <ul className="space-y-1 px-4 pb-4">
+                      {item.children.map((child, cIdx) => (
+                        <li key={`${key}-${cIdx}`}>
+                          {child.content ? (
+                            <div className="pt-1">{child.content}</div>
+                          ) : (
+                            <Anchor
+                              href={child.href}
+                              className="inline-block py-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+                            >
+                              {child.label}
+                            </Anchor>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
-
-                {hasChildren && (
-                  <div
-                    id={`submenu-${idx}`}
-                    role="region"
-                    aria-label={`${item.label} submenu`}
-                    className={`${expanded ? "block" : "hidden"}`}
-                  >
-                    {item.children && item.children.length > 0 && (
-                      <ul className="space-y-1 px-4 pb-4">
-                        {item.children.map((child, cIdx) => (
-                          <li key={`${key}-${cIdx}`}>
-                            {child.content ? (
-                              <div className="pt-1">{child.content}</div>
-                            ) : (
-                              <Anchor
-                                href={child.href}
-                                className="inline-block py-2 text-sm font-medium text-slate-700 hover:text-slate-900"
-                              >
-                                {child.label}
-                              </Anchor>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {!item.children?.length && item.content && (
-                      <div className="px-4 pb-4">{item.content}</div>
-                    )}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
