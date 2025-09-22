@@ -5,11 +5,13 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
 import NavigationMenuComponent from "./NavigationMenu";
+import MobileNavigation from "./MobileNavigation";
 // import GlobalSearchAutocomplete from "./GlobalSearchAutocomplete";
 
 interface HeaderData {
   phone_numbers?: { label: string; value: string }[];
   logo_url?: string;
+  navigation: any[];
   address?: string;
   city?: string;
 }
@@ -24,6 +26,9 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
     () => headerData?.phone_numbers || [],
     [headerData?.phone_numbers]
   );
+  const navigationItems = headerData?.navigation;
+  // const navigationItems = headerData?.website_external_links;
+  const images = imagesRaw;
 
   return (
     <div className="bg-white border-b border-gray-200">
@@ -85,13 +90,7 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
               side="left"
               className="p-0 z-[1000] w-[85vw] max-w-xs bg-white"
             >
-              {/* Render navigation items for mobile */}
-              <div className="p-4">
-                <NavigationMenuComponent
-                  headerData={headerData}
-                  imagesRaw={imagesRaw}
-                />
-              </div>
+              <div className="">{/* <MobileNavigation /> */}</div>
             </SheetContent>
           </Sheet>
 
