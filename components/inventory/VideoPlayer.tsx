@@ -26,8 +26,8 @@ function VideoPlayer(props: Props) {
   return (
     <div className="!my-0 aspect-[3/2] rounded-t-2xl overflow-hidden">
       <HoverVideoPlayer
-        className="h-full w-full object-cover"
-        videoClassName="w-full h-full object-cover"
+        className="h-full w-full object-contain"
+        videoClassName="w-full h-full object-contain"
         videoSrc={video}
         controls
         focused={isVideoPlaying}
