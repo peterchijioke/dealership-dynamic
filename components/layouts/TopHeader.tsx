@@ -3,7 +3,7 @@ import { Calendar, Menu, Scroll, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "../ui/sheet";
 import NavigationMenuComponent from "./NavigationMenu";
 import MobileNavigation from "./MobileNavigation";
 import { ScrollArea } from "../ui/scroll-area";
@@ -91,6 +91,7 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
               side="left"
               className="p-0 z-[1000] w-[85vw] max-w-full bg-white"
             >
+              <SheetTitle />
               <ScrollArea className=" h-screen flex flex-col pt-16 w-full">
                 <MobileNavigation menu={navigationItems || []} />
               </ScrollArea>
