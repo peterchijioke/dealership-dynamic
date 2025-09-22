@@ -189,8 +189,8 @@ export default function CarouselComponents() {
                       >
                         <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                           <HoverVideoPlayer
-                            className="h-full w-full object-cover"
-                            videoClassName="w-full h-full object-cover"
+                            className="h-full w-full object-contain"
+                            videoClassName="w-full h-full object-contain"
                             videoSrc={item.url}
                             controls
                             focused={isVideoPlaying}
