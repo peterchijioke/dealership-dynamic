@@ -106,12 +106,13 @@ const MobileInlineForm: React.FC<{
   };
 
   // Build Zod schema from formData.fields
-  const schema = useMemo(() => {
-    if (!formData) return z.object({});
-    const shape: Record<string, any> = {};
+  const schema: z.ZodObject<Record<string, z.ZodTypeAny>> = useMemo(() => {
+    if (!formData)
+      return z.object({}) as z.ZodObject<Record<string, z.ZodTypeAny>>;
+    const shape: Record<string, z.ZodTypeAny> = {};
     for (const field of formData.fields) {
       if (!field.is_visible) continue;
-      let zodType: any = z.string();
+      let zodType: z.ZodTypeAny = z.string();
       if (field.field_type === "email")
         zodType = z.string().email("Invalid email");
       if (field.field_type === "tel")
@@ -124,13 +125,29 @@ const MobileInlineForm: React.FC<{
         zodType = z.union([z.literal("true"), z.literal("false")]);
       }
       if (field.is_required) {
-        zodType = zodType.min(1, `${field.label || field.name} is required`);
+        // Only apply .min(1) to string types
+        if (
+          field.field_type === "text" ||
+          field.field_type === "email" ||
+          field.field_type === "tel" ||
+          field.field_type === "date" ||
+          field.field_type === "select" ||
+          field.field_type === "radio" ||
+          field.field_type === "textarea"
+        ) {
+          zodType = (zodType as z.ZodString).min(
+            1,
+            `${field.label || field.name} is required`
+          );
+        } else {
+          zodType = zodType; // leave as is for other types
+        }
       } else {
         zodType = zodType.optional();
       }
       shape[field.name] = zodType;
     }
-    return z.object(shape);
+    return z.object(shape) as z.ZodObject<Record<string, z.ZodTypeAny>>;
   }, [formData]);
 
   const {
@@ -138,7 +155,7 @@ const MobileInlineForm: React.FC<{
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
+  } = useForm<Record<string, any>>({
     resolver: zodResolver(schema),
     mode: "onTouched",
   });

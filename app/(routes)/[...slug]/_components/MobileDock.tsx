@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Car, HandCoins, Wrench, Coins, MoreHorizontal } from "lucide-react";
+import {
+  Car,
+  HandCoins,
+  Wrench,
+  Coins,
+  MoreHorizontal,
+  Gift,
+} from "lucide-react";
 import { ComponentType } from "react";
 import { cn } from "@/lib/utils"; // or replace with your own cx helper
 
@@ -15,23 +22,28 @@ type Item = {
 
 const ITEMS: Item[] = [
   {
-    label: "Shop",
-    href: "/shop",
+    label: "New",
+    href: "/new-vehicles/",
     icon: Car,
-    match: /^\/(shop|new-vehicles|used-vehicles)/,
+    match: /^\/new-vehicles/,
+  },
+  {
+    label: "Used",
+    href: "/used-vehicles/",
+    icon: HandCoins,
+    match: /^\/used-vehicles/,
   },
   {
     label: "Sell/Trade",
     href: "/sell-trade",
-    icon: HandCoins,
+    icon: Coins,
     match: /^\/sell-trade/,
   },
   { label: "Service", href: "/service", icon: Wrench, match: /^\/service/ },
-  { label: "Finance", href: "/finance", icon: Coins, match: /^\/finance/ },
   {
-    label: "More",
-    href: "/more",
-    icon: MoreHorizontal,
+    label: "Specials",
+    href: "/specials/",
+    icon: Gift,
     match: /^\/(more|account|menu)/,
   },
 ];
