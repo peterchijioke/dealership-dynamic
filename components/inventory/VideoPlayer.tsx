@@ -1,7 +1,8 @@
+"use client";
 import React, { useState, useRef } from "react";
-import Image from "next/image";
-import ClipLoader from "react-spinners/ClipLoader";
 import { VideoIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
+import { generateImagePreviewData, previewurl } from "@/utils/utils";
 
 type Props = {
   video: string;
@@ -12,101 +13,109 @@ type Props = {
 function VideoPlayer({ video, videoCc, poster }: Props) {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [posterLoaded, setPosterLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleMouseEnter = async () => {
-    if (videoRef.current && !isVideoPlaying) {
-      setIsLoading(true);
-      try {
-        await videoRef.current.play();
-        setIsVideoPlaying(true);
-      } catch (error) {
-        console.error("Error playing video:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  const priority = true; // treat poster as LCP candidate
+
+  const handlePlay = async () => {
+    if (!videoRef.current) return;
+    setIsLoading(true);
+    try {
+      await videoRef.current.play();
+    } catch (err) {
+      console.error("Autoplay error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleMouseLeave = () => {
-    if (videoRef.current && isVideoPlaying) {
-      videoRef.current.pause();
+  const handlePause = () => {
+    if (videoRef.current) videoRef.current.pause();
+  };
+
+  const toggleVideo = () => {
+    if (!videoRef.current) return;
+    if (isVideoPlaying) {
+      handlePause();
       setIsVideoPlaying(false);
+    } else {
+      handlePlay();
+      setIsVideoPlaying(true);
     }
   };
 
-  const handleVideoClick = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-        setIsVideoPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsVideoPlaying(true);
-      }
-    }
-  };
+  const isMobile = typeof window !== "undefined" && /iPhone|Android/i.test(window.navigator.userAgent);
 
   return (
     <div
-      className="!my-0 aspect-[3/2] rounded-t-2xl overflow-hidden relative w-full cursor-pointer"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className="relative w-full aspect-[3/2] rounded-t-2xl overflow-hidden bg-gray-100 cursor-pointer"
+      onMouseEnter={!isMobile ? handlePlay : undefined}
+      onMouseLeave={!isMobile ? handlePause : undefined}
+      onClick={isMobile ? toggleVideo : undefined}
     >
-      {/* Poster Image Overlay */}
-      {!isVideoPlaying && (
+      {/* Animated shimmer while waiting for poster */}
+      {!posterLoaded && (
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200" />
+      )}
+
+      {/* Blur-up preview behind poster */}
+      <img
+        src={generateImagePreviewData(previewurl)}
+        alt="blur preview"
+        className={cn(
+          "absolute inset-0 w-full h-full object-cover blur-md scale-105 transition-opacity duration-500",
+          posterLoaded ? "opacity-0" : "opacity-100"
+        )}
+        aria-hidden="true"
+      />
+
+      {/* Poster image */}
+      <img
+        src={poster}
+        alt="video thumbnail"
+        fetchPriority={priority ? "high" : "auto"}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        onLoad={() => setPosterLoaded(true)}
+        className={cn(
+          "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+          posterLoaded ? "opacity-100" : "opacity-0"
+        )}
+        sizes="(max-width: 768px) 100vw,
+               (max-width: 1200px) 50vw,
+               33vw"
+      />
+
+      {/* Play Icon Overlay (only when not playing) */}
+      {!isVideoPlaying && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Image
-            alt="video thumbnail"
-            src={poster}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-
-          {/* Video Icon Overlay - shown when not playing */}
-          {!isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black/50 rounded-full p-3 backdrop-blur-sm">
-                <VideoIcon
-                  width={25}
-                  height={25}
-                  color="white"
-                  className="drop-shadow-lg"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Loading Overlay */}
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <ClipLoader loading size={36} color="#FFFFFF" />
-            </div>
-          )}
+          <div className="bg-black/50 rounded-full p-3 backdrop-blur-sm">
+            <VideoIcon
+              width={28}
+              height={28}
+              color="white"
+              className="drop-shadow-lg"
+            />
+          </div>
         </div>
       )}
 
-      {/* Video Element */}
+      {/* Video element */}
       <video
         ref={videoRef}
         poster={poster}
-        preload="none"
+        preload="metadata"
         muted
+        playsInline
         disablePictureInPicture
         controls={isVideoPlaying}
-        onClick={handleVideoClick}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          display: "block",
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
+        onClick={isMobile ? undefined : toggleVideo}
         onPlay={() => setIsVideoPlaying(true)}
         onPause={() => setIsVideoPlaying(false)}
       >
-        <source src={video} />
+        <source src={video} type="video/mp4" />
         {videoCc && (
           <track src={videoCc} kind="captions" srcLang="en" label="English" />
         )}
