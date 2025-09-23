@@ -574,7 +574,7 @@ function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
       {hit.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={hit.photo}
+          src={hit.photo || placeholderImage}
           fetchPriority="high"
           loading="eager"
           alt={hit.title || "Vehicle"}
