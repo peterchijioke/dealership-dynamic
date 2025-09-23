@@ -28,7 +28,6 @@ export const algoliaSortOptions = [
     label: "Relevance",
     value: srpIndex,
   },
- 
   {
     label: "Price: Low to High",
     value: "prod_73d6c4fc8ffb471e88c45e8eeddc1c63_srp_price_asc",
