@@ -533,17 +533,22 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
         <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded">
+        <div className="flex gap-2 mb-1">
+          <span className="text-xs font-medium h-fit text-green-700 bg-green-100 px-2 py-0.5 rounded">
             {hit.condition.toUpperCase()}
           </span>
-          <span className="text-xs text-gray-500">{hit.title}</span>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 truncate line-clamp-2">
+              {hit.title}
+            </span>
+
+            <p className="text-xs text-gray-500 truncate">
+              {hit.drive_train} {hit.body}
+            </p>
+          </div>
         </div>
         <p className="font-medium text-sm group-hover:text-blue-600 truncate">
           <Highlight attribute="title" hit={hit as any} />
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {hit.drive_train} {hit.body}
         </p>
       </div>
       <div className="text-right flex-shrink-0">
@@ -580,7 +585,15 @@ function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
           <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
             {hit.condition.toUpperCase()}
           </span>
-          <span className="text-xs text-gray-500">{hit.title}</span>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 truncate line-clamp-2">
+              {hit.title}
+            </span>
+
+            <p className="text-xs text-gray-500 truncate">
+              {hit.drive_train} {hit.body}
+            </p>
+          </div>
         </div>
         <p className="font-medium text-sm group-hover:text-blue-600 truncate">
           <Highlight attribute="title" hit={hit as any} />
