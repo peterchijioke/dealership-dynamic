@@ -189,11 +189,14 @@ export default function CarouselComponents() {
                       >
                         <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                           <video
+                            style={{
+                              objectFit: "cover",
+                            }}
                             controls
                             poster={vdpData.photo}
                             preload="none"
                             disablePictureInPicture
-                            className="w-full h-full object-cover"
+                            className="w-full h-full flex-1 object-cover"
                           >
                             <source src={item.url} />
                             {!isVideoPlaying && (
