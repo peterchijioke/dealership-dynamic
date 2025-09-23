@@ -180,7 +180,7 @@ export default function CarouselComponents() {
                 </div>
               ) : (
                 images.map((item, index) => {
-                  if (item.type === "video") {
+                  if (item.type === "video" && item.url) {
                     return (
                       <div
                         key={index}
@@ -188,6 +188,33 @@ export default function CarouselComponents() {
                         style={{ width: "100%", minWidth: "100%" }}
                       >
                         <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
+                          <video
+                            controls
+                            poster={vdpData.photo}
+                            preload="none"
+                            disablePictureInPicture
+                            className="w-full h-full object-cover"
+                          >
+                            <source src={item.url} />
+                            {!isVideoPlaying && (
+                              <VideoIcon
+                                width={48}
+                                height={48}
+                                color="white"
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform"
+                              />
+                            )}
+                            {vdpData.video_subtitle && (
+                              <track
+                                src={vdpData.video_subtitle}
+                                kind="captions"
+                                srcLang="en"
+                                label="English"
+                              />
+                            )}
+                          </video>
+                        </div>
+                        {/* <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                           <HoverVideoPlayer
                             className="h-full w-full object-contain"
                             videoClassName="w-full h-full object-contain"
@@ -238,7 +265,7 @@ export default function CarouselComponents() {
                               ) : undefined
                             }
                           />
-                        </div>
+                        </div> */}
                       </div>
                     );
                   }
