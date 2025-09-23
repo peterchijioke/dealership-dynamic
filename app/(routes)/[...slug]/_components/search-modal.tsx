@@ -152,7 +152,6 @@ export default function SearchDropdown({
   // Prevent page scroll when open - ENHANCED LOCK
   useEffect(() => {
     if (!isOpen) return;
-
     // Store original values for both html and body
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
