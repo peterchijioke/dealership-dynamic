@@ -55,7 +55,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
     >
       {/* Poster Image Overlay */}
       {!isVideoPlaying && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center">
           <Image
             alt="video thumbnail"
             src={poster}
