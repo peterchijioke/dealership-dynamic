@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  extractFacetFilters,
   refinementToFacetFilters,
   searchWithMultipleQueries,
 } from "@/lib/algolia";
@@ -56,9 +57,8 @@ export default async function CatchAllPage({
     "/" + slug.join("/"),
     searchParamsObj
   );
+  // console.log("refinementList", refinementList);
 
-  // Use Algolia search with parsed query & filters
-  // const query = searchParamsObj.get("query") || "";
   const facetFilters = refinementToFacetFilters(refinementList);
 
   // Prefetch first page from Algolia
@@ -69,7 +69,9 @@ export default async function CatchAllPage({
     // attributesToRetrieve: ["*"],
   });
 
-  // console.log("Initial search results:", initialResults);
+  const extractedFacetFilters = extractFacetFilters(initialResults.params)
+
+  // console.log("Initial search results:", initialResults.params);
 
   // Build JSON-LD structured data
   const jsonLd = buildSrpJsonLd(slug, initialResults.hits);
@@ -85,7 +87,7 @@ export default async function CatchAllPage({
 
       <SearchClient
         initialResults={initialResults}
-        refinements={refinementList}
+        refinements={extractedFacetFilters}
       />
     </div>
   );

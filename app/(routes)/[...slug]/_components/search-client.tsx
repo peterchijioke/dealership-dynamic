@@ -1,13 +1,13 @@
 "use client";
 import "./search-client-scroll-lock.css";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
 import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
-import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
+import { useAlgolia } from "@/hooks/useAlgolia";
 import {
   algoliaSortOptions,
   CATEGORICAL_FACETS,
@@ -16,7 +16,6 @@ import {
 } from "@/configs/config";
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
-import { urlParser2 } from "@/lib/url-formatter";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
@@ -175,7 +174,7 @@ export default function SearchClient({
           >
             <ScrollArea className="h-full pb-8  ">
               <div className=" w-full px-3 md:pt-0 pt-20">
-                <CarouselBanner className=" rounded-2xl" />
+                <CarouselBanner filters={selectedFacets} className=" rounded-2xl" />
               </div>
               <div className="p-4 space-y-4">
                 <div className="w-full flex py-4  flex-col gap-2">

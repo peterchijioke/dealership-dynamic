@@ -21,27 +21,14 @@ export function useSpecials(filters: Record<string, any>) {
       setError(null);
       try {
         const payload = {
-    special_types: [],
-    channels: [
-        "srp_banner"
-    ],
-    filters
-    // "filters": {
-    //     "condition": [
-    //         "new"
-    //     ],
-    //     "make": [
-    //         "Nissan"
-    //     ],
-    //     "model": [
-    //         "Frontier"
-    //     ]
-    // }
-}
+          special_types: [],
+          channels: ["srp_banner"],
+          filters,
+        };
         const specialsGroup = await getSpecials(site, payload);
-        console.log('=============getSpecials=======================');
-        console.log(JSON.stringify(specialsGroup, null, 2));
-        console.log('==============getSpecials======================');
+        // console.log("=============getSpecials=======================");
+        // console.log(JSON.stringify(specialsGroup, null, 2));
+        // console.log("==============getSpecials======================");
         const final = {
           topBannerSpecials: specialsGroup
             .flat()
@@ -72,8 +59,7 @@ export function useSpecials(filters: Record<string, any>) {
   return { specials, isLoading, error };
 }
 
-
- async function getSpecials(site: string, payload: any) {
+async function getSpecials(site: string, payload: any) {
   const channels = payload?.channels ?? [];
   const special_types = payload?.special_types ?? [];
 
@@ -86,23 +72,26 @@ export function useSpecials(filters: Record<string, any>) {
     special_types,
   };
 
-  if (!channels.includes('special_page')) {
+  if (!channels.includes("special_page")) {
     requestBody.filters = payload?.filters ?? {
-      condition: ['new', 'used', 'certified'],
+      condition: ["new", "used", "certified"],
     };
   }
 
-try {
-    const res = await apiClient.post<{
-    data: SpecialGroup[];
-  }>(
-    `/${site}${specialBanner}`,
-    requestBody
-  );
+  try {
+    if (requestBody.filters?.condition) {
+      requestBody.filters.condition = requestBody.filters.condition.map((val) =>
+        val.toLowerCase()
+      );
+    }
 
-  return res.data.data;
-} catch (error) {
-  console.error(error);
-  throw error;
-}
+    const res = await apiClient.post<{
+      data: SpecialGroup[];
+    }>(`/${site}${specialBanner}`, requestBody);
+
+    return res.data.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

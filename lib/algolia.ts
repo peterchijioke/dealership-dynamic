@@ -129,10 +129,13 @@ async function searchWithMultipleQueries(options: SearchOptions) {
     mergedFacets.year = sortedYears;
   }
 
+  // console.log("hitsResult:", hitsResult);
+
   return {
     hits: hitsResult.hits,
     nbHits: hitsResult.nbHits,
     facets: mergedFacets,
+    params: hitsResult.params,
     page: hitsResult.page,
     nbPages: hitsResult.nbPages,
   };
@@ -321,6 +324,36 @@ function buildFacetFilters(
     });
 }
 
+function extractFacetFilters(params: string): Record<string, string[]> {
+  // Parse querystring into key-value pairs
+  const searchParams = new URLSearchParams(params);
+
+  const facetFiltersParam = searchParams.get("facetFilters");
+  if (!facetFiltersParam) return {};
+
+  // Decode URI then parse JSON
+  let facetFilters: string[][] = [];
+  try {
+    facetFilters = JSON.parse(decodeURIComponent(facetFiltersParam));
+  } catch (e) {
+    console.error("Failed to parse facetFilters:", e);
+    return {};
+  }
+
+  // Convert [["condition:New"], ["make:Nissan"]] → { condition: ["New"], make: ["Nissan"] }
+  const record: Record<string, string[]> = {};
+  facetFilters.forEach((group) => {
+    group.forEach((filter) => {
+      const [key, value] = filter.split(":");
+      if (!record[key]) record[key] = [];
+      record[key].push(value);
+    });
+  });
+
+  return record;
+}
+
+
 export {
   client,
   search,
@@ -332,4 +365,5 @@ export {
   parsePathRefinements,
   generateFacetFilters,
   buildFacetFilters,
+  extractFacetFilters,
 };
