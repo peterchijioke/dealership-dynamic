@@ -13,6 +13,7 @@ export default function VdpBodySection() {
 
   useInView(
     featuresRef,
+
     {
       threshold: 0.25,
       root: null,

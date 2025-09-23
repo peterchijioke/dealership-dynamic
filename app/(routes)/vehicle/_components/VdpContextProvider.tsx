@@ -14,6 +14,8 @@ type VdpContextType = {
   footerInView: boolean;
   setFooterInView: (value: boolean) => void;
   vdpData: VDPType & VehicleRecord;
+  bottomInView: boolean;
+  setBottomInView: (value: boolean) => void;
 };
 
 const VDPContext = createContext<VdpContextType | undefined>(undefined);
@@ -26,12 +28,15 @@ export const VdpContextProvider: React.FC<{
 }> = ({ vdpData, children, srpData }) => {
   const [featureInView, setFeatureInView] = useState(false);
   const [footerInView, setFooterInView] = useState(false);
+  const [bottomInView, setBottomInView] = useState(false);
 
   return (
     <VDPContext.Provider
       value={{
         featureInView,
         setFeatureInView,
+        bottomInView,
+        setBottomInView,
         footerInView,
         setFooterInView,
         vdpData: {

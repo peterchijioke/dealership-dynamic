@@ -2,7 +2,11 @@ import React from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
-export default function AppFooter() {
+export default function AppFooter({
+  bottomRef,
+}: {
+  bottomRef: React.RefObject<HTMLDivElement | null>;
+}) {
   return (
     <footer className="bg-[#1e1e1e] px-4 pt-14 md:px-5 lg:px-8 xl:px-10 2xl:px-16 pb-12">
       <div className="max-w-5xl mx-auto">
@@ -210,7 +214,7 @@ export default function AppFooter() {
       </div>
 
       {/* Copyright */}
-      <div className="flex flex-col pt-8 max-w-5xl mx-auto">
+      <div ref={bottomRef} className="flex flex-col pt-8 max-w-5xl mx-auto">
         <p className="text-white">
           <small>
             The #1 family-owned dealer serving the Virginia, Maryland &

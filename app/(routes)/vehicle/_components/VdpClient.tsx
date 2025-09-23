@@ -10,7 +10,8 @@ import SpecialBanner from "@/components/layouts/SpecialBanner";
 
 export default function VdpClient() {
   const footerRef = useRef<HTMLDivElement>(null);
-  const { setFooterInView } = useVehicleDetails();
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const { setFooterInView, setBottomInView } = useVehicleDetails();
 
   useInView(
     footerRef,
@@ -29,6 +30,24 @@ export default function VdpClient() {
     }
   );
 
+  useInView(
+    bottomRef,
+
+    {
+      threshold: 0.25,
+      root: null,
+      rootMargin: "0px 0px -10% 0px",
+    },
+    {
+      onEnter: () => {
+        setBottomInView(true);
+      },
+      onExit: () => {
+        setBottomInView(false);
+      },
+    }
+  );
+
   return (
     <>
       <SpecialBanner />
@@ -42,7 +61,7 @@ export default function VdpClient() {
       </main>
 
       <BottomSection footerRef={footerRef} />
-      <AppFooter />
+      <AppFooter bottomRef={bottomRef} />
     </>
   );
 }

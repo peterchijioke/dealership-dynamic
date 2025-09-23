@@ -91,15 +91,10 @@ const AvailabilityForm = ({ action, setAction }: Props) => {
             <p className="text-sm text-gray-600 mt-1">Limited availability</p>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="text-lg font-bold text-gray-900">
-              {vdpData.sale_price?.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              }) ||
-                vdpData.prices?.dealer_sale_price_formatted ||
-                "$0"}
+            <div className="text-lg font-bold text-rose-700">
+              {vdpData.prices?.dealer_sale_price_formatted}
             </div>
-            <div className="text-xs text-gray-500">Starting price</div>
+            {/* <div className="text-xs text-gray-500">Starting price</div> */}
           </div>
         </div>
 
