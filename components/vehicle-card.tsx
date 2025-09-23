@@ -499,7 +499,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
             "rounded-xl border pt-0 pb-0 text-card-foreground shadow vehicle-grid__card bg-white relative flex max-w-[92vw] h-full transform flex-col border-none transition duration-500 md:max-w-[380px] xl:max-w-[400px]"
           )}
         >
-          <div className="flex-1  ">
+          <div className="flex-1   ">
             {hit.tag && (
               <VehicleCardLabel isSpecial={hit.is_special} tags={hit.tag} />
             )}

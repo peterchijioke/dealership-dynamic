@@ -15,6 +15,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import HoverVideoPlayer from "react-hover-video-player";
 import { cn } from "@/lib/utils";
 import { TagT } from "@/types/vehicle";
+import VideoCarouselItem from "./VideoCarouselItem";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -187,33 +188,13 @@ export default function CarouselComponents() {
                         className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
                         style={{ width: "100%", minWidth: "100%" }}
                       >
-                        <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                          <video
-                            controls
-                            poster={vdpData.photo}
-                            preload="none"
-                            disablePictureInPicture
-                            className="w-full h-full object-cover"
-                          >
-                            <source src={item.url} />
-                            {!isVideoPlaying && (
-                              <VideoIcon
-                                width={48}
-                                height={48}
-                                color="white"
-                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform"
-                              />
-                            )}
-                            {vdpData.video_subtitle && (
-                              <track
-                                src={vdpData.video_subtitle}
-                                kind="captions"
-                                srcLang="en"
-                                label="English"
-                              />
-                            )}
-                          </video>
-                        </div>
+                        <VideoCarouselItem
+                          onPlayStateChange={setIsVideoPlaying}
+                          url={item.url}
+                          poster={vdpData.photo}
+                          subtitle={vdpData.video_subtitle!}
+                          isVideoPlaying={isVideoPlaying}
+                        />
                         {/* <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                           <HoverVideoPlayer
                             className="h-full w-full object-contain"
