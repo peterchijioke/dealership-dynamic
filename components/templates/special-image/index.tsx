@@ -29,7 +29,7 @@ function SpecialImageSrp(props: Props) {
       {imageUrl && (
         <Image
           // className={'mx-auto max-w-[972px] object-cover xl:max-w-[100%] 4xl:object-contain'}
-          className={"object-cover lg:object-contain"}
+          className={"object-contain"}
           alt={special.title}
           // src={imageLoader({ src: imageUrl, width: 972 })} // 972 is the width of the image for desktop, but if you want to use the width of the image for mobile, you can use another value
           src={imageUrl}

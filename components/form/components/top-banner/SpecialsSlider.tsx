@@ -111,7 +111,7 @@ function SpecialsSlider(props: Props) {
             {specials.map((special, index) => (
               <CarouselItem
                 key={`${special.title}${index}`}
-                className=" w-full h-full"
+                className=" w-full mb-3 h-full"
               >
                 <SpecialTopBannerTemplateRenderer
                   special={special}

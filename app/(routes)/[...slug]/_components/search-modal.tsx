@@ -136,18 +136,6 @@ export function CustomSearchBox({
   );
 }
 
-/**
- * --- Search Dropdown (overlay + a11y + keyboard nav + suggestions) ---
- *
- * IMPORTANT: Choose ONE filtering strategy below:
- *   A) Multi-index approach: set NEW_INDEX_NAME and USED_INDEX_NAME.
- *   B) Single-index + facet filter: leave index names as null and set CONDITION_FACET to the facet key.
- */
-
-const NEW_INDEX_NAME: string | null = null; // e.g. "vehicles_new"
-const USED_INDEX_NAME: string | null = null; // e.g. "vehicles_used"
-const CONDITION_FACET = "condition"; // used when single index (values: "new" | "used")
-
 export default function SearchDropdown({
   isOpen,
   resultsLimit = 6,
@@ -164,7 +152,6 @@ export default function SearchDropdown({
   // Prevent page scroll when open - ENHANCED LOCK
   useEffect(() => {
     if (!isOpen) return;
-
     // Store original values for both html and body
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
@@ -297,6 +284,9 @@ export default function SearchDropdown({
   // recent searches (simple localStorage) - Fixed to handle SSR
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
+  // Mobile tab state: 'new' or 'used'
+  const [activeMobileTab, setActiveMobileTab] = useState<"new" | "used">("new");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -397,8 +387,87 @@ export default function SearchDropdown({
           </div>
         </div>
 
-        {/* Body - FIXED: Allow internal scrolling only */}
-        <div className="flex h-[25rem] bg-inherit" ref={listRef}>
+        {/* Mobile Tab Navigation */}
+        <div className="bg-inherit w-full flex md:hidden gap-2 px-2 py-2 items-center">
+          <button
+            className={`w-fit shadow-xs rounded-full py-1 px-4 text-[#454545] ${
+              activeMobileTab === "new"
+                ? "bg-rose-700 text-white"
+                : "bg-[#F0F0F0]"
+            }`}
+            onClick={() => setActiveMobileTab("new")}
+            aria-pressed={activeMobileTab === "new"}
+          >
+            New Inventory
+          </button>
+          <button
+            className={`w-fit shadow-xs rounded-full py-1 px-4 text-[#454545] ${
+              activeMobileTab === "used"
+                ? "bg-rose-700 text-white"
+                : "bg-[#F0F0F0]"
+            }`}
+            onClick={() => setActiveMobileTab("used")}
+            aria-pressed={activeMobileTab === "used"}
+          >
+            Used Inventory
+          </button>
+        </div>
+
+        {/* Mobile Results */}
+        <div className="flex md:hidden h-[25rem] bg-inherit" ref={listRef}>
+          <ScrollArea
+            className="flex-1 h-96 bg-inherit backdrop-blur-sm"
+            data-scroll-area="true"
+            style={{
+              touchAction: "pan-y pan-x",
+              overscrollBehavior: "contain",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            <div className="p-6">
+              {activeMobileTab === "new" ? (
+                <section aria-labelledby="new-inventory-mobile">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3
+                      id="new-inventory-mobile"
+                      className="text-lg font-semibold"
+                    >
+                      See ALL New Inventory
+                    </h3>
+                    <ViewAllLink close={() => onClose()} href="/new-vehicles" />
+                  </div>
+                  <div className="space-y-3">
+                    <Hits
+                      classNames={{ root: "grid grid-cols-1 gap-4" }}
+                      hitComponent={NewInventoryHit}
+                    />
+                  </div>
+                </section>
+              ) : (
+                <section aria-labelledby="new-inventory-mobile">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3
+                      id="new-inventory-mobile"
+                      className="text-lg font-semibold"
+                    >
+                      See ALL Used Inventory
+                    </h3>
+                    <ViewAllLink close={() => onClose()} href="/new-vehicles" />
+                  </div>
+                  <div className="space-y-3">
+                    <Hits
+                      classNames={{ root: "grid grid-cols-1 gap-4" }}
+                      hitComponent={PreOwnedHit}
+                    />
+                  </div>
+                </section>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Desktop Results */}
+        <div className="md:flex h-[25rem] bg-inherit hidden" ref={listRef}>
           {/* Results - ENHANCED: Only this area can scroll */}
           <ScrollArea
             className="flex-1 h-96 bg-inherit backdrop-blur-sm"
@@ -524,6 +593,57 @@ function SuggestionItem({
   );
 }
 
+function PreOwnedHit({ hit }: { hit: any & { objectID: string } }) {
+  if (hit.condition.toLowerCase() == "new") {
+    return null; // Skip rendering if the condition is "used"
+  }
+  return (
+    <Link
+      href={`/vehicle/${hit.objectID}`}
+      data-hit-link="true"
+      className="flex items-center gap-3 p-3 mb-2 hover:bg-gray-50 focus:bg-gray-50 rounded-lg border transition-colors group outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      {hit.photo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={hit.photo || placeholderImage}
+          alt={hit.title || "Vehicle"}
+          loading="eager"
+          fetchPriority="high"
+          className="w-16 h-12 object-cover rounded flex-shrink-0"
+        />
+      ) : (
+        <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex gap-2 mb-1 min-w-0 items-center">
+          <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded mb-1 xs:mb-0 w-fit">
+            {hit.condition.toUpperCase()}
+          </span>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span
+              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
+              style={{ display: "block" }}
+            >
+              {hit.title}
+            </span>
+            <p className="text-xs text-gray-500 truncate">
+              {hit.drive_train} {hit.body}
+            </p>
+          </div>
+        </div>
+        <p className="font-medium text-sm group-hover:text-blue-600 truncate">
+          <Highlight attribute="title" hit={hit as any} />
+        </p>
+      </div>
+      <div className="text-right flex-shrink-0">
+        <p className="text-sm font-semibold text-red-600">
+          {hit.prices?.sale_price_formatted || "Call for Price"}
+        </p>
+      </div>
+    </Link>
+  );
+}
 function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
   if (hit.condition.toLowerCase() !== "new") {
     return null; // Skip rendering if the condition is "used"
@@ -539,6 +659,7 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
         <img
           src={hit.photo || placeholderImage}
           alt={hit.title || "Vehicle"}
+          loading="eager"
           fetchPriority="high"
           className="w-16 h-12 object-cover rounded flex-shrink-0"
         />
@@ -546,68 +667,30 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
         <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded">
+        <div className="flex gap-2 mb-1 min-w-0 items-center">
+          <span className="text-xs font-medium h-fit text-green-700 bg-green-100 px-2 py-0.5 rounded">
             {hit.condition.toUpperCase()}
           </span>
-          <span className="text-xs text-gray-500">{hit.title}</span>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span
+              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
+              style={{ display: "block" }}
+            >
+              {hit.title}
+            </span>
+            <p className="text-xs text-gray-500 truncate">
+              {hit.drive_train} {hit.body}
+            </p>
+          </div>
         </div>
         <p className="font-medium text-sm group-hover:text-blue-600 truncate">
           <Highlight attribute="title" hit={hit as any} />
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {hit.drive_train} {hit.body}
         </p>
       </div>
       <div className="text-right flex-shrink-0">
         <p className="text-sm font-semibold text-red-600">
           {hit.prices?.sale_price_formatted || "Call for Price"}
         </p>
-      </div>
-    </Link>
-  );
-}
-
-function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
-  if (hit.condition.toLowerCase() === "new") {
-    return null; // Skip rendering if the condition is "new"
-  }
-  return (
-    <Link
-      href={`/vehicle/${hit.objectID}`}
-      data-hit-link="true"
-      className="flex items-center mb-2 gap-3 p-3 hover:bg-gray-50 focus:bg-gray-50 rounded-lg border transition-colors group outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      {hit.photo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={hit.photo}
-          alt={hit.title || "Vehicle"}
-          className="w-16 h-12 object-cover rounded flex-shrink-0"
-        />
-      ) : (
-        <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0" />
-      )}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
-            {hit.condition.toUpperCase()}
-          </span>
-          <span className="text-xs text-gray-500">{hit.title}</span>
-        </div>
-        <p className="font-medium text-sm group-hover:text-blue-600 truncate">
-          <Highlight attribute="title" hit={hit as any} />
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {hit.drive_train} {hit.body}
-        </p>
-      </div>
-      <div className="text-right flex-shrink-0">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-red-600">
-            {hit.prices?.sale_price_formatted || "Call for Price"}
-          </p>
-        </div>
       </div>
     </Link>
   );

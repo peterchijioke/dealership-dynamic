@@ -5,9 +5,9 @@ import { ChevronLeft, Calendar, Car, Globe } from "lucide-react";
 import WarrantyForLife from "./WarrantyForLife";
 import VehicleFeatures from "./VehicleFeatures";
 import { useVehicleDetails } from "./VdpContextProvider";
-import { stripTrailingCents } from "@/utils/utils";
 import VehicleFinancing from "../../[...slug]/_components/vehicle-financing";
 import VehicleOemIncentives from "../../[...slug]/_components/vehicle-oem-incentives";
+import { formatPrice } from "@/utils/utils";
 
 export type VehicleDetailsProps = {
   onGoBack?: () => void;
@@ -46,15 +46,7 @@ export default function VehicleDetails({
           </div>
           <div className="flex flex-col items-end">
             <div className=" font-bold text-lg text-rose-700">
-              <h2>
-                {vdpData.sale_price?.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }) ||
-                  stripTrailingCents(
-                    vdpData.prices?.dealer_sale_price_formatted
-                  )}
-              </h2>
+              <h2>{formatPrice(vdpData.sale_price)}</h2>
             </div>
             <div className="flex flex-row min-w-max">
               <button
