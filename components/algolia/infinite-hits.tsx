@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useInfiniteHits } from "react-instantsearch";
-import VehicleCard from "@/components/vehicle-card";
+import VehicleCard from "@/components/vehicle/vehicle-card";
 import type { Vehicle } from "@/types/vehicle";
 
 export default function InfiniteHits({
@@ -44,8 +44,8 @@ export default function InfiniteHits({
         {hits.length > 0
           ? hits.map((hit) => <VehicleCard key={hit.objectID} hit={hit} />)
           : serverHits.map((hit) => (
-              <VehicleCard key={hit.objectID} hit={hit} />
-            ))}
+            <VehicleCard key={hit.objectID} hit={hit} />
+          ))}
       </div>
 
       {/* Sentinel div for infinite scroll */}

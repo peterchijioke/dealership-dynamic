@@ -15,7 +15,7 @@ interface ShardSheetFormProps {
   title?: string;
 }
 
-export function ShardSheetForm({
+export default function ShardSheetForm({
   open,
   onOpenChange,
   children,

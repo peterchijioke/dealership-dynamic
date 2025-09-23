@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import VehicleCard from "@/components/vehicle-card";
+import VehicleCard from "@/components/vehicle/vehicle-card";
 import type { VehicleHit } from "@/types/vehicle";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 

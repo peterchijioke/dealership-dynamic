@@ -38,9 +38,7 @@ function VehicleOemIncentives(props: Props) {
       {showSpecials && (
         <ul className="vehicle-oem-list my-2">
           {incentives.map((incentive) => (
-            <li key={incentive.id} className="vehicle-oem-list-item mb-2">
-              <IncentiveItem incentive={incentive} />
-            </li>
+            <IncentiveItem key={incentive.id} incentive={incentive} />
           ))}
         </ul>
       )}
