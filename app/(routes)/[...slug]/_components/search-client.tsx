@@ -187,7 +187,7 @@ export default function SearchClient({
                       indexName={srpIndex}
                       searchClient={searchClient}
                     >
-                      <div className="relative w-full z-50 pointer-events-auto">
+                      <div className="relative max-w-7xl w-full z-50 pointer-events-auto">
                         <CustomSearchBox
                           onClose={() => setSearchOpen(false)}
                           setSearchOpen={setSearchOpen}
