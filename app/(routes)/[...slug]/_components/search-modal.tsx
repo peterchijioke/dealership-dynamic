@@ -284,6 +284,9 @@ export default function SearchDropdown({
   // recent searches (simple localStorage) - Fixed to handle SSR
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
+  // Mobile tab state: 'new' or 'used'
+  const [activeMobileTab, setActiveMobileTab] = useState<"new" | "used">("new");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -384,8 +387,87 @@ export default function SearchDropdown({
           </div>
         </div>
 
-        {/* Body - FIXED: Allow internal scrolling only */}
-        <div className="flex h-[25rem] bg-inherit" ref={listRef}>
+        {/* Mobile Tab Navigation */}
+        <div className="bg-inherit w-full flex md:hidden gap-2 px-2 py-2 items-center">
+          <button
+            className={`w-fit shadow-xs rounded-full py-1 px-4 text-[#454545] ${
+              activeMobileTab === "new"
+                ? "bg-rose-700 text-white"
+                : "bg-[#F0F0F0]"
+            }`}
+            onClick={() => setActiveMobileTab("new")}
+            aria-pressed={activeMobileTab === "new"}
+          >
+            New Inventory
+          </button>
+          <button
+            className={`w-fit shadow-xs rounded-full py-1 px-4 text-[#454545] ${
+              activeMobileTab === "used"
+                ? "bg-rose-700 text-white"
+                : "bg-[#F0F0F0]"
+            }`}
+            onClick={() => setActiveMobileTab("used")}
+            aria-pressed={activeMobileTab === "used"}
+          >
+            Used Inventory
+          </button>
+        </div>
+
+        {/* Mobile Results */}
+        <div className="flex md:hidden h-[25rem] bg-inherit" ref={listRef}>
+          <ScrollArea
+            className="flex-1 h-96 bg-inherit backdrop-blur-sm"
+            data-scroll-area="true"
+            style={{
+              touchAction: "pan-y pan-x",
+              overscrollBehavior: "contain",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            <div className="p-6">
+              {activeMobileTab === "new" ? (
+                <section aria-labelledby="new-inventory-mobile">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3
+                      id="new-inventory-mobile"
+                      className="text-lg font-semibold"
+                    >
+                      See ALL New Inventory
+                    </h3>
+                    <ViewAllLink close={() => onClose()} href="/new-vehicles" />
+                  </div>
+                  <div className="space-y-3">
+                    <Hits
+                      classNames={{ root: "grid grid-cols-1 gap-4" }}
+                      hitComponent={NewInventoryHit}
+                    />
+                  </div>
+                </section>
+              ) : (
+                <section aria-labelledby="new-inventory-mobile">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3
+                      id="new-inventory-mobile"
+                      className="text-lg font-semibold"
+                    >
+                      See ALL Used Inventory
+                    </h3>
+                    <ViewAllLink close={() => onClose()} href="/new-vehicles" />
+                  </div>
+                  <div className="space-y-3">
+                    <Hits
+                      classNames={{ root: "grid grid-cols-1 gap-4" }}
+                      hitComponent={PreOwnedHit}
+                    />
+                  </div>
+                </section>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Desktop Results */}
+        <div className="md:flex h-[25rem] bg-inherit hidden" ref={listRef}>
           {/* Results - ENHANCED: Only this area can scroll */}
           <ScrollArea
             className="flex-1 h-96 bg-inherit backdrop-blur-sm"
