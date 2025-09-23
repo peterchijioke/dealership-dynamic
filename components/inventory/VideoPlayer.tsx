@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import ClipLoader from "react-spinners/ClipLoader";
+import { VideoIcon } from "@radix-ui/react-icons";
 
 type Props = {
   video: string;
@@ -63,6 +64,20 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
+          {/* Video Icon Overlay - shown when not playing */}
+          {!isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-black/50 rounded-full p-3 backdrop-blur-sm">
+                <VideoIcon
+                  width={25}
+                  height={25}
+                  color="white"
+                  className="drop-shadow-lg"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Loading Overlay */}
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -76,7 +91,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
       <video
         ref={videoRef}
         poster={poster}
-        preload="auto"
+        preload="none"
         muted
         disablePictureInPicture
         controls={isVideoPlaying}
