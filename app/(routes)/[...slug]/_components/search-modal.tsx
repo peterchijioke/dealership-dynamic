@@ -511,6 +511,57 @@ function SuggestionItem({
   );
 }
 
+function PreOwnedHit({ hit }: { hit: any & { objectID: string } }) {
+  if (hit.condition.toLowerCase() == "new") {
+    return null; // Skip rendering if the condition is "used"
+  }
+  return (
+    <Link
+      href={`/vehicle/${hit.objectID}`}
+      data-hit-link="true"
+      className="flex items-center gap-3 p-3 mb-2 hover:bg-gray-50 focus:bg-gray-50 rounded-lg border transition-colors group outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      {hit.photo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={hit.photo || placeholderImage}
+          alt={hit.title || "Vehicle"}
+          loading="eager"
+          fetchPriority="high"
+          className="w-16 h-12 object-cover rounded flex-shrink-0"
+        />
+      ) : (
+        <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex gap-2 mb-1 min-w-0 items-center">
+          <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded mb-1 xs:mb-0 w-fit">
+            {hit.condition.toUpperCase()}
+          </span>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span
+              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
+              style={{ display: "block" }}
+            >
+              {hit.title}
+            </span>
+            <p className="text-xs text-gray-500 truncate">
+              {hit.drive_train} {hit.body}
+            </p>
+          </div>
+        </div>
+        <p className="font-medium text-sm group-hover:text-blue-600 truncate">
+          <Highlight attribute="title" hit={hit as any} />
+        </p>
+      </div>
+      <div className="text-right flex-shrink-0">
+        <p className="text-sm font-semibold text-red-600">
+          {hit.prices?.sale_price_formatted || "Call for Price"}
+        </p>
+      </div>
+    </Link>
+  );
+}
 function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
   if (hit.condition.toLowerCase() !== "new") {
     return null; // Skip rendering if the condition is "used"
@@ -558,63 +609,6 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
         <p className="text-sm font-semibold text-red-600">
           {hit.prices?.sale_price_formatted || "Call for Price"}
         </p>
-      </div>
-    </Link>
-  );
-}
-
-function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
-  if (hit.condition.toLowerCase() === "new") {
-    return null;
-  }
-  return (
-    <Link
-      href={`/vehicle/${hit.objectID}`}
-      data-hit-link="true"
-      className="flex flex-col sm:flex-row items-start sm:items-center mb-2 gap-2 sm:gap-3 p-3 hover:bg-gray-50 focus:bg-gray-50 rounded-lg border transition-colors group outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      {hit.photo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={hit.photo || placeholderImage}
-          fetchPriority="high"
-          loading="eager"
-          alt={hit.title || "Vehicle"}
-          className="w-16 h-12 object-cover rounded flex-shrink-0 mb-2 sm:mb-0"
-        />
-      ) : (
-        <div className="w-16 h-12 bg-gray-200 rounded flex-shrink-0 mb-2 sm:mb-0" />
-      )}
-      <div className="flex-1 min-w-0 w-full">
-        <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-2 mb-1 w-full min-w-0">
-          <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded mb-1 xs:mb-0 w-fit">
-            {hit.condition.toUpperCase()}
-          </span>
-          <div className="flex flex-col flex-1 min-w-0">
-            <span
-              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
-              style={{ display: "block" }}
-            >
-              {hit.title}
-            </span>
-            <p className="text-xs text-gray-500 truncate">
-              {hit.drive_train} {hit.body}
-            </p>
-          </div>
-        </div>
-        <p className="font-medium text-sm group-hover:text-blue-600 truncate">
-          <Highlight attribute="title" hit={hit as any} />
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {hit.drive_train} {hit.body}
-        </p>
-      </div>
-      <div className="text-right flex-shrink-0 mt-2 sm:mt-0">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-red-600">
-            {hit.prices?.sale_price_formatted || "Call for Price"}
-          </p>
-        </div>
       </div>
     </Link>
   );
