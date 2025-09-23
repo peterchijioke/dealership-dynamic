@@ -136,18 +136,6 @@ export function CustomSearchBox({
   );
 }
 
-/**
- * --- Search Dropdown (overlay + a11y + keyboard nav + suggestions) ---
- *
- * IMPORTANT: Choose ONE filtering strategy below:
- *   A) Multi-index approach: set NEW_INDEX_NAME and USED_INDEX_NAME.
- *   B) Single-index + facet filter: leave index names as null and set CONDITION_FACET to the facet key.
- */
-
-const NEW_INDEX_NAME: string | null = null; // e.g. "vehicles_new"
-const USED_INDEX_NAME: string | null = null; // e.g. "vehicles_used"
-const CONDITION_FACET = "condition"; // used when single index (values: "new" | "used")
-
 export default function SearchDropdown({
   isOpen,
   resultsLimit = 6,
