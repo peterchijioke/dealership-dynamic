@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useInfiniteHits } from "react-instantsearch";
-import VehicleCard from "@/components/vehicle/vehicle-card";
+import VehicleCard from "@/components/vehicle-card";
 import type { Vehicle } from "@/types/vehicle";
 
 export default function InfiniteHits({
