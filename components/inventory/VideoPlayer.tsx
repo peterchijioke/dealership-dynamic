@@ -18,7 +18,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
   };
 
   return (
-  <div className="!my-0 aspect-[3/2] rounded-t-2xl overflow-hidden relative w-full">
+    <div className="!my-0 aspect-[3/2] rounded-t-2xl overflow-hidden relative w-full">
       {/* <HoverVideoPlayer
         className="h-full flex-1 w-full"
         videoClassName="w-full h-full object-contain"
@@ -66,7 +66,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
         preload="none"
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ display: 'block' }}
+        style={{ display: "block" }}
       >
         <source src={video} />
         {videoCc && (
