@@ -25,7 +25,6 @@ function SpecialTopBannerTemplateRenderer(props: Props) {
   const renderContent = () => {
     if (isJustImage) {
       return (
-        // <div className="relative mx-auto aspect-[1600/120] max-h-[120px]  w-full  lg:aspect-[2560/120]">
         <div className="relative mx-auto aspect-[1600/150] max-h-[150px]  w-full  lg:aspect-[2560/200]">
           <SpecialImageSrp special={special} index={index} />
         </div>

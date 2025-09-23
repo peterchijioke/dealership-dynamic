@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getFormField, submitForm } from "@/app/api/dynamic-forms";
 import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { useRouter } from "next/navigation";
 
 type Props = {
   onContinue?: (action: Action) => void; // optional callback
@@ -482,7 +483,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
     setShowForm(false);
     setSelectedFormId(null);
   };
-
+  const route = useRouter();
   return (
     <div ref={footerRef} className="relative">
       {/* Bottom gradient under the pill (mobile only) */}
@@ -491,15 +492,27 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       {!open && (
         <div className="md:hidden fixed  left-0 right-0 bottom-6 z-30 px-4 ">
           {!featureInView && !bottomInView && (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="w-full py-3 rounded-full font-semibold text-white
-                       bg-rose-700 hover:bg-rose-800 active:scale-[.99]
-                       shadow-lg transition"
-            >
-              I&apos;m Interested
-            </button>
+            <div className="w-full flex  items-center gap-1">
+              <button
+                onClick={() => {
+                  route.back();
+                }}
+                className="flex rounded-full w-fit items-center py-3 px-3 justify-center gap-3 text-white hover:text-white bg-rose-700 transition-colors duration-200 text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="w-full py-3 flex-1  rounded-full font-semibold text-white
+                       bg-rose-700 hover:bg-rose-800
+"
+              >
+                I&apos;m Interested
+              </button>
+            </div>
           )}
           {featureInView && (
             <button
