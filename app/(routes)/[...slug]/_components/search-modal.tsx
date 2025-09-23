@@ -526,6 +526,7 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
         <img
           src={hit.photo || placeholderImage}
           alt={hit.title || "Vehicle"}
+          loading="eager"
           fetchPriority="high"
           className="w-16 h-12 object-cover rounded flex-shrink-0"
         />
@@ -562,7 +563,7 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
 
 function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
   if (hit.condition.toLowerCase() === "new") {
-    return null; // Skip rendering if the condition is "new"
+    return null;
   }
   return (
     <Link
@@ -574,6 +575,8 @@ function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={hit.photo}
+          fetchPriority="high"
+          loading="eager"
           alt={hit.title || "Vehicle"}
           className="w-16 h-12 object-cover rounded flex-shrink-0"
         />
