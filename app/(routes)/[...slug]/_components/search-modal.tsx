@@ -539,7 +539,10 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
             {hit.condition.toUpperCase()}
           </span>
           <div className="flex flex-col flex-1 min-w-0">
-            <span className="text-xs text-gray-500 truncate min-w-0 max-w-full" style={{display:'block'}}>
+            <span
+              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
+              style={{ display: "block" }}
+            >
               {hit.title}
             </span>
             <p className="text-xs text-gray-500 truncate">
@@ -588,7 +591,10 @@ function PreOwnedHit({ hit }: { hit: Vehicle & { objectID: string } }) {
             {hit.condition.toUpperCase()}
           </span>
           <div className="flex flex-col flex-1 min-w-0">
-            <span className="text-xs text-gray-500 truncate min-w-0 max-w-full" style={{display:'block'}}>
+            <span
+              className="text-xs text-gray-500 truncate min-w-0 max-w-full"
+              style={{ display: "block" }}
+            >
               {hit.title}
             </span>
             <p className="text-xs text-gray-500 truncate">
