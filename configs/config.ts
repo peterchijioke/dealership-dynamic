@@ -25,7 +25,7 @@ export const specialBanner = `/v1/get-specials`
 export const similarVehicleUrl=`${baseUrl}/${getDynamicPath()}/v1/get-similar-vehicles`
 export const algoliaSortOptions = [
   {
-    label: "Sort",
+    label: "Relevance",
     value: srpIndex,
   },
   {
