@@ -5,7 +5,6 @@ import CarouselComponents from "./CarouselComponents";
 import VehicleDetails from "./VehicleDetails";
 import { useInView } from "@/hooks/useInView";
 import { useVehicleDetails } from "./VdpContextProvider";
-import SpecialBanner from "@/components/layouts/SpecialBanner";
 
 export default function VdpBodySection() {
   const featuresRef = useRef<HTMLDivElement>(null);
