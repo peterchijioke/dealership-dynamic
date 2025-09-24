@@ -1,4 +1,4 @@
-import { placeholderImage } from "@/components/vehicle-image";
+import { PLACEHOLDER_IMAGE } from "@/configs/config";
 import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { SimilarVehicle } from "@/types/similar-vehicles";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
@@ -32,7 +32,7 @@ export default function SimilarVehicleCard({ vehicle }: Props) {
             <picture className="max-w-full h-auto w-full aspect-[1.33]">
               {!vehicle.photo && !encryptedUrl && !isHydrating && (
                 <img
-                  src={placeholderImage}
+                  src={PLACEHOLDER_IMAGE}
                   alt={vehicle.title || "car preview"}
                   fetchPriority={"high"}
                   loading={"eager"}
