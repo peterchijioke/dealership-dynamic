@@ -14,7 +14,7 @@ type Props = {
     attribute2: string; // e.g. "trim"
     values: HierarchyNode[]; // from buildModelTrimHierarchy()
     selectedFacets: Record<string, string[]>;
-    updateFacet: (attribute: string, value: string, parentModel?: string) => void;
+    updateFacet: (attribute: string, value: string) => void;
     className?: string;
 };
 
@@ -54,16 +54,6 @@ export default function CustomHierarchicalMenu({
                                         onChange={() => {
                                             updateFacet(attribute1, node.name);
                                             toggleExpand(node.name, !isChecked);
-
-                                            // If model is being unchecked, remove its associated trims
-                                            if (isChecked) {
-                                                node.children?.forEach((child) => {
-                                                    const childKey = `${node.name}+${child.name}`;
-                                                    if (selectedTrims.includes(childKey)) {
-                                                        updateFacet(attribute2, childKey);
-                                                    }
-                                                });
-                                            }
                                         }}
                                         className="h-4 w-4 cursor-pointer"
                                     />
