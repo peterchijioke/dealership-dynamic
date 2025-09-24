@@ -24,7 +24,6 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
     try {
       await videoRef.current.play();
     } catch (err: any) {
-      // Ignore "interrupted by pause" errors
       if (!err?.message?.includes("play() request was interrupted")) {
         console.error("Autoplay error:", err);
       }
@@ -61,7 +60,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
     >
       {/* Animated shimmer while waiting for poster */}
       {!posterLoaded && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200" />
+        <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200" />
       )}
 
       {/* Blur-up preview behind poster */}
@@ -69,8 +68,10 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
         src={generateImagePreviewData(previewurl)}
         alt="blur preview"
         className={cn(
-          "absolute inset-0 w-full h-full object-cover blur-md scale-105 transition-opacity duration-500",
-          posterLoaded ? "opacity-0" : "opacity-100"
+          "absolute inset-0 w-full h-full object-cover transition-all duration-700 animate-shimmer",
+          posterLoaded
+            ? "opacity-0 scale-100 blur-0"
+            : "opacity-100 scale-105 blur-md"
         )}
         aria-hidden="true"
       />
@@ -84,7 +85,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
         decoding="async"
         onLoad={() => setPosterLoaded(true)}
         className={cn(
-          "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+          "absolute inset-0 w-full h-full object-cover transition-opacity duration-500 animate-shimmer",
           posterLoaded ? "opacity-100" : "opacity-0"
         )}
         sizes="(max-width: 768px) 100vw,
