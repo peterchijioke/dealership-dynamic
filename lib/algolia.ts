@@ -352,7 +352,9 @@ function extractFacetFilters(params: string): Record<string, string[]> {
   return record;
 }
 
-function normalizeRefinementForAlgolia(selectedFacets: Record<string, string[]>) {
+function normalizeRefinementForAlgolia(
+  selectedFacets: Record<string, string[]>
+) {
   return {
     ...selectedFacets,
     trim: (selectedFacets.trim || [])
@@ -362,7 +364,6 @@ function normalizeRefinementForAlgolia(selectedFacets: Record<string, string[]>)
       .filter(Boolean), // remove empty strings
   };
 }
-
 
 export {
   client,

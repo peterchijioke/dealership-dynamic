@@ -1,4 +1,5 @@
-import { makesCode, modelsCode } from "@/configs/facets-code";
+// import { makesCode, modelsCode } from "@/configs/facets-code";
+import codes from "../facetCodes.json";
 import {
   appendParam,
   orderParams,
@@ -10,6 +11,22 @@ import {
 } from "./helpers";
 
 type UrlPattern = { pathname: string; params: { [x: string]: string[] } };
+
+const FACET_KEYS = [
+  "make",
+  "model",
+  "body",
+  "transmission",
+  "dealer_city",
+  "dealer_state",
+  "drive_train",
+  "engine",
+  "ext_color",
+  "fuel_type",
+  "int_color",
+  "key_features",
+  "trim",
+];
 
 function getConditionFromPath(pathname: string): string[] {
   if (pathname.startsWith("/used-vehicles/certified"))
@@ -83,7 +100,7 @@ export function urlParser(
   return { pathname: newPath, params };
 }
 
-export function urlParser2(
+export function urlParser2x(
   pathname: string,
   params: URLSearchParams
 ): { pathname: string; params: Record<string, string[]> } {
@@ -112,15 +129,25 @@ export function urlParser2(
   let model: string[] = [];
 
   if (pathParts.length > 1) {
+    const makeKey = pathParts[0] as keyof typeof codes.make;
+    const modelKey = pathParts[1] as keyof typeof codes.model;
+
     // If more than 1 segment, treat first as make
-    const makeCode = makesCode[pathParts[0]];
+    // const makeCode = makesCode[pathParts[0]];
+    const makeCode = codes.make[makeKey];
     // last item is model
-    const modelCode = modelsCode[pathParts[1]];
+    // const modelCode = modelsCode[pathParts[1]];
+    const modelCode = codes.model[modelKey];
+
     make = [makeCode];
     model = [modelCode];
   } else if (pathParts.length === 1) {
-    const makeCode = makesCode[pathParts[0]];
-    const modelCode = modelsCode[pathParts[0]];
+    const makeKey = pathParts[0] as keyof typeof codes.make;
+    const modelKey = pathParts[0] as keyof typeof codes.model;
+
+    const makeCode = codes.make[makeKey];
+    const modelCode = codes.model[modelKey];
+
     if (makeCode) make = [makeCode];
     if (modelCode) model = [modelCode];
   }
@@ -132,15 +159,123 @@ export function urlParser2(
   else if (matchedCondition.includes("used-vehicles/certified"))
     condition = ["Certified"];
   else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
-  else if (matchedCondition.includes("used-vehicles") && queryParams.condition?.includes("new"))
+  else if (
+    matchedCondition.includes("used-vehicles") &&
+    queryParams.condition?.includes("new")
+  )
     condition = ["Used"];
-  else if (matchedCondition.includes("used-vehicles")) condition = ["Used", "Certified"];
+  else if (matchedCondition.includes("used-vehicles"))
+    condition = ["Used", "Certified"];
+
+  // Normalize queryParams by mapping slugs → facet values
+  const normalizedParams: Record<string, string[]> = {};
+  for (const [key, values] of Object.entries(queryParams)) {
+    if (FACET_KEYS.includes(key) && codes[key as keyof typeof codes]) {
+      // Translate each slug back to its original value
+      normalizedParams[key] = values
+        .map(
+          (slug) =>
+            (codes[key as keyof typeof codes] as Record<string, string>)[slug]
+        )
+        .filter(Boolean); // drop unknown slugs
+    } else {
+      normalizedParams[key] = values;
+    }
+  }
 
   // Return full refinementList
   return {
     pathname,
     params: {
       ...queryParams,
+      ...(condition.length ? { condition } : {}),
+      ...(make.length ? { make } : {}),
+      ...(model.length ? { model } : {}),
+    },
+  };
+}
+
+export function urlParser2(
+  pathname: string,
+  params: URLSearchParams
+): { pathname: string; params: Record<string, string[]> } {
+  const queryParams = searchParamsToRecord2(params);
+
+  // Condition part
+  const conditionPaths = [
+    "/new-vehicles/certified",
+    "/used-vehicles/certified",
+    "/new-vehicles",
+    "/used-vehicles",
+  ];
+  let remainingPath = pathname;
+  const matchedCondition =
+    conditionPaths.find((p) => pathname.startsWith(p)) || "/new-vehicles/";
+  remainingPath = remainingPath
+    .replace(matchedCondition, "")
+    .replace(/^\/|\/$/g, "");
+
+  const pathParts = remainingPath.split("/").filter(Boolean);
+
+  // Extract make/model from path
+  let pathMake: string[] = [];
+  let pathModel: string[] = [];
+
+  if (pathParts.length > 1) {
+    const makeCode = codes.make?.[pathParts[0] as keyof typeof codes.make];
+    const modelCode = codes.model?.[pathParts[1] as keyof typeof codes.model];
+    if (makeCode) pathMake = [makeCode];
+    if (modelCode) pathModel = [modelCode];
+  } else if (pathParts.length === 1) {
+    const makeCode = codes.make?.[pathParts[0] as keyof typeof codes.make];
+    const modelCode = codes.model?.[pathParts[0] as keyof typeof codes.model];
+    if (makeCode) pathMake = [makeCode];
+    if (modelCode) pathModel = [modelCode];
+  }
+
+  // Determine condition from path
+  let condition: string[] = [];
+  if (matchedCondition.includes("new-vehicles/certified"))
+    condition = ["New", "Certified"];
+  else if (matchedCondition.includes("used-vehicles/certified"))
+    condition = ["Certified"];
+  else if (matchedCondition.includes("new-vehicles")) condition = ["New"];
+  else if (
+    matchedCondition.includes("used-vehicles") &&
+    queryParams.condition?.includes("new")
+  )
+    condition = ["Used"];
+  else if (matchedCondition.includes("used-vehicles"))
+    condition = ["Used", "Certified"];
+
+  // Normalize query params with slug→facet mapping
+  const normalizedParams: Record<string, string[]> = {};
+  for (const [key, values] of Object.entries(queryParams)) {
+    if (FACET_KEYS.includes(key) && codes[key as keyof typeof codes]) {
+      normalizedParams[key] = values
+        .map((slug) => {
+          const safeSlug = slugify(slug);
+          return (codes[key as keyof typeof codes] as Record<string, string>)[safeSlug]
+        })
+        .filter(Boolean);
+    } else {
+      normalizedParams[key] = values;
+    }
+  }
+
+  // Merge make/model from path + query
+  const make = Array.from(
+    new Set([...(normalizedParams.make || []), ...pathMake])
+  );
+  const model = Array.from(
+    new Set([...(normalizedParams.model || []), ...pathModel])
+  );
+
+  // Return everything combined
+  return {
+    pathname,
+    params: {
+      ...normalizedParams,
       ...(condition.length ? { condition } : {}),
       ...(make.length ? { make } : {}),
       ...(model.length ? { model } : {}),
