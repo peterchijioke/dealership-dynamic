@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { VehicleHit } from "@/types/vehicle";
 import {
   normalizeRefinementForAlgolia,
@@ -10,9 +10,9 @@ import { CATEGORICAL_FACETS } from "@/configs/config";
 type UseInfiniteAlgoliaHitsProps = {
   initialHits: VehicleHit[];
   initialTotalHits?: number;
-  initialFacets?: { [key: string]: { [key: string]: number } };
+  initialFacets?: Record<string, Record<string, number>>;
   initialPage?: number;
-  refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
+  refinements?: Record<string, string[]>;
   sortIndex?: string;
   hitsPerPage?: number;
 };
@@ -26,91 +26,116 @@ export function useInfiniteAlgoliaHits({
   hitsPerPage = 12,
   sortIndex,
 }: UseInfiniteAlgoliaHitsProps) {
-  const [totalHits, setTotalHits] = useState(initialTotalHits);
-  const [hits, setHits] = useState<VehicleHit[]>(initialHits);
-  const [page, setPage] = useState(initialPage);
-  const [isLastPage, setIsLastPage] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [initialized, setInitialized] = useState(false);
-  const [facets, setFacets] = useState(initialFacets);
+  const [state, setState] = useState({
+    hits: initialHits,
+    totalHits: initialTotalHits,
+    facets: initialFacets,
+    page: initialPage,
+    isLastPage: false,
+    loading: false,
+  });
 
-  // Build facetFilters for Algolia
-  const buildFacetFilters = useCallback(() => {
-    return refinementToFacetFilters(refinements);
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Memoize filters so they're stable across re-renders
+  const facetFilters = useMemo(() => {
+    const normalized = normalizeRefinementForAlgolia(refinements);
+    return refinementToFacetFilters(normalized);
   }, [refinements]);
 
-  // Reset hits when refinements, sortIndex, or hitsPerPage change
+  // Reset hits when refinements/sort/page size change
   useEffect(() => {
     if (!refinements || Object.keys(refinements).length === 0) return;
 
-    if (!initialized) {
-      // Skip first run, trust initialHits
-      setInitialized(true);
-      return;
-    }
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    let active = true;
+    setState((prev) => ({ ...prev, loading: true }));
+
     (async () => {
-      setLoading(true);
       try {
-        const normalizedRefinement = normalizeRefinementForAlgolia(refinements);
         const response = await searchWithMultipleQueries({
           page: 0,
           hitsPerPage,
-          facetFilters: refinementToFacetFilters(normalizedRefinement),
+          facetFilters,
           sortIndex,
           facets: CATEGORICAL_FACETS,
         });
 
-        // console.log("useEffect:", response);
+        if (controller.signal.aborted) return;
 
-        if (!active) return;
-
-        setTotalHits(response.nbHits ?? 0);
-        setHits(response.hits as VehicleHit[]);
-        setFacets(response.facets);
-        setPage(0);
-        setIsLastPage((response?.page ?? 0) + 1 >= (response?.nbPages ?? 0));
-      } finally {
-        if (active) setLoading(false);
+        setState({
+          hits: response.hits as VehicleHit[],
+          totalHits: response.nbHits ?? 0,
+          facets: response.facets ?? {},
+          page: 0,
+          isLastPage: (response.page ?? 0) + 1 >= (response.nbPages ?? 0),
+          loading: false,
+        });
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error("Algolia fetch error", err);
+          setState((prev) => ({ ...prev, loading: false }));
+        }
       }
     })();
 
-    return () => {
-      active = false;
-    };
-  }, [buildFacetFilters, sortIndex, hitsPerPage]);
+    return () => controller.abort();
+  }, [facetFilters, sortIndex, hitsPerPage]);
 
-  // Infinite scroll: fetch next page
+  // Infinite scroll
   const showMore = useCallback(async () => {
-    if (loading || isLastPage) return;
+    if (state.loading || state.isLastPage) return;
 
-    setLoading(true);
-    const nextPage = page + 1;
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setState((prev) => ({ ...prev, loading: true }));
+
+    const nextPage = state.page + 1;
 
     try {
-      const normalizedRefinement = normalizeRefinementForAlgolia(refinements);
       const response = await searchWithMultipleQueries({
         page: nextPage,
         hitsPerPage,
-        facetFilters: refinementToFacetFilters(normalizedRefinement),
+        facetFilters,
         sortIndex,
         facets: CATEGORICAL_FACETS,
       });
 
-      if (!response?.hits || response.hits.length === 0) {
-        setIsLastPage(true);
-      } else {
-        setTotalHits(response.nbHits ?? 0);
-        setHits((prev) => [...prev, ...(response.hits as VehicleHit[])]);
-        setFacets(response.facets);
-        setPage(nextPage);
-        setIsLastPage((response.page ?? 0) + 1 >= (response.nbPages ?? 0));
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [page, loading, isLastPage, buildFacetFilters, hitsPerPage, sortIndex]);
+      if (controller.signal.aborted) return;
 
-  return { hits, totalHits, facets, setFacets, isLastPage, showMore, loading };
+      setState((prev) => ({
+        ...prev,
+        hits: response.hits?.length
+          ? [...prev.hits, ...(response.hits as VehicleHit[])]
+          : prev.hits,
+        totalHits: response.nbHits ?? prev.totalHits,
+        facets: response.facets ?? prev.facets,
+        page: nextPage,
+        isLastPage: (response.page ?? nextPage) + 1 >= (response.nbPages ?? 0),
+        loading: false,
+      }));
+    } catch (err) {
+      if (!controller.signal.aborted) {
+        console.error("Algolia fetch error", err);
+        setState((prev) => ({ ...prev, loading: false }));
+      }
+    }
+  }, [
+    state.page,
+    state.isLastPage,
+    state.loading,
+    facetFilters,
+    hitsPerPage,
+    sortIndex,
+  ]);
+
+  return {
+    ...state,
+    showMore,
+    setFacets: (f: any) => setState((prev) => ({ ...prev, facets: f })),
+  };
 }
