@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Hits,
   Highlight,
   useSearchBox,
-  Configure,
-  Index,
 } from "react-instantsearch";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import type { Vehicle } from "@/types/vehicle";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { placeholderImage } from "@/components/vehicle-image";
+import { PLACEHOLDER_IMAGE } from "@/configs/config";
 
 /**
  * --- Overlay Search Input ---
@@ -606,7 +603,7 @@ function PreOwnedHit({ hit }: { hit: any & { objectID: string } }) {
       {hit.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={hit.photo || placeholderImage}
+          src={hit.photo || PLACEHOLDER_IMAGE}
           alt={hit.title || "Vehicle"}
           loading="eager"
           fetchPriority="high"
@@ -657,7 +654,7 @@ function NewInventoryHit({ hit }: { hit: any & { objectID: string } }) {
       {hit.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={hit.photo || placeholderImage}
+          src={hit.photo || PLACEHOLDER_IMAGE}
           alt={hit.title || "Vehicle"}
           loading="eager"
           fetchPriority="high"
