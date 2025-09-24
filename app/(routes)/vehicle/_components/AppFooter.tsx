@@ -217,8 +217,6 @@ export default function AppFooter({
       <div ref={bottomRef} className="flex flex-col pt-8 max-w-5xl mx-auto">
         <p className="text-white">
           <small>
-            The #1 family-owned dealer serving the Virginia, Maryland &
-            Washington, DC area for over 25 years.
             <br />
             Copyright © {new Date().getFullYear()} Nissan of portland. Powered
             by{" "}
