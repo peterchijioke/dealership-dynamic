@@ -3,15 +3,13 @@ import { cn } from "@/lib/utils";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
 import type { Vehicle } from "@/types/vehicle";
 import VideoPlayer from "./inventory/VideoPlayer";
+import { PLACEHOLDER_IMAGE } from "@/configs/config";
 
 interface VehicleImageProps {
   hit: Vehicle;
   encryptedUrl: string | undefined;
   isHydrating: boolean;
 }
-
-export const placeholderImage =
-  "https://dealertower.app/image/UuPD13gL_j3TIE57a2mSoOGLRxwnwl_PpZ0OOPDuQ1icAbVhR_62E7sfpRP7217gmQmnZGk2UQ_YGUIwA-8OVVbNXjhM1nntORyi1OhKFWu6LD2kslrksibGGIkol0mk7spFpJbIja2z0mpjuB2FLux6aOZKzArQNHRnVWXp3omIvBsiM1G9qOu0koZP06vG0mGrvanG1c6TVvPaihCMs2zfkzelz9ls_6cLDmKxDF05-fr642YaI6rrC9rtCQ.avif";
 
 export default function VehicleImage({
   hit,
@@ -43,7 +41,7 @@ export default function VehicleImage({
       {/* Static fallback */}
       {!hit.photo && !encryptedUrl && !isHydrating && (
         <img
-          src={placeholderImage}
+          src={PLACEHOLDER_IMAGE}
           alt={altText}
           fetchPriority={priority ? "high" : "auto"}
           loading={priority ? "eager" : "lazy"}
