@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface SortDropdownProps {
   currentSort: string;
@@ -19,11 +20,22 @@ export default function SortDropdown({
   currentSort,
   onChange,
 }: SortDropdownProps) {
+  console.log("==============currentSort======================");
+  console.log(currentSort);
+  console.log("=============currentSort=======================");
   return (
     <Select value={currentSort} onValueChange={onChange}>
-      <SelectTrigger className="md:w-[180px] h-full max-w-44  w-fit flex items-center gap-2 border bg-rose-700 text-white  rounded-xs px-5 py-2 border-none cursor-pointer">
+      <SelectTrigger
+        className={cn(
+          " h-full w-fit flex items-center gap-2 border   rounded-xs px-5 py-2 border-none cursor-pointer",
+
+          currentSort && currentSort !== algoliaSortOptions[0].value
+            ? "bg-rose-700 text-white "
+            : " bg-white text-black"
+        )}
+      >
         <SelectValue
-          className=" truncate line-clamp-1 text-white"
+          className=" md:truncate line-clamp-none md:line-clamp-1 text-white"
           placeholder="Sort by"
         />
         {/* </div> */}
