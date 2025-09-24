@@ -23,29 +23,34 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
     setIsLoading(true);
     try {
       await videoRef.current.play();
-    } catch (err) {
-      console.error("Autoplay error:", err);
+    } catch (err: any) {
+      // Ignore "interrupted by pause" errors
+      if (!err?.message?.includes("play() request was interrupted")) {
+        console.error("Autoplay error:", err);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handlePause = () => {
-    if (videoRef.current) videoRef.current.pause();
+    if (videoRef.current && !videoRef.current.paused) {
+      videoRef.current.pause();
+    }
   };
 
   const toggleVideo = () => {
     if (!videoRef.current) return;
     if (isVideoPlaying) {
       handlePause();
-      setIsVideoPlaying(false);
     } else {
       handlePlay();
-      setIsVideoPlaying(true);
     }
   };
 
-  const isMobile = typeof window !== "undefined" && /iPhone|Android/i.test(window.navigator.userAgent);
+  const isMobile =
+    typeof window !== "undefined" &&
+    /iPhone|Android/i.test(window.navigator.userAgent);
 
   return (
     <div
