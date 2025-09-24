@@ -366,7 +366,7 @@ export default function CarouselComponents() {
                     width: "100vw",
                   }}
                 >
-                  <picture className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
+                  <picture className="relative  w-full h-full flex items-center justify-center p-2 md:p-4">
                     <img
                       fetchPriority={"high"}
                       loading={"eager"}
