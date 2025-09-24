@@ -30,7 +30,7 @@ export default function CarouselComponents() {
       const cacheKey = JSON.stringify({
         url,
         width: 400,
-        quality: 65,
+        quality: 100,
         cache: 1,
       });
 
@@ -43,23 +43,23 @@ export default function CarouselComponents() {
       };
       // }
       const isCancelled = false;
-      // encryptObject(
-      //   {
-      //     url,
-      //     width: 400,
-      //     quality: 65,
-      //     cache: 1,
-      //   },
-      //   key!
-      // )
-      //   .then((str) => {
-      //     const finalUrl = `https://dealertower.app/image/${str}.avif`;
-      //     urlCache.set(cacheKey, finalUrl);
-      //     if (!isCancelled) return { type: "image", url: finalUrl };
-      //   })
-      //   .catch(() => {
-      //     if (!isCancelled) return undefined;
-      //   });
+      encryptObject(
+        {
+          url,
+          width: 400,
+          quality: 100,
+          cache: 1,
+        },
+        key!
+      )
+        .then((str) => {
+          const finalUrl = `https://dealertower.app/image/${str}.avif`;
+          urlCache.set(cacheKey, finalUrl);
+          if (!isCancelled) return { type: "image", url: finalUrl };
+        })
+        .catch(() => {
+          if (!isCancelled) return undefined;
+        });
       return { type: "image", url: undefined };
     }),
   ];
