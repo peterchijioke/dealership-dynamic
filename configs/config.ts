@@ -1,6 +1,7 @@
 import { algoliasearch } from 'algoliasearch';
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import { createNullCache } from '@algolia/cache-common'
+import axios from 'axios';
 
 export const responsesCache = createInMemoryCache();
 export const nullCache = createNullCache();
@@ -19,7 +20,9 @@ export const vdpIndex = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON_VDP!
 export const srpIndex=process.env.NEXT_PUBLIC_ALGOLIA_INDEX_TONKINWILSON!
 export const  getDynamicPath=():string=>process.env.NEXT_PUBLIC_HOST!
 export const baseUrl=process.env.NEXT_PUBLIC_API_BASE_URL!
-export const getWebsiteInformationPath=()=>`/${getDynamicPath()}/get-website-information`
+export const getWebsiteInformationPath: () => string = () => `/${getDynamicPath()}/v1/get-website-information`
+export const specialBanner = `/v1/get-specials`
+
 export const algoliaSortOptions = [
   {
     label: "Relevance",
@@ -115,3 +118,9 @@ export const CATEGORICAL_FACETS = [
   "mileage",
   "is_special",
 ];
+
+export const apiClient = axios.create({
+	baseURL: baseUrl,
+	headers: {},
+	// withCredentials: true,
+});

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, VideoIcon, X } from "lucide-react";
 import React, { useState, useEffect, Fragment } from "react";
 import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+// import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
 import {
   encryptObject,
@@ -14,6 +14,8 @@ import Image from "next/image";
 import ClipLoader from "react-spinners/ClipLoader";
 import HoverVideoPlayer from "react-hover-video-player";
 import { cn } from "@/lib/utils";
+import { TagT } from "@/types/vehicle";
+import VideoCarouselItem from "./VideoCarouselItem";
 
 export default function CarouselComponents() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -28,19 +30,24 @@ export default function CarouselComponents() {
       const cacheKey = JSON.stringify({
         url,
         width: 400,
-        quality: 65,
+        quality: 100,
         cache: 1,
       });
 
-      if (urlCache.has(cacheKey)) {
-        return { type: "image", url: urlCache.get(cacheKey)! };
-      }
+      // if (urlCache.has(cacheKey)) {
+      return {
+        type: "image",
+        url: url,
+
+        // urlCache.get(cacheKey)!
+      };
+      // }
       const isCancelled = false;
       encryptObject(
         {
           url,
           width: 400,
-          quality: 65,
+          quality: 100,
           cache: 1,
         },
         key!
@@ -134,13 +141,6 @@ export default function CarouselComponents() {
   }, [isModalOpen, images.length]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
-  const handlePlayVideo = () => {
-    setIsVideoPlaying(true);
-  };
-  const handlePauseVideo = () => {
-    setIsVideoPlaying(false);
-  };
-
   const [isMount, setIsMount] = useState(false);
   useEffect(() => {
     setIsMount(true);
@@ -179,17 +179,24 @@ export default function CarouselComponents() {
                 </div>
               ) : (
                 images.map((item, index) => {
-                  if (item.type === "video") {
+                  if (item.type === "video" && item.url) {
                     return (
                       <div
                         key={index}
                         className="keen-slider__slide cursor-zoom-in !w-full !min-w-full flex-shrink-0"
                         style={{ width: "100%", minWidth: "100%" }}
                       >
-                        <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
+                        <VideoCarouselItem
+                          onPlayStateChange={setIsVideoPlaying}
+                          url={item.url}
+                          poster={vdpData.photo}
+                          subtitle={vdpData.video_subtitle!}
+                          isVideoPlaying={isVideoPlaying}
+                        />
+                        {/* <div className="w-full relative overflow-hidden aspect-[2/3] md:aspect-[1.5] max-h-[250px] md:max-h-none">
                           <HoverVideoPlayer
-                            className="h-full w-full object-cover"
-                            videoClassName="w-full h-full object-cover"
+                            className="h-full w-full object-contain"
+                            videoClassName="w-full h-full object-contain"
                             videoSrc={item.url}
                             controls
                             focused={isVideoPlaying}
@@ -237,7 +244,7 @@ export default function CarouselComponents() {
                               ) : undefined
                             }
                           />
-                        </div>
+                        </div> */}
                       </div>
                     );
                   }
@@ -248,25 +255,20 @@ export default function CarouselComponents() {
                       onClick={() => openModal(index)}
                       style={{ width: "100%", minWidth: "100%" }}
                     >
-                      <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                        {/* <img
-                      loading="eager"
-                      alt={`Car preview ${index + 1}`}
-                      src={item}
-                      className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
-                    /> */}
+                      <picture className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none max-w-full h-auto">
                         <img
                           className={cn(
-                            "absolute top-0 left-0 w-full h-full  scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain",
-                            !isMount && "blur-[10px]"
+                            "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain"
                           )}
-                          src={
-                            item?.url || generateImagePreviewData(previewurl)
-                          }
+                          src={item?.url as string}
                           alt="car preview"
                           loading="eager"
+                          style={{
+                            display: "block",
+                            filter: "brightness(1.15)",
+                          }}
                         />
-                      </div>
+                      </picture>
                     </div>
                   );
                 })
@@ -322,18 +324,18 @@ export default function CarouselComponents() {
 
       {/* Modal Gallery */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#808080]">
-          {/* Photo counter - positioned absolutely */}
-          <span className="absolute top-6 left-6 z-20 bg-[#a6a6a6] text-white px-4 py-2 rounded-full backdrop-blur-sm">
+        <div className="fixed inset-0  bg-white   z-[1000] ">
+          {/* Photo counter - positioned absolutely, responsive */}
+          <span className="absolute top-2 left-2 md:top-6 md:left-6 z-20 bg-[#a6a6a6] text-white px-3 py-1 md:px-4 md:py-2 rounded-full backdrop-blur-sm text-xs md:text-base">
             Photo {modalCurrentSlide + 1}/{images.length}
           </span>
 
-          {/* Close Button - positioned absolutely */}
+          {/* Close Button - positioned absolutely, responsive */}
           <Button
             onClick={closeModal}
             variant="ghost"
             size="icon"
-            className="absolute cursor-pointer top-6 right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-10 w-10"
+            className="absolute cursor-pointer top-2 right-2 md:top-6 md:right-6 z-20 bg-[#a6a6a6] hover:bg-[#a6a6a6] text-white rounded-lg h-8 w-8 md:h-10 md:w-10"
             aria-label="Close gallery"
           >
             <X className="h-5 w-5 text-white" />
@@ -341,7 +343,7 @@ export default function CarouselComponents() {
 
           {/* Main scrollable container */}
           <div
-            className="modal-scroll-container w-full h-full overflow-y-auto scroll-smooth snap-y snap-mandatory"
+            className="modal-scroll-container w-full flex-1 overflow-y-auto scroll-smooth snap-y snap-mandatory"
             style={{
               width: "100vw",
               height: "100vh",
@@ -354,24 +356,35 @@ export default function CarouselComponents() {
               return (
                 <div
                   key={index}
-                  className="snap-start flex items-center justify-center"
+                  className="snap-start flex items-center justify-center 
+                  
+                  box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    width: auto;
+    height: 100%;
+    aspect-ratio: 1.5 / 1;
+    position: relative;
+                  "
                   style={{
                     minHeight: "100vh",
                     width: "100vw",
                   }}
                 >
-                  <div className="relative w-full h-full flex items-center justify-center p-4">
+                  <picture className="relative  w-full h-full flex items-center justify-center p-2 md:p-4">
                     <img
+                      fetchPriority={"high"}
+                      loading={"eager"}
+                      decoding="async"
                       src={image?.url || generateImagePreviewData(previewurl)}
                       alt={`Car image ${index + 1}`}
-                      className="w-full h-full object-contain"
-                      loading="eager"
+                      className="w-full h-full object-contain max-w-full max-h-[80vh] md:max-h-[90vh]"
                       style={{
-                        maxWidth: "95vw",
-                        maxHeight: "90vh",
+                        maxWidth: "100vw",
+                        maxHeight: "80vh",
                       }}
                     />
-                  </div>
+                  </picture>
                 </div>
               );
             })}
@@ -409,10 +422,6 @@ export interface CTAButton {
   cta_label: string;
   btn_styles: ButtonStyles;
   btn_classes: string[];
-  /**
-   * For "link": a URL (e.g. tel:..., https://...).
-   * For "form": an ID/template reference.
-   */
   btn_content: string;
   open_newtab: boolean;
   cta_location: CTALocation;
@@ -455,12 +464,6 @@ export interface AlgoliaHighlight {
   matchedWords: string[];
 }
 
-/**
- * Maps a data shape T to its Algolia `_highlightResult` equivalent:
- * - primitives (string | number | boolean) -> AlgoliaHighlight
- * - arrays -> array of DeepHighlight of the element
- * - objects -> keyed object of DeepHighlight
- */
 export type DeepHighlight<T> = T extends string | number | boolean
   ? AlgoliaHighlight
   : T extends (infer U)[]
@@ -473,6 +476,8 @@ export type DeepHighlight<T> = T extends string | number | boolean
 export interface VDPType {
   key_features: string[];
   inventory_date: ISODateString;
+  is_special: boolean;
+  tag: TagT[];
 
   prices: PriceBreakdown;
 

@@ -1,3 +1,5 @@
+import { CTAButton } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
+
 export type AlgoliaMatchLevel = "none" | "partial" | "full";
 
 export interface AlgoliaHighlight {
@@ -33,21 +35,6 @@ export type DeepHighlight<T> = T extends string | number | boolean
     text_hover_color: string;
   }
   
-  export interface CTAButton {
-    device: CTADevice;
-    cta_type: CTAType;
-    cta_label: string;
-    btn_styles: ButtonStyles;
-    btn_classes: string[];
-    /**
-     * For "link": a URL (e.g. tel:..., https://...).
-     * For "form": an ID/template reference.
-     */
-    btn_content: string;
-    open_newtab: boolean;
-    cta_location: CTALocation;
-    btn_attributes: Record<string, string | number | boolean>;
-  }
 
 export interface PriceBreakdown {
   total_discounts: number;
@@ -120,22 +107,7 @@ export interface Vehicle {
   vehicle_dealer_id: string[];
   drive_train: string;
   fuel_type: string;
-  cta: {
-    device: string;
-    cta_type: string;
-    cta_label: string;
-    btn_styles: {
-      bg: string;
-      bg_hover: string;
-      text_color: string;
-      text_hover_color: string;
-    };
-    btn_classes: any[];
-    btn_content: string;
-    open_newtab: boolean;
-    cta_location: string;
-    btn_attributes: Record<string, any>;
-  }[];
+  cta: CTAButton[];
   ext_color: string;
   tag: any[];
   ext_color_raw: string;
@@ -272,13 +244,6 @@ interface HighlightResult {
   matchedWords: any[];
 }
 
-
-
-
-
-
-
-
 export type VehicleBaseT = {
 	vehicle_id: string;
 	photo: string;
@@ -301,7 +266,6 @@ export type VehicleBaseT = {
 	mileage: number;
 	length_unit: string;
 	price: number;
-	is_special: boolean;
 	vdp_url: string;
 	carfax_url: string;
 	carfax_icon_url: string;
@@ -309,6 +273,7 @@ export type VehicleBaseT = {
 	vin_number: string;
 	key_features: string[];
 	srp_cards_items: { value: string; label: string }[];
+	is_special: boolean;
 	tag: TagT[];
 	model: string;
 	make: string;
@@ -354,7 +319,7 @@ export type PriceT = {
 	dealer_discount_details: PriceDetail[];
 	dealer_sale_price_label: string;
 	incentive_discount_label: string;
-	incentive_discount_total: 3000;
+	incentive_discount_total: number;
 	dealer_additional_details: PriceDetail[];
 	total_discounts_formatted: string;
 	incentive_additional_label: string;
@@ -439,4 +404,10 @@ export type OemIncentiveT = {
 	finance_monthly_payment: any;
 	is_price_applied_default: boolean;
 	is_price_applied_adjusted: boolean;
+};
+
+export type HierarchyNode = {
+  name: string;
+  count: number;
+  children?: HierarchyNode[];
 };

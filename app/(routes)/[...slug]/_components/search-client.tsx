@@ -1,22 +1,32 @@
 "use client";
+import "./search-client-scroll-lock.css";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import {
-  refinementToFacetFilters,
-  searchWithMultipleQueries,
-} from "@/lib/algolia";
+import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
-import { useAlgolia, useAllRefinements } from "@/hooks/useAlgolia";
-import { algoliaSortOptions, CATEGORICAL_FACETS, searchClient, srpIndex } from "@/configs/config";
+import { useAlgolia } from "@/hooks/useAlgolia";
+import {
+  algoliaSortOptions,
+  CATEGORICAL_FACETS,
+  searchClient,
+  srpIndex,
+} from "@/configs/config";
 import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
-import { urlParser2 } from "@/lib/url-formatter";
-import SpecialBanner from "@/components/layouts/SpecialBanner";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
+import CarouselBanner from "@/components/inventory/CarouselBanner";
+import { Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface Props {
   initialResults: any;
@@ -31,59 +41,34 @@ export default function SearchClient({
 }: Props) {
   const [selectedFacets, setSelectedFacets] =
     useState<Record<string, string[]>>(refinements);
-  const [facets, setFacets] = useState(initialResults.facets);
   const [sortIndex, setSortIndex] = useState(algoliaSortOptions[0].value);
   const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isFilterSheetOpen, setFilterSheetOpen] = useState(false);
 
-  const { refinements: filterRefinements } = useAllRefinements();
   const { stateToRoute } = useAlgolia();
 
   // Infinite hits hook
-  const { hits, totalHits, showMore, isLastPage, loading } = useInfiniteAlgoliaHits({
+  const {
+    hits,
+    totalHits,
+    facets: latestFacets,
+    setFacets,
+    showMore,
+    isLastPage,
+    loading,
+  } = useInfiniteAlgoliaHits({
     initialHits: initialResults.hits,
     initialTotalHits: initialResults.nbHits,
+    initialFacets: initialResults.facets,
+    // initialPage: initialResults.page,
     refinements: selectedFacets,
     sortIndex,
     hitsPerPage: HITS_PER_PAGE,
   });
 
-  // Helper: build Algolia facetFilters array from selected facets
-  const buildFacetFilters = useCallback(
-    (facetsOverride?: Record<string, string[]>) => {
-      const source = facetsOverride ?? selectedFacets;
-      return Object.entries(source)
-        .filter(([_, vals]) => vals.length > 0)
-        .map(([f, vals]) => vals.map((v) => `${f}:${v}`));
-    },
-    [selectedFacets]
-  );
-
-  // Sync state with URL back/forward
-  useEffect(() => {
-    const handlePopState = () => {
-      console.log("Popstate detected, syncing state with URL");
-      const searchParamsObj = new URLSearchParams(window.location.search);
-      const { params: newRefinements } = urlParser2(
-        window.location.pathname,
-        searchParamsObj
-      );
-      setSelectedFacets(newRefinements);
-
-      // Refetch facets counts
-      searchWithMultipleQueries({
-        hitsPerPage: HITS_PER_PAGE,
-        facetFilters: refinementToFacetFilters(newRefinements),
-        sortIndex,
-        facets: CATEGORICAL_FACETS,
-      }).then((res) => setFacets(res.facets));
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [sortIndex]);
-
   // Toggle a facet
   const updateFacet = async (facet: string, value: string) => {
+    let currentFacets = selectedFacets;
     setSelectedFacets((prev) => {
       const current = prev[facet] || [];
       const updated = current.includes(value)
@@ -92,21 +77,23 @@ export default function SearchClient({
       const newState = { ...prev, [facet]: updated };
       if (newState[facet].length === 0) delete newState[facet];
 
-      stateToRoute(newState); // push URL change
+      // Auto-select make when model is toggled
+      if (facet === "model" && !prev.make) {
+        const firstMakeKey = Object.keys(latestFacets.make || {})[0];
+        if (firstMakeKey) {
+          newState.make = [firstMakeKey];
+        }
+      }
+
+      currentFacets = newState;
       return newState;
     });
 
-    // Refetch facet counts
-    const res = await searchWithMultipleQueries({
-      hitsPerPage: HITS_PER_PAGE,
-      facetFilters: buildFacetFilters(),
-      sortIndex,
-      facets: CATEGORICAL_FACETS,
-    });
-    setFacets(res.facets);
+    stateToRoute(currentFacets); // push URL change
   };
 
   const handleRemoveFilter = async (facet: string, value: string) => {
+    let currentFacets = selectedFacets;
     setSelectedFacets((prev) => {
       const updated = {
         ...prev,
@@ -114,31 +101,34 @@ export default function SearchClient({
       };
       if (updated[facet].length === 0) delete updated[facet];
 
-      stateToRoute(updated); // push URL change
+      currentFacets = updated;
       return updated;
     });
 
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: buildFacetFilters(),
+      facetFilters: generateFacetFilters(selectedFacets),
       sortIndex,
       facets: CATEGORICAL_FACETS,
     });
+
     setFacets(res.facets);
+    stateToRoute(currentFacets); // push URL change
   };
 
   const handleReset = async () => {
     const defaultRefinements = { condition: ["New"] };
     setSelectedFacets(defaultRefinements);
-    stateToRoute(defaultRefinements); // replaceState to avoid extra history entry
 
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: buildFacetFilters(defaultRefinements),
+      facetFilters: generateFacetFilters(defaultRefinements),
       sortIndex,
       facets: CATEGORICAL_FACETS,
     });
+
     setFacets(res.facets);
+    stateToRoute(defaultRefinements);
   };
 
   const handleSortChange = async (newSort: string) => {
@@ -146,77 +136,133 @@ export default function SearchClient({
 
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: buildFacetFilters(),
+      facetFilters: generateFacetFilters(selectedFacets),
       sortIndex: newSort,
       facets: CATEGORICAL_FACETS,
     });
+
     setFacets(res.facets);
   };
 
-  const sidebarFacets = useMemo(() => facets ?? {}, [facets]);
-
   return (
-    <div
-      className="w-full m:pt-28 md:pt-28 lg:pt-28">
-      <SpecialBanner />
-
-      <div className="h-[calc(100vh-7rem)]x flex overflow-hidden">
+    <div className="w-full h-svh m:pt-28 md:pt-32">
+      <div className="h-full flex overflow-hidden">
         <aside className="hidden lg:block w-72 shrink-0 bg-[#FAF9F7]">
-          <ScrollArea className="h-full px-3">
-            <div className="p-4">
-              <h2 className="font-bold text-center uppercase">
-                Search Filters
-              </h2>
-            </div>
-            <SidebarFilters
-              facets={sidebarFacets}
-              currentRefinements={selectedFacets}
-              onToggleFacet={updateFacet}
-            />
-          </ScrollArea>
+          <div
+            className="h-full"
+            {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
+          >
+            <ScrollArea className="h-full px-3">
+              <div className="p-4">
+                <h2 className="font-bold text-center uppercase">
+                  Search Filters
+                </h2>
+              </div>
+              <SidebarFilters
+                facets={latestFacets}
+                currentRefinements={selectedFacets}
+                onToggleFacet={updateFacet}
+              />
+            </ScrollArea>
+          </div>
         </aside>
 
-        <main className="flex-1 ">
-          <ScrollArea className="h-full  ">
-            <div className="p-4 space-y-4">
-              <div className="w-full flex py-4  flex-col gap-2">
-                <div className="w-full flex items-center md:flex-row gap-2">
-                  <div className="hidden md:block w-1/3">
-                    <span>{totalHits} vehicles found for sale</span>
-                  </div>
-                  <InstantSearch indexName={srpIndex} searchClient={searchClient}>
-                    <div className="relative w-full z-50 pointer-events-auto">
-                      <CustomSearchBox setSearchOpen={setSearchOpen} />
-                      <SearchDropdown isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+        <main className="h-full flex-1 flex flex-col">
+          <div
+            className="h-full"
+            {...(isSearchOpen ? { "data-scroll-locked": true } : {})}
+          >
+            <ScrollArea className="h-full pb-8  ">
+              <div className=" w-full px-3 md:pt-0 pt-20">
+                <CarouselBanner filters={selectedFacets} className=" rounded-2xl" />
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="w-full flex py-4  flex-col gap-2">
+                  <div className="w-full flex flex-col items-start  md:items-center md:flex-row gap-2">
+                    <div className="hidden md:block w-1/3">
+                      <span>{totalHits} vehicles found for sale</span>
                     </div>
-                  </InstantSearch>
-                  {/* Sort dropdown */}
-                  <SortDropdown
-                    currentSort={sortIndex}
-                    onChange={handleSortChange}
+                    <InstantSearch
+                      indexName={srpIndex}
+                      searchClient={searchClient}
+                    >
+                      <div className="relative max-w-7xl w-full z-50 pointer-events-auto">
+                        <CustomSearchBox
+                          onClose={() => setSearchOpen(false)}
+                          setSearchOpen={setSearchOpen}
+                        />
+                        <SearchDropdown
+                          isOpen={isSearchOpen}
+                          onClose={() => setSearchOpen(false)}
+                        />
+                      </div>
+                    </InstantSearch>
+                    {/* Sort dropdown */}
+                    <div className="md:block hidden">
+                      <SortDropdown
+                        currentSort={sortIndex}
+                        onChange={handleSortChange}
+                      />
+                    </div>
+                  </div>
+                  <div className=" md:hidden flex items-center justify-between">
+                    <div className=" flex-1">
+                      <span className=" text-sm font-semibold ">
+                        {totalHits} vehicles
+                      </span>
+                    </div>
+                    <div className="flex flex-1 items-center gap-2">
+                      <Button
+                        className=" rounded-xs  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300"
+                        onClick={() => setFilterSheetOpen(true)}
+                      >
+                        Filter
+                        <Filter className="mr-2 h-4 w-4" />
+                      </Button>
+                      <SortDropdown
+                        currentSort={sortIndex}
+                        onChange={handleSortChange}
+                      />
+                    </div>
+                  </div>
+                  {/* Mobile Filter Sheet using shadcn/ui Sheet */}
+                  <Sheet
+                    open={isFilterSheetOpen}
+                    onOpenChange={setFilterSheetOpen}
+                  >
+                    <SheetContent
+                      side="left"
+                      className="p-0 w-72 max-w-[80vw] z-[1000]"
+                    >
+                      <SheetHeader className="border-b">
+                        <SheetTitle>Filters</SheetTitle>
+                      </SheetHeader>
+                      <div className="overflow-y-auto h-[calc(100vh-56px)] p-4">
+                        <SidebarFilters
+                          facets={latestFacets}
+                          currentRefinements={selectedFacets}
+                          onToggleFacet={updateFacet}
+                        />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                  <ActiveFiltersBar
+                    refinements={selectedFacets}
+                    onRemove={handleRemoveFilter}
+                    onClearAll={handleReset}
                   />
                 </div>
-                <div className="block md:hidden">
-                  <span className=" text-sm ">
-                    1438 vehicles found for sale
-                  </span>
-                </div>
-                <ActiveFiltersBar
+
+                <InfiniteHits
+                  hits={hits}
                   refinements={selectedFacets}
-                  onRemove={handleRemoveFilter}
-                  onClearAll={handleReset}
+                  showMore={showMore}
+                  isLastPage={isLastPage}
+                  loading={loading}
                 />
               </div>
-
-              <InfiniteHits
-                hits={hits}
-                refinements={selectedFacets}
-                showMore={showMore}
-                isLastPage={isLastPage}
-                loading={loading}
-              />
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         </main>
       </div>
     </div>

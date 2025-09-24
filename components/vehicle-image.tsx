@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
 import type { Vehicle } from "@/types/vehicle";
@@ -9,7 +9,8 @@ interface VehicleImageProps {
   encryptedUrl: string | undefined;
   isHydrating: boolean;
 }
-const blurDataURL =
+
+export const placeholderImage =
   "https://dealertower.app/image/UuPD13gL_j3TIE57a2mSoOGLRxwnwl_PpZ0OOPDuQ1icAbVhR_62E7sfpRP7217gmQmnZGk2UQ_YGUIwA-8OVVbNXjhM1nntORyi1OhKFWu6LD2kslrksibGGIkol0mk7spFpJbIja2z0mpjuB2FLux6aOZKzArQNHRnVWXp3omIvBsiM1G9qOu0koZP06vG0mGrvanG1c6TVvPaihCMs2zfkzelz9ls_6cLDmKxDF05-fr642YaI6rrC9rtCQ.avif";
 
 export default function VehicleImage({
@@ -17,6 +18,8 @@ export default function VehicleImage({
   encryptedUrl,
   isHydrating,
 }: VehicleImageProps) {
+  const [loaded, setLoaded] = useState(false);
+
   if (hit.video) {
     return (
       <VideoPlayer
@@ -27,63 +30,70 @@ export default function VehicleImage({
     );
   }
 
+  const altText = `${hit.year} ${hit.make} ${hit.model}`;
+  const priority = hit.__position && hit.__position <= 3;
+
+  // Always inline a blurred dataURI for top 3 results
+  const inlineBlur = priority
+    ? generateImagePreviewData(previewurl)
+    : undefined;
+
   return (
-    <div className="relative w-full flex items-center justify-center !my-0 aspect-[3/2]">
+    <div className="relative w-full flex items-center justify-center aspect-[3/2] rounded-t-2xl overflow-hidden bg-gray-100">
+      {/* Static fallback */}
       {!hit.photo && !encryptedUrl && !isHydrating && (
         <img
-          style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            inset: "0px",
-            color: "transparent",
-          }}
-          src={blurDataURL}
-          alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
-          // Do not lazy-load the LCP candidate. Let the browser discover it in the initial document.
-          loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
-          className={cn("w-full h-full rounded-t-2xl object-cover")}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          src={placeholderImage}
+          alt={altText}
+          fetchPriority={priority ? "high" : "auto"}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          className="w-full h-full object-cover"
+          sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
         />
       )}
-      {hit.photo && encryptedUrl && !isHydrating && (
-        <img
-          style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            inset: "0px",
-            color: "transparent",
-          }}
-          src={encryptedUrl}
-          alt={hit.year + " " + hit.make + " " + hit.model}
-          fetchPriority={hit.__position && hit.__position <= 3 ? "high" : "auto"}
-          // Prioritize and avoid lazy-loading for top-ranked images to improve LCP.
-          loading={hit.__position && hit.__position <= 3 ? "eager" : "lazy"}
-          className={cn(
-            "w-full h-full rounded-t-2xl ",
-            encryptedUrl ? " object-contain" : "object-contain"
+
+      {/* Progressive loading with shimmer */}
+      {hit.photo && (
+        <>
+          {/* Blurred preview + shimmer overlay */}
+          <div
+            className={cn(
+              "absolute inset-0 w-full h-full",
+              loaded ? "opacity-0" : "opacity-100 transition-opacity duration-500"
+            )}
+            aria-hidden="true"
+          >
+            <img
+              src={inlineBlur || generateImagePreviewData(previewurl)}
+              alt="blur preview"
+              className="w-full h-full object-cover blur-md scale-105"
+            />
+            {/* Shimmer overlay */}
+            <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 opacity-70" />
+          </div>
+
+          {/* Final optimized image */}
+          {encryptedUrl && (
+            <img
+              src={encryptedUrl}
+              alt={altText}
+              fetchPriority={priority ? "high" : "auto"}
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
+              onLoad={() => setLoaded(true)}
+              className={cn(
+                "w-full h-full object-contain transition-opacity duration-500",
+                loaded ? "opacity-100" : "opacity-0"
+              )}
+              sizes="(max-width: 768px) 100vw,
+                     (max-width: 1200px) 50vw,
+                     33vw"
+            />
           )}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      )}
-      {isHydrating && !hit.photo && !encryptedUrl && (
-        <img
-          style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            inset: "0px",
-          }}
-          src={generateImagePreviewData(previewurl)}
-          alt={"blur placeholder"}
-          fetchPriority={"auto"}
-          // Hydration placeholder isn't the LCP image; keep it default loading.
-          loading={"lazy"}
-          className={cn("w-full h-full rounded-t-2xl ", "object-cover")}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+        </>
       )}
     </div>
   );

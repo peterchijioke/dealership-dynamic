@@ -116,6 +116,7 @@ import React, { useState } from "react";
 import VehiclePrice from "../vehicle-price";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Label from "../vehicle-price/Label";
 
 type Props = {
   vehicle: any;
@@ -124,14 +125,34 @@ type Props = {
 function VehicleFinancing({ vehicle }: Props) {
   const [activeTab, setActiveTab] = useState("buy");
   const { prices, default_payment } = vehicle;
-  const { sale_price_formatted } = prices;
 
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
+  const {
+    dealer_additional_details,
+    dealer_additional_label,
+    dealer_additional_total,
+    retail_price_formatted,
+    retail_price_label,
+    sale_price_formatted,
+    sale_price_label,
+    total_discounts_formatted,
+    total_discounts_label,
+    dealer_discount_label,
+    incentive_discount_label,
+    dealer_discount_details,
+    incentive_discount_details,
+  } = prices;
+
+  const isRetail =
+    String(sale_price_label).toUpperCase().trim() ==
+      "MSRP".toUpperCase().trim() ||
+    String(sale_price_label).toUpperCase().trim() ==
+      "Sale price".toUpperCase().trim();
   return (
     <div className="vehicle-financing vehicle-financing--container">
-      {default_payment && vehicle.default_payment?.apr_value ? (
+      {/* {default_payment && vehicle.default_payment?.apr_value ? (
         <div className="vehicle-financing__tabs-wrapper flex items-center justify-center">
           <div className="vehicle-financing__tabs mt-2 flex h-12 w-full overflow-hidden rounded-lg border border-gray-300">
             <button
@@ -160,10 +181,10 @@ function VehicleFinancing({ vehicle }: Props) {
         </div>
       ) : (
         <div className="vehicle-financing__placeholder mt-2 h-12" />
-      )}
+      )} */}
 
-      <div className="vehicle-financing__details">
-        {/* {activeTab === "buy" && (
+      {/* <div className="vehicle-financing__details">
+        {activeTab === "buy" && (
           <p className="vehicle-financing__buy-details mt-3 flex flex-col items-center text-center">
             <span className="vehicle-financing__buy-price text-4xl font-semibold">
               {sale_price_formatted}
@@ -172,7 +193,7 @@ function VehicleFinancing({ vehicle }: Props) {
               Best price
             </span>
           </p>
-        )} */}
+        )}
         {activeTab === "finance" && (
           <div className="vehicle-financing__finance-details my-3 flex justify-between text-center">
             <div className="vehicle-financing__finance-item flex flex-col items-center text-center">
@@ -201,29 +222,43 @@ function VehicleFinancing({ vehicle }: Props) {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
+
+      {retail_price_label && retail_price_formatted && (
+        <div className="price-default-retail-row flex items-center  rounded-2xl py-1 justify-between text-neutral-600">
+          <Label className="price-default-retail-label" isStrong>
+            {retail_price_label}
+          </Label>
+          {/* <div className={lineClassName} /> */}
+          <Label className="price-default-retail-value line-through" isStrong>
+            {retail_price_formatted}
+          </Label>
+        </div>
+      )}
 
       <div className="flex w-full items-center justify-between ">
         <div className=" flex items-center  gap-2">
-          <span className="vehicle-financing__buy-label capitalize text-[#69707C]0">
-            Sale price
+          <span className="vehicle-financing__buy-label font-medium text-lg capitalize text-[#374151]">
+            {sale_price_label}
           </span>
-          <button
-            type="button"
-            onClick={toggleExpand}
-            aria-expanded={isExpanded}
-            aria-controls={`price-breakdown-${vehicle.objectID}`}
-            className=" cursor-pointer shadow px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors"
-          >
-            <ChevronDown
-              className={cn(
-                "size-4 transition-transform",
-                isExpanded && "rotate-180"
-              )}
-            />
-          </button>
+          {!isRetail && (
+            <button
+              type="button"
+              onClick={toggleExpand}
+              aria-expanded={isExpanded}
+              aria-controls={`price-breakdown-${vehicle.objectID}`}
+              className=" cursor-pointer shadow px-4 py-1 bg-white rounded-full hover:bg-gray-50 transition-colors"
+            >
+              <ChevronDown
+                className={cn(
+                  "size-4 transition-transform",
+                  isExpanded && "rotate-180"
+                )}
+              />
+            </button>
+          )}
         </div>
-        <span className="vehicle-financing__buy-price text-lg font-semibold text-[#374151]">
+        <span className="vehicle-financing__buy-price text-lg   font-bold text-[#374151]">
           {sale_price_formatted}
         </span>
       </div>

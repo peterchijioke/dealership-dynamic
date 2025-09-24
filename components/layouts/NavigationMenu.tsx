@@ -14,15 +14,27 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+import type { NavigationItem } from "./TopHeader";
+
+interface NavigationMenuComponentProps {
+  headerData: {
+    navigation: NavigationItem[];
+    [key: string]: any;
+  };
+  imagesRaw: any;
+}
+
 const NavigationMenuComponent = ({
   headerData,
   imagesRaw,
-}: {
-  headerData: any;
-  imagesRaw: any;
-}) => {
-  const navigationItems = headerData?.navigation;
+}: NavigationMenuComponentProps) => {
+  const navigationItems: NavigationItem[] = headerData?.navigation;
+  // const navigationItems = headerData?.website_external_links;
   const images = imagesRaw;
+  // console.log("=============navigation links=======================");
+  // console.log(headerData);
+  // console.log("==============navigation links======================");
+
   return (
     <nav className="w-screen py-0 shadow-md bg-[#e5e7eb] hidden md:block">
       <NavigationMenu className=" " viewport={false}>
@@ -33,11 +45,11 @@ const NavigationMenuComponent = ({
                 <>
                   <NavigationMenuTrigger
                     className={cn(
-                      "bg-transparent rounded-none  cursor-pointer hover:bg-transparent font-semibold px-4 py-3 capitalize"
+                      "bg-transparent rounded-none  cursor-pointer hover:bg-transparent font-semibold px-4 py-3 uppercase"
                     )}
                   >
                     <Link href={`/inventory/${item.link}`}>
-                      {item.label.toLowerCase()}
+                      {item.label.toUpperCase()}
                     </Link>
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -55,7 +67,7 @@ const NavigationMenuComponent = ({
                                   target={
                                     child.open_new_tab ? "_blank" : "_self"
                                   }
-                                  className="block text-base font-medium hover:underline underline-offset-2 text-black"
+                                  className="block text-base font-medium hover:underline underline-offset-2 uppercase text-black"
                                 >
                                   {child.label}
                                 </Link>
@@ -127,7 +139,7 @@ const NavigationMenuComponent = ({
                 <>
                   <NavigationMenuTrigger className="bg-transparent rounded-none cursor-pointer hover:bg-transparent font-semibold px-4 py-6 uppercase">
                     <Link prefetch={true} href={item.link}>
-                      {item.label.toLowerCase()}
+                      {item.label.toUpperCase()}
                     </Link>
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="uppercase">
@@ -138,9 +150,9 @@ const NavigationMenuComponent = ({
                             <Link
                               prefetch={true}
                               href={child.link}
-                              className="block select-none rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-transparent hover:text-accent-foreground focus:bg-transparent focus:text-accent-foreground bg-transparent text-base font-medium underline-offset-2 hover:underline"
+                              className="block select-none uppercase rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-transparent hover:text-accent-foreground focus:bg-transparent focus:text-accent-foreground bg-transparent text-base font-medium underline-offset-2 hover:underline"
                             >
-                              {child.label}
+                              {child.label.toUpperCase()}
                             </Link>
                           </NavigationMenuLink>
                         </li>
@@ -150,11 +162,11 @@ const NavigationMenuComponent = ({
                 </>
               ) : (
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-transparent font-semibold px-4 py-3 capitalize`}
+                  className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-transparent font-semibold px-4 py-3 uppercase`}
                   asChild
                 >
-                  <Link prefetch={true} href={item.link}>
-                    {item.label.toLowerCase()}
+                  <Link prefetch={true} href={item?.link}>
+                    {item?.label.toUpperCase()}
                   </Link>
                 </NavigationMenuLink>
               )}

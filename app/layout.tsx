@@ -4,6 +4,9 @@ import "./globals.css";
 import PageWrapper from "@/components/layouts/PageWrapper";
 import MobileDock from "./(routes)/[...slug]/_components/MobileDock";
 import Script from "next/script";
+import { Toaster } from "sonner";
+import { WebsiteInfoProvider } from "@/contexts/useWebsiteInfoContext";
+import { getPrimaryNav } from "@/lib/nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +33,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://yourdealership.com"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.nissanofportland.com"
   ),
   title: {
-    template: "%s | Dealership", 
+    template: "%s | Dealership",
     default: "Dealership - Quality Pre-Owned & New Vehicles",
   },
   description:
@@ -103,11 +106,13 @@ export const metadata: Metadata = {
   category: "automotive",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navItems = (await getPrimaryNav()) as any;
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -196,8 +201,11 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <PageWrapper sticky>{children}</PageWrapper>
-        <MobileDock />
+        <Toaster />
+        <WebsiteInfoProvider data={navItems?.data}>
+          <PageWrapper sticky>{children}</PageWrapper>
+          <MobileDock />
+        </WebsiteInfoProvider>
       </body>
     </html>
   );

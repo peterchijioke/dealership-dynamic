@@ -1,3 +1,16 @@
+import type { HierarchyNode } from "@/types/vehicle";
+
+// Define the priority order
+const priority = [
+  "condition",
+  "make",
+  "model",
+  "year",
+  "trim",
+  "price",
+  "mileage",
+];
+
 export function slugify(str: string) {
   if (!str) return "";
   return str
@@ -21,19 +34,30 @@ export function unslugify(str: string): string {
     .join(" ");
 }
 
+export function orderFacets(
+  facets: Record<string, string[]>
+): Record<string, string[]> {
+  const ordered: Record<string, string[]> = {};
+
+  // First, add keys in priority order
+  for (const key of priority) {
+    if (facets[key]) {
+      ordered[key] = facets[key];
+    }
+  }
+
+  // Then, add remaining keys not in priority
+  for (const key of Object.keys(facets)) {
+    if (!priority.includes(key)) {
+      ordered[key] = facets[key];
+    }
+  }
+
+  return ordered;
+}
+
 export function orderParams(params?: URLSearchParams): URLSearchParams {
   if (!params) return new URLSearchParams();
-
-  // Define the priority order
-  const priority = [
-    "condition",
-    "make",
-    "model",
-    "year",
-    "trim",
-    "price",
-    "mileage",
-  ];
 
   const entries: [string, string][] = [];
 
@@ -206,3 +230,26 @@ export function urlToRefinement(url: string): Record<string, string[]> {
   return refinements;
 }
 
+export function buildModelTrimHierarchy(
+  modelFacet: Record<string, number>,
+  modelTrimFacet: Record<string, number>
+): HierarchyNode[] {
+  return Object.entries(modelFacet).map(([modelName, modelCount]) => {
+    // Find all trims belonging to this model
+    const children = Object.entries(modelTrimFacet)
+      .filter(([key]) => key.startsWith(`${modelName} >`))
+      .map(([key, trimCount]) => {
+        const [, trimName] = key.split(" > ");
+        return {
+          name: trimName,
+          count: trimCount,
+        };
+      });
+
+    return {
+      name: modelName,
+      count: modelCount,
+      ...(children.length > 0 ? { children } : {}),
+    };
+  });
+}

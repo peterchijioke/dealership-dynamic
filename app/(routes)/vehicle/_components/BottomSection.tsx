@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useVehicleDetails } from "./VdpContextProvider";
 import AvailabilityForm from "./AvailabilityForm";
 import FeaturesMobile from "./FeaturesMobile";
 import { VdpContextType } from "./VdpVehicleCard";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { getFormField, submitForm } from "@/app/api/dynamic-forms";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { useRouter } from "next/navigation";
 
 type Props = {
   onContinue?: (action: Action) => void; // optional callback
@@ -72,11 +78,11 @@ const MobileInlineForm: React.FC<{
   formId: string;
   dealerDomain: string;
   onBack: () => void;
-}> = ({ formId, dealerDomain, onBack }) => {
+  onClose: () => void;
+}> = ({ formId, dealerDomain, onBack, onClose }) => {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
 
   React.useEffect(() => {
     if (formId) {
@@ -87,12 +93,10 @@ const MobileInlineForm: React.FC<{
   const fetchFormData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://dealertower.app/api/${dealerDomain}/form/${formId}`
-      );
-      const data: FormApiResponse = await response.json();
-      if (data.success) {
-        setFormData(data.data);
+      const result = await getFormField(formId, dealerDomain);
+
+      if (result.success && result.data) {
+        setFormData(result.data);
       }
     } catch (error) {
       console.error("Error fetching form:", error);
@@ -101,61 +105,89 @@ const MobileInlineForm: React.FC<{
     }
   };
 
-  const handleInputChange = (fieldName: string, value: string): void => {
-    setFormValues((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-  };
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      const response = await fetch(
-        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formValues),
-        }
-      );
-
-      if (response.ok) {
-        const result: FormSubmitResponse = await response.json();
-        console.log("Form submitted successfully:", result);
-
-        if (result.success && result.data) {
-          toast.success("Form submitted successfully!", {
-            description:
-              "Thank you for your submission. We'll get back to you soon.",
-            duration: 4000,
-          });
-
-          setTimeout(() => {
-            onBack();
-          }, 1500);
+  // Build Zod schema from formData.fields
+  const schema: z.ZodObject<Record<string, z.ZodTypeAny>> = useMemo(() => {
+    if (!formData)
+      return z.object({}) as z.ZodObject<Record<string, z.ZodTypeAny>>;
+    const shape: Record<string, z.ZodTypeAny> = {};
+    for (const field of formData.fields) {
+      if (!field.is_visible) continue;
+      let zodType: z.ZodTypeAny = z.string();
+      if (field.field_type === "email")
+        zodType = z.string().email("Invalid email");
+      if (field.field_type === "tel")
+        zodType = z.string().min(7, "Invalid phone number");
+      if (field.field_type === "date") zodType = z.string();
+      if (field.field_type === "select" || field.field_type === "radio") {
+        zodType = z.string();
+      }
+      if (field.field_type === "checkbox") {
+        zodType = z.union([z.literal("true"), z.literal("false")]);
+      }
+      if (field.is_required) {
+        // Only apply .min(1) to string types
+        if (
+          field.field_type === "text" ||
+          field.field_type === "email" ||
+          field.field_type === "tel" ||
+          field.field_type === "date" ||
+          field.field_type === "select" ||
+          field.field_type === "radio" ||
+          field.field_type === "textarea"
+        ) {
+          zodType = (zodType as z.ZodString).min(
+            1,
+            `${field.label || field.name} is required`
+          );
         } else {
-          toast.error("Form submission failed", {
-            description: "Please check your information and try again.",
-          });
+          zodType = zodType; // leave as is for other types
         }
       } else {
-        const errorData = await response.json();
-        console.error("Form submission failed:", errorData);
+        zodType = zodType.optional();
+      }
+      shape[field.name] = zodType;
+    }
+    return z.object(shape) as z.ZodObject<Record<string, z.ZodTypeAny>>;
+  }, [formData]);
 
-        toast.error("Form submission failed", {
-          description: errorData.message || "Please try again later.",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Record<string, any>>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+  });
+
+  // Reset form when formData changes
+  useEffect(() => {
+    if (formData) {
+      const defaults: Record<string, any> = {};
+      for (const field of formData.fields) {
+        if (field.default_value !== null && field.default_value !== undefined) {
+          defaults[field.name] = field.default_value;
+        }
+      }
+      reset(defaults);
+    }
+  }, [formData, reset]);
+
+  const onSubmit = async (data: Record<string, string>) => {
+    setSubmitting(true);
+    try {
+      const result = await submitForm(data, formId, dealerDomain);
+      if (result.success && result.data) {
+        toast.success("Form submitted successfully!", {
+          description:
+            "Thank you for your submission. We'll get back to you soon.",
+          duration: 4000,
         });
+        setTimeout(() => {
+          onBack();
+        }, 1500);
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-
       toast.error("Network error", {
         description: "Please check your connection and try again.",
       });
@@ -165,18 +197,11 @@ const MobileInlineForm: React.FC<{
   };
 
   const renderField = (field: FormField): React.ReactNode => {
-    const gridClass =
-      field.settings?.display_grid === "12"
-        ? "col-span-12"
-        : field.settings?.display_grid === "6"
-        ? "col-span-6"
-        : field.settings?.display_grid === "4"
-        ? "col-span-4"
-        : "col-span-12";
+    const gridClass = "col-span-12";
     const isRequired = field.is_required;
-
     if (!field.is_visible) return null;
-
+    // Show error if present
+    const error = errors[field.name]?.message as string | undefined;
     switch (field.field_type) {
       case "text":
       case "email":
@@ -185,42 +210,33 @@ const MobileInlineForm: React.FC<{
           <div key={field.name} className={gridClass}>
             <input
               type={field.field_type}
-              name={field.name}
+              {...register(field.name)}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
-              required={isRequired}
-              defaultValue={field.default_value || ""}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
             />
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "date":
         return (
           <div key={field.name} className={gridClass}>
             <input
               type="date"
-              name={field.name}
+              {...register(field.name)}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
-              required={isRequired}
-              defaultValue={field.default_value || ""}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
             />
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "select":
         return (
           <div key={field.name} className={gridClass}>
             <select
-              name={field.name}
+              {...register(field.name)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
-              required={isRequired}
-              defaultValue={field.default_value || ""}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
             >
               <option value="">
@@ -233,9 +249,9 @@ const MobileInlineForm: React.FC<{
                 </option>
               ))}
             </select>
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "radio":
         return (
           <div key={field.name} className={gridClass}>
@@ -252,14 +268,9 @@ const MobileInlineForm: React.FC<{
                   >
                     <input
                       type="radio"
-                      name={field.name}
                       value={option.value}
+                      {...register(field.name)}
                       className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                      required={isRequired}
-                      defaultChecked={field.default_value === option.value}
-                      onChange={(e) =>
-                        handleInputChange(field.name, e.target.value)
-                      }
                       disabled={submitting}
                     />
                     <span className="text-gray-700">{option.label}</span>
@@ -267,26 +278,18 @@ const MobileInlineForm: React.FC<{
                 ))}
               </div>
             </fieldset>
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "checkbox":
         return (
           <div key={field.name} className={gridClass}>
             <label className="flex items-start space-x-2 text-sm">
               <input
                 type="checkbox"
-                name={field.name}
+                {...register(field.name)}
                 value="true"
                 className="w-4 h-4 mt-0.5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                required={isRequired}
-                defaultChecked={field.default_value === "true"}
-                onChange={(e) =>
-                  handleInputChange(
-                    field.name,
-                    e.target.checked ? "true" : "false"
-                  )
-                }
                 disabled={submitting}
               />
               <span className="text-gray-700">
@@ -294,9 +297,9 @@ const MobileInlineForm: React.FC<{
                 {isRequired ? "*" : ""}
               </span>
             </label>
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "paragraph":
         const TagName =
           (field.settings?.tag_name as keyof JSX.IntrinsicElements) || "p";
@@ -317,120 +320,124 @@ const MobileInlineForm: React.FC<{
             )}
           </div>
         );
-
       case "textarea":
         return (
           <div key={field.name} className={gridClass}>
             <textarea
-              name={field.name}
+              {...register(field.name)}
               placeholder={`${field.label}${isRequired ? "*" : ""}`}
               rows={3}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 resize-none transition-all duration-200"
-              required={isRequired}
-              defaultValue={field.default_value || ""}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
               disabled={submitting}
             />
+            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
           </div>
         );
-
       case "hidden":
         return (
           <input
             key={field.name}
             type="hidden"
-            name={field.name}
+            {...register(field.name)}
             value={field.default_value || ""}
           />
         );
-
       default:
         return null;
     }
   };
 
   return (
-    <div className="bg-gray-50 h-96 pt-4 w-full flex flex-col">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b mx-4 flex-shrink-0">
+    <div className="bg-gray-50 h-full pt-8 w-full flex flex-col">
+      <div className=" w-full flex-shrink-0 flex justify-end px-3 ">
         <button
-          onClick={onBack}
-          className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200 text-sm"
+          onClick={onClose}
+          className="flex rounded-full w-fit items-center justify-center bg-gray-300 p-2 gap-3 text-gray-600 hover:text-gray-600  transition-colors duration-200 text-sm"
           disabled={submitting}
         >
-          <ArrowLeft className="w-4 h-4 mr-1" />
-          Go Back
+          <X className="w-4 h-4" />
         </button>
       </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+        <div className="flex-1">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-8 flex-1">
+              <div className="w-8 h-8 border-3 border-gray-200 border-t-red-600 rounded-full animate-spin"></div>
+              <p className="text-gray-600 mt-3 text-center text-sm">
+                Loading form...
+              </p>
+            </div>
+          ) : formData ? (
+            <div className="flex flex-col h-full gap-4 min-h-0 px-4">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex-shrink-0">
+                {formData.title}
+              </h2>
 
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-8 flex-1">
-          <div className="w-8 h-8 border-3 border-gray-200 border-t-red-600 rounded-full animate-spin"></div>
-          <p className="text-gray-600 mt-3 text-center text-sm">
-            Loading form...
-          </p>
-        </div>
-      ) : formData ? (
-        <div className="flex flex-col h-full min-h-0 px-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex-shrink-0">
-            {formData.title}
-          </h2>
-
-          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-12 gap-3">
-                {formData.fields.map((field) => renderField(field))}
+              <div className="flex-1 overflow-y-auto">
+                <div className="grid grid-cols-12 gap-5 pt-4 px-1">
+                  {formData.fields.map((field) => renderField(field))}
+                </div>
               </div>
-
-              <div className="pt-4 mt-6 border-t bg-gray-50 sticky bottom-0">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full bg-red-600 text-white py-2.5 rounded-md font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 flex-1">
+              <div className="w-8 h-8 bg-rose-100 rounded-full flex items-center justify-center mb-3">
+                <svg
+                  className="w-4 h-4 text-rose-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {submitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit"
-                  )}
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
               </div>
-            </form>
-          </div>
+              <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                Error Loading Form
+              </h3>
+              <p className="text-gray-600 text-center mb-3 text-xs">
+                We couldn&apos;t load the form. Please try again.
+              </p>
+              <button
+                onClick={() => fetchFormData()}
+                className="px-3 py-1.5 bg-rose-700 text-white rounded-md hover:bg-rose-700 transition-colors duration-200 text-xs"
+              >
+                Retry
+              </button>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8 flex-1">
-          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mb-3">
-            <svg
-              className="w-4 h-4 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-sm font-semibold text-gray-800 mb-2">
-            Error Loading Form
-          </h3>
-          <p className="text-gray-600 text-center mb-3 text-xs">
-            We couldn&apos;t load the form. Please try again.
-          </p>
+        <div className="w-full flex  items-center gap-2 px-4 ">
           <button
-            onClick={() => fetchFormData()}
-            className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 text-xs"
+            onClick={onBack}
+            className="flex rounded-full w-fit items-center py-3 px-3 justify-center gap-3 text-white hover:text-white bg-rose-700 transition-colors duration-200 text-sm"
+            disabled={submitting}
           >
-            Retry
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
           </button>
+          {formData && (
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-rose-700 flex-1 rounded-full text-white py-3 font-semibold text-sm hover:bg-rose-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </button>
+          )}
         </div>
-      )}
+      </form>
     </div>
   );
 };
@@ -444,6 +451,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
 
   const { vdpData } = useVehicleDetails() as VdpContextType;
   const featureInView = (useVehicleDetails() as any).featureInView;
+  const bottomInView = (useVehicleDetails() as any).bottomInView;
 
   // Lock body scroll while sheet is open
   useEffect(() => {
@@ -453,6 +461,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       document.body.style.overflow = original;
     };
   }, [open]);
+  const { site } = useGetCurrentSite();
 
   // Escape to close
   useEffect(() => {
@@ -491,24 +500,36 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
     setShowForm(false);
     setSelectedFormId(null);
   };
-
+  const route = useRouter();
   return (
-    <div ref={footerRef}>
+    <div ref={footerRef} className="relative">
       {/* Bottom gradient under the pill (mobile only) */}
-      <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent z-10" />
+      {/* <div className="md:hidden pointer-events-none fixed inset-x-0 bottom-0 h-fit bg-gradient-to-t from-white to-transparent z-10" /> */}
 
       {!open && (
-        <div className="md:hidden fixed left-0 right-0 bottom-6 z-30 px-4">
-          {!featureInView && (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="w-full py-3 rounded-full font-semibold text-white
-                       bg-rose-700 hover:bg-rose-800 active:scale-[.99]
-                       shadow-lg transition"
-            >
-              I&apos;m Interested
-            </button>
+        <div className="md:hidden fixed  left-0 right-0 bottom-6 z-30 px-4 ">
+          {!featureInView && !bottomInView && (
+            <div className="w-full flex  items-center gap-1">
+              <button
+                onClick={() => {
+                  route.back();
+                }}
+                className="flex rounded-full w-fit items-center py-3 px-3 justify-center gap-3 text-white hover:text-white bg-rose-700 transition-colors duration-200 text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="w-full py-3 flex-1  rounded-full font-semibold text-white
+                       bg-rose-700 hover:bg-rose-800
+"
+              >
+                I&apos;m Interested
+              </button>
+            </div>
           )}
           {featureInView && (
             <button
@@ -525,7 +546,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
       )}
 
       {/* Backdrop */}
-      <div
+      {/* <div
         onClick={handleBackdropClick}
         className={`md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px]
                     transition-opacity duration-200
@@ -535,7 +556,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
                         : "opacity-0 pointer-events-none"
                     }`}
         aria-hidden={!open}
-      />
+      /> */}
 
       {/* Bottom Sheet */}
       <section
@@ -543,20 +564,19 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="sheet-title"
-        className={`md:hidden fixed inset-x-0 bottom-0 z-50 grid
+        className={`md:hidden fixed h-full w-full   bottom-0 grid z-[1000]
                     transform transition-transform duration-300
                     ${open ? "translate-y-0" : "translate-y-full"}`}
       >
         <div
-          className=" pb-3 rounded-t-3xl bg-white shadow-2xl ring-1 ring-black/5
-                        max-h-[85vh] overflow-hidden flex flex-col"
+          className=" pb-3 h-full flex-1 bg-white shadow-2xl
+                          overflow-hidden flex flex-col"
         >
           {showForm && selectedFormId ? (
             <MobileInlineForm
+              onClose={handleCloseSheet}
               formId={selectedFormId}
-              dealerDomain={
-                vdpData?.dealer_domain || "www.nissanofportland.com"
-              }
+              dealerDomain={site}
               onBack={handleBackToSheet}
             />
           ) : (
@@ -568,7 +588,7 @@ export default function BottomSection({ onContinue, footerRef }: Props) {
                 <FeaturesMobile action={action} setAction={setAction} />
               )}
 
-              <div className="flex items-center gap-2 px-3 mt-auto">
+              <div className="flex items-center  gap-2 px-3 mt-auto">
                 <button
                   type="button"
                   onClick={handleCloseSheet}

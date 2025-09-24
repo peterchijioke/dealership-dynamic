@@ -1,110 +1,91 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useAlgolia } from "@/hooks/useAlgolia";
 import { useState } from "react";
-import { updateFacetFilter } from "@/lib/algolia";
 
-type HierarchicalFacet = Record<string, number>;
+type HierarchyNode = {
+    name: string;
+    count: number;
+    children?: HierarchyNode[];
+};
 
 type Props = {
-    attribute: string; // should be "hierarchicalCategories:model_trim"
-    values: Record<string, HierarchicalFacet | number>;
+    attribute1: string; // e.g. "model"
+    attribute2: string; // e.g. "trim"
+    values: HierarchyNode[]; // from buildModelTrimHierarchy()
     selectedFacets: Record<string, string[]>;
     updateFacet: (attribute: string, value: string) => void;
     className?: string;
 };
 
-/**
- * Custom hierarchical menu for Algolia hierarchical facet like:
- * hierarchicalCategories.model_trim: ["Camry > SE", "Camry > XLE", "Civic > LX"]
- */
 export default function CustomHierarchicalMenu({
-    attribute,
+    attribute1,
+    attribute2,
     values,
     selectedFacets,
     updateFacet,
     className,
 }: Props) {
-    const { stateToRoute } = useAlgolia();
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+    const selectedModels = selectedFacets[attribute1] || [];
+    const selectedTrims = selectedFacets[attribute2] || [];
 
-    const selected = selectedFacets[attribute] || [];
-
-    function toggle(value: string) {
-        updateFacet(attribute, value);
-        const updated = updateFacetFilter(selectedFacets, attribute, value);
-        stateToRoute(updated);
-    }
-
-    function toggleExpand(model: string) {
-        setExpanded((prev) => ({ ...prev, [model]: !prev[model] }));
-    }
-
-    // Values come in flattened hierarchical format (e.g. "Camry > SE")
-    const models: Record<string, { trims: { name: string; count: number }[]; count: number }> = {};
-
-    Object.entries(values).forEach(([path, count]) => {
-        const parts = path.split(" > ");
-        const model = parts[0];
-        const trim = parts[1];
-
-        if (!models[model]) {
-            models[model] = { trims: [], count: 0 };
-        }
-
-        if (trim) {
-            models[model].trims.push({ name: path, count: count as number });
-        }
-
-        models[model].count += count as number;
-    });
+    const toggleExpand = (model: string, checked: boolean) => {
+        setExpanded((prev) => ({
+            ...prev,
+            [model]: checked ? true : false, // expand on check, collapse on uncheck
+        }));
+    };
 
     return (
         <div className={cn("w-full", className)}>
-            <ul className="space-y-1">
-                {Object.entries(models).map(([model, data]) => {
-                    const isExpanded = expanded[model] || false;
-                    const modelSelected = selected.includes(model);
+            <ul className="space-y-2">
+                {values.map((node) => {
+                    const isChecked = selectedModels.includes(node.name);
+                    const isExpanded = expanded[node.name] || isChecked;
 
                     return (
-                        <li key={model}>
-                            {/* Model row */}
+                        <li key={node.name}>
                             <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    className="flex items-center gap-2 text-left w-full"
-                                    onClick={() => toggleExpand(model)}
-                                >
-                                    <span className="font-medium">{model}</span>
-                                    <span className="text-xs text-gray-500">{data.count}</span>
-                                </button>
-                                <input
-                                    type="checkbox"
-                                    checked={modelSelected}
-                                    onChange={() => toggle(model)}
-                                    className="h-4 w-4 ml-2"
-                                />
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => {
+                                            updateFacet(attribute1, node.name);
+                                            toggleExpand(node.name, !isChecked);
+                                        }}
+                                        className="h-4 w-4 cursor-pointer"
+                                    />
+                                    <span className="text-sm font-medium">{node.name}</span>
+                                </label>
+
+                                <span className="text-xs text-gray-500">{node.count}</span>
                             </div>
 
-                            {/* Trim list */}
-                            {isExpanded && data.trims.length > 0 && (
-                                <ul className="ml-4 mt-1 space-y-1">
-                                    {data.trims.map((trim) => {
-                                        const trimSelected = selected.includes(trim.name);
+                            {/* Show children when expanded */}
+                            {node.children && isExpanded && (
+                                <ul className="ml-6 mt-1 space-y-1">
+                                    {node.children.map((child) => {
+                                        const isChildChecked = selectedTrims.includes(child.name);
+
                                         return (
-                                            <li key={trim.name}>
-                                                <label className="flex items-center justify-between gap-2">
+                                            <li key={child.name}>
+                                                <label className="flex items-center justify-between gap-2 cursor-pointer">
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"
-                                                            checked={trimSelected}
-                                                            onChange={() => toggle(trim.name)}
-                                                            className="h-4 w-4"
+                                                            checked={isChildChecked}
+                                                            onChange={() =>
+                                                                updateFacet(attribute2, child.name)
+                                                            }
+                                                            className="h-4 w-4 cursor-pointer"
                                                         />
-                                                        <span className="text-sm">{trim.name.split(" > ")[1]}</span>
+                                                        <span className="text-sm">{child.name}</span>
                                                     </div>
-                                                    <span className="text-xs text-gray-500">{trim.count}</span>
+                                                    <span className="text-xs text-gray-500">
+                                                        {child.count}
+                                                    </span>
                                                 </label>
                                             </li>
                                         );

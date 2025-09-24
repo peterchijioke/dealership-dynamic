@@ -56,9 +56,8 @@ export default async function CatchAllPage({
     "/" + slug.join("/"),
     searchParamsObj
   );
+  // console.log("refinementList", refinementList);
 
-  // Use Algolia search with parsed query & filters
-  // const query = searchParamsObj.get("query") || "";
   const facetFilters = refinementToFacetFilters(refinementList);
 
   // Prefetch first page from Algolia
@@ -69,7 +68,7 @@ export default async function CatchAllPage({
     // attributesToRetrieve: ["*"],
   });
 
-  // console.log("Initial search results:", initialResults);
+  // console.log("Initial search results:", initialResults.params);
 
   // Build JSON-LD structured data
   const jsonLd = buildSrpJsonLd(slug, initialResults.hits);

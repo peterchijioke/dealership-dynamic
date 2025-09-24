@@ -79,6 +79,7 @@ const modelValues = [
   "4Runner",
   "Accord",
   "Elantra",
+  "Frontier",
   "Colorado",
   "Equinox",
   "Bronco",

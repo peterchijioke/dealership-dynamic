@@ -1,9 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useAlgolia } from "@/hooks/useAlgolia";
 import { useMemo, useState } from "react";
-import { updateFacetFilter } from "@/lib/algolia";
 
 type Props = {
   attribute: string;
@@ -24,16 +22,8 @@ export default function CustomRefinementList({
 }: Props) {
   const [search, setSearch] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const { stateToRoute } = useAlgolia();
 
   const selected = selectedFacets[attribute] || [];
-
-  // Always normalize to string[]
-  // const selected = Array.isArray(selectedFacets[attribute])
-  //     ? (selectedFacets[attribute] as string[])
-  //     : selectedFacets[attribute]
-  //         ? (selectedFacets[attribute] as string).split(",")
-  //         : [];
 
   // Filter by search (case-insensitive)
   const filtered = useMemo(() => {
@@ -48,10 +38,7 @@ export default function CustomRefinementList({
   const visibleValues = showAll ? filtered : filtered.slice(0, 10);
 
   function toggle(value: string) {
-    // Update state
     updateFacet(attribute, value);
-    const updated = updateFacetFilter(selectedFacets, attribute, value);
-    stateToRoute(updated);
   }
 
   return (

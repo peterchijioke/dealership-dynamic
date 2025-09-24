@@ -4,13 +4,22 @@ import { useVehicleDetails } from "./VdpContextProvider";
 import { cn } from "@/lib/utils";
 import { formatPrice, stripTrailingCents } from "@/utils/utils";
 import { toast } from "sonner";
+import Link from "next/link";
+import { baseUrl, getDynamicPath } from "@/configs/config";
+import { getFormField, submitForm } from "@/app/api/dynamic-forms";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import VehicleCardLabel from "@/components/labels/VehicleCardLabel";
+import { TagT } from "@/types/vehicle";
+import VehicleFinancing from "../../[...slug]/_components/vehicle-financing";
+import VehicleOemIncentives from "../../[...slug]/_components/vehicle-oem-incentives";
 
 // Type definitions matching the context
 interface ButtonStyles {
   [key: string]: string | number;
 }
 
-interface CTAButton {
+export interface CTAButton {
   device: string;
   cta_type: "html" | "button" | "link" | "form";
   cta_label: string;
@@ -27,6 +36,7 @@ export interface VdpContextType {
   vdpData: {
     title?: string;
     sale_price?: number;
+    oem_incentives: any;
     prices?: {
       dealer_sale_price_formatted?: string;
     };
@@ -35,6 +45,8 @@ export interface VdpContextType {
     stock_number?: string;
     dealer_city?: string;
     dealer_state?: string;
+    is_special: boolean;
+    tag: TagT[];
     dealer_zip_code?: string;
     dealer_domain?: string;
     carfax_url?: string;
@@ -90,7 +102,7 @@ interface FormSubmitResponse {
 }
 
 // Extended button type for internal use
-interface ButtonDataWithFormHandler extends CTAButton {
+export interface ButtonDataWithFormHandler extends CTAButton {
   onFormClick?: (formId: string) => void;
 }
 
@@ -114,12 +126,9 @@ const InlineForm: React.FC<{
   const fetchFormData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://dealertower.app/api/${dealerDomain}/form/${formId}`
-      );
-      const data: FormApiResponse = await response.json();
-      if (data.success) {
-        setFormData(data.data);
+      const response = await getFormField(formId, dealerDomain);
+      if (response.success && response.data) {
+        setFormData(response.data);
       }
     } catch (error) {
       console.error("Error fetching form:", error);
@@ -142,49 +151,25 @@ const InlineForm: React.FC<{
     setSubmitting(true);
 
     try {
-      const response = await fetch(
-        `https://api.dealertower.com/public/${dealerDomain}/v1/form/${formId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formValues),
-        }
-      );
+      const result = await submitForm(formValues, formId, dealerDomain);
+      if (result.success && result.data) {
+        toast.success("Form submitted successfully!", {
+          description:
+            "Thank you for your submission. We'll get back to you soon.",
+          duration: 4000,
+        });
 
-      if (response.ok) {
-        const result: FormSubmitResponse = await response.json();
-        console.log("Form submitted successfully:", result);
-
-        if (result.success && result.data) {
-          toast.success("Form submitted successfully!", {
-            description:
-              "Thank you for your submission. We'll get back to you soon.",
-            duration: 4000,
-          });
-
-          setTimeout(() => {
-            onBack();
-          }, 1500);
-        } else {
-          toast.error("Form submission failed", {
-            description: "Please check your information and try again.",
-          });
-        }
+        setTimeout(() => {
+          onBack();
+        }, 1500);
       } else {
-        const errorData = await response.json();
-        console.error("Form submission failed:", errorData);
-
         toast.error("Form submission failed", {
-          description: errorData.message || "Please try again later.",
+          description: "Please check your information and try again.",
         });
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-
-      toast.error("Network error", {
-        description: "Please check your connection and try again.",
+    } catch (error: any) {
+      toast.error("Form submission failed", {
+        description: error.message,
       });
     } finally {
       setSubmitting(false);
@@ -383,7 +368,7 @@ const InlineForm: React.FC<{
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col ">
       <div className="flex items-center justify-between mb-4 pb-3 border-b flex-shrink-0">
         <button
           onClick={onBack}
@@ -408,17 +393,26 @@ const InlineForm: React.FC<{
             {formData.title}
           </h2>
 
-          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-12 gap-3">
-                {formData.fields.map((field) => renderField(field))}
-              </div>
-
+          <ScrollArea className=" overflow-hidden  h-96 pr-2 -mr-2">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              {Array.isArray(formData?.fields) &&
+              formData.fields &&
+              formData.fields.length > 0 ? (
+                formData.fields.map((field, idx) => (
+                  <div key={field.name || idx} className="w-full">
+                    {renderField(field)}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  No form fields found.
+                </div>
+              )}
               <div className="pt-4 mt-6 border-t bg-white sticky bottom-0">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-black text-white py-3 rounded-full font-semibold text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {submitting ? (
                     <>
@@ -431,7 +425,7 @@ const InlineForm: React.FC<{
                 </button>
               </div>
             </form>
-          </div>
+          </ScrollArea>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 flex-1">
@@ -482,6 +476,7 @@ export default function VdpVehicleCard(): JSX.Element {
     setShowForm(false);
     setSelectedFormId(null);
   };
+  const { site } = useGetCurrentSite();
 
   return (
     <>
@@ -494,8 +489,16 @@ export default function VdpVehicleCard(): JSX.Element {
             bottom: "unset",
             top: "unset",
           }}
-          className="max-h-[calc(100vh-62px)]  overflow-y-auto bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
+          className="max-h-[calc(100vh-62px)]   bg-white  rounded-3xl min-h-[420px] p-6 w-full shadow-xs md:mt-10 pb-6x max-w-sm"
         >
+          {vdpData.tag && (
+            <div className=" w-full mb-14">
+              <VehicleCardLabel
+                isSpecial={vdpData.is_special}
+                tags={vdpData.tag}
+              />
+            </div>
+          )}
           <div>
             {/* Price section - always visible */}
             <div className="flex flex-row gap-1 justify-between mb-6">
@@ -541,7 +544,13 @@ export default function VdpVehicleCard(): JSX.Element {
                     <span>{vdpData?.stock_number}</span>
                   </div>
                 </div>
+                <div className=" w-full">
+                  <VehicleFinancing vehicle={vdpData} />
+                </div>
 
+                <div className="vehicle-default-theme__incentives-wrapper">
+                  <VehicleOemIncentives incentives={vdpData.oem_incentives} />
+                </div>
                 <div className=" hidden md:block py-2">
                   {vdpData.cta?.map((ctaItem, index) => (
                     <div key={index} className="flex items-center  w-full py-1">
@@ -551,20 +560,6 @@ export default function VdpVehicleCard(): JSX.Element {
                       })}
                     </div>
                   ))}
-
-                  {/* {!showCtaButtons && (
-                    <button
-                      onClick={() => {
-                        setShowCtaButtons(!showCtaButtons);
-                      }}
-                      className=" bg-rose-700 cursor-pointer text-white active:opacity-90 select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full border-0 pl-0 pr-1 mr-4 border-transparent hover:text-primary-600 text-primary-500 mb-2 w-full border-none flex flex-row items-start justify-center"
-                      aria-haspopup="false"
-                    >
-                      <div className="w-full text-[0.96rem]">
-                        I&apos;m Interested
-                      </div>
-                    </button>
-                  )} */}
                 </div>
 
                 <div className=" flex-row flex items-center">
@@ -588,9 +583,7 @@ export default function VdpVehicleCard(): JSX.Element {
               selectedFormId && (
                 <InlineForm
                   formId={selectedFormId}
-                  dealerDomain={
-                    vdpData?.dealer_domain || "www.nissanofportland.com"
-                  }
+                  dealerDomain={site}
                   onBack={handleBackToCard}
                 />
               )
@@ -609,12 +602,14 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
     cta_type,
     open_newtab = false,
     btn_classes = [],
+    device,
     btn_attributes = {},
     onFormClick,
   } = data;
 
-  const baseButtonClasses =
-    "active:opacity-90 bg-rose-700 cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full ";
+  const baseButtonClasses = `active:opacity-90 bg-rose-700 cursor-pointer select-none min-w-[48px] min-h-[44px] md:min-h-[41px] inline-flex items-center justify-center border-solid border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 md:transition-all md:duration-200 px-7 active:scale-[.99] hover:scale-[1.05] py-2 py-1 text-base rounded-full bg-primary-500 hover:bg-primary-600 hover:border-primary-600 text-white border-primary-500 w-full ${
+    device === "mobile" ? "md:hidden" : "md:block"
+  } `;
 
   // Handle form type - show inline form
   if (cta_type === "form" && onFormClick) {
@@ -646,16 +641,16 @@ export const getButtonType = (data: ButtonDataWithFormHandler): JSX.Element => {
   // Handle link type
   if (cta_type === "link" && btn_content) {
     return (
-      <a
+      <Link
         href={btn_content}
-        className={`${baseButtonClasses} ${btn_classes.join(" ")}`}
+        className={`${baseButtonClasses} ${btn_classes.join(" ")} text-center`}
         target={open_newtab ? "_blank" : "_self"}
         rel={open_newtab ? "noopener noreferrer" : undefined}
         aria-haspopup="false"
         {...btn_attributes}
       >
         {cta_label}
-      </a>
+      </Link>
     );
   }
 
