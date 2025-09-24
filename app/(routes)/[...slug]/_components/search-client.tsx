@@ -66,28 +66,39 @@ export default function SearchClient({
     hitsPerPage: HITS_PER_PAGE,
   });
 
-  // Toggle a facet
-  const updateFacet = async (facet: string, value: string, parentModel?: string) => {
+  // Toggle a facet  
+  const updateFacet = async (
+    facet: string,
+    value: string,
+  ) => {
     let currentFacets = selectedFacets;
+
     setSelectedFacets((prev) => {
       const current = prev[facet] || [];
 
-      // Build unique key for trims: "Model::Trim"
-      const facetValue = facet === "trim" && parentModel ? `${parentModel}::${value}` : value;
-
-      const updated = current.includes(facetValue)
-        ? current.filter((v) => v !== facetValue)
-        : [...current, facetValue];
+      // Toggle facet value
+      const updated = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
 
       const newState = { ...prev, [facet]: updated };
       if (newState[facet].length === 0) delete newState[facet];
 
-      // Auto-select make when model is toggled
+      // Auto-select make when model is toggled (unchanged)
       if (facet === "model" && !prev.make) {
         const firstMakeKey = Object.keys(latestFacets.make || {})[0];
         if (firstMakeKey) {
           newState.make = [firstMakeKey];
         }
+      }
+
+      // ---- Remove associated trims when a model is being UNCHECKED ----
+      if (facet === "model" && current.includes(value)) {
+        const trims = newState.trim || [];
+        // Remove any trim that starts with `Model+`, e.g. "Frontier+SV"
+        const prefix = `${value}+`;
+        newState.trim = trims.filter((t) => !t.startsWith(prefix));
+        if (newState.trim.length === 0) delete newState.trim;
       }
 
       currentFacets = newState;
@@ -96,6 +107,8 @@ export default function SearchClient({
 
     stateToRoute(currentFacets); // push URL change
   };
+
+
 
 
   const handleRemoveFilter = async (facet: string, value: string) => {

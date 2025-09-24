@@ -14,7 +14,7 @@ type Props = {
     attribute2: string; // e.g. "trim"
     values: HierarchyNode[]; // from buildModelTrimHierarchy()
     selectedFacets: Record<string, string[]>;
-    updateFacet: (attribute: string, value: string, parentModel?: string) => void;
+    updateFacet: (attribute: string, value: string) => void;
     className?: string;
 };
 
