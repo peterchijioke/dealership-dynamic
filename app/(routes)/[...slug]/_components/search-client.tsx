@@ -81,7 +81,7 @@ export default function SearchClient({
         ? current.filter((v) => v !== value)
         : [...current, value];
 
-      let newState = { ...prev, [facet]: updated };
+      const newState = { ...prev, [facet]: updated };
       if (newState[facet].length === 0) delete newState[facet];
 
       // Auto-select make when model is toggled (unchanged)
