@@ -6,7 +6,6 @@ import {
 import { createInMemoryCache } from "@algolia/cache-in-memory";
 import type { VehicleHit } from "@/types/vehicle";
 import { CATEGORICAL_FACETS, srpIndex, vdpIndex } from "@/configs/config";
-import { buildModelTrimHierarchy } from "./helpers";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,

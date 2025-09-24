@@ -44,8 +44,8 @@ export default function InfiniteHits({
         {hits.length > 0
           ? hits.map((hit) => <VehicleCard key={hit.objectID} hit={hit} />)
           : serverHits.map((hit) => (
-              <VehicleCard key={hit.objectID} hit={hit} />
-            ))}
+            <VehicleCard key={hit.objectID} hit={hit} />
+          ))}
       </div>
 
       {/* Sentinel div for infinite scroll */}
