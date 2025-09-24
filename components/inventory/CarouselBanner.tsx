@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Fragment } from "react";
 import { useSpecials } from "@/hooks/useSpecials";
 
 import InventoryTopBannerSpecials from "../form/components/top-banner/InventoryTopBannerSpecials";
+import { cn } from "@/lib/utils";
 
 // Array of paths where the carousel should be shown
 // const SHOW_CAROUSEL_PATHS = ["/new-vehicles/", "/used-vehicles/"];
@@ -29,7 +30,7 @@ const CarouselBanner = ({
       ),
     [filters]
   );
-  const { specials } = useSpecials(defaultFilters);
+  const { specials, isLoading } = useSpecials(defaultFilters);
   const dynamicSlides =
     specials &&
     specials.topBannerSpecials &&
@@ -62,22 +63,22 @@ const CarouselBanner = ({
   const clientTopBanner = specials?.topBannerSpecials || [];
   const hasBanner = clientTopBanner.length > 0;
 
-  // if (isLoading) {
-  //   return (
-  //     <Fragment>
-  //       <div className={cn("relative w-full overflow-hidden mt-5", className)}>
-  //         <div className="relative w-full h-28 overflow-hidden bg-gray-300 ">
-  //           <div className="w-full h-full bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 animate-pulse"></div>
-  //           <div className="absolute inset-0 flex items-center justify-center">
-  //             <div className="text-gray-500 text-sm font-medium">
-  //               Loading specials...
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </Fragment>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <Fragment>
+        <div className={cn("relative w-full overflow-hidden mt-5", className)}>
+          <div className="relative w-full h-28 overflow-hidden bg-gray-300 ">
+            <div className="w-full h-full bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 animate-pulse"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-gray-500 text-sm font-medium">
+                Loading specials...
+              </div>
+            </div>
+          </div>
+        </div>
+      </Fragment>
+    );
+  }
 
   if (!hasBanner) {
     return null;
