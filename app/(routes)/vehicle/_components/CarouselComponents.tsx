@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, VideoIcon, X } from "lucide-react";
 import React, { useState, useEffect, Fragment } from "react";
 import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+// import "keen-slider/keen-slider.min.css";
 import { useVehicleDetails } from "./VdpContextProvider";
 import {
   encryptObject,

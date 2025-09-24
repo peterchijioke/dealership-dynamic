@@ -137,7 +137,7 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
             </Button>
 
             {/* Contact Info */}
-            {(phones[0]?.value || headerData?.address) && (
+            {/* {(phones[0]?.value || headerData?.address) && (
               <div className="flex-col gap-1 hidden md:flex items-end">
                 {phones[0]?.value && (
                   <div className="flex space-x-2 text-rose-700">
@@ -156,6 +156,32 @@ const TopHeader = ({ headerData, imagesRaw }: TopHeaderProps) => {
                     {headerData?.address && headerData?.city && ", "}
                     {headerData?.city}
                   </div>
+                )}
+              </div>
+            )} */}
+            {(phones[0]?.value || headerData?.address) && (
+              <div className="header-theme3-contact-info hidden h-15 flex-col justify-between gap-1 py-1 xl:flex">
+                {phones[0]?.value && (
+                  <a
+                    href={`tel:${phones[0].value.replace(/\D/g, "")}`}
+                    className="header-theme3-phone-number text-2xl font-semibold text-rose-700 leading-[117%] tracking-normal text-primary no-underline hover:underline"
+                    aria-label={`Call ${phones[0].value}`}
+                  >
+                    {phones[0].value}
+                  </a>
+                )}
+                {(headerData?.address || headerData?.city) && (
+                  <a
+                    href="https://www.google.com/maps?q=45.326775,-122.771114"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="header-theme3-address text-gray-600 text-[12px] font-normal leading-[117%] tracking-normal no-underline hover:underline"
+                    aria-label="Address"
+                  >
+                    {headerData?.address}
+                    {headerData?.address && headerData?.city && ", "}
+                    {headerData?.city}
+                  </a>
                 )}
               </div>
             )}
