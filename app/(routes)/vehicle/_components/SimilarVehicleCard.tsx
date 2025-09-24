@@ -3,7 +3,7 @@ import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { SimilarVehicle } from "@/types/similar-vehicles";
 import { generateImagePreviewData, previewurl } from "@/utils/utils";
 import Link from "next/link";
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 
 type Props = {
   vehicle: SimilarVehicle;

@@ -16,7 +16,7 @@ export function slugify(str: string) {
   return str
     .toString()
     .normalize("NFKD")
-    .replace(/[^\w\s-]/g, "")
+    .replace(/[^\w\s-+]/g, "")
     .trim()
     .replace(/\s+/g, "-")
     .toLowerCase();
@@ -123,6 +123,7 @@ export function recordToSearchParams(
 
   return params;
 }
+
 
 export function searchParamsToRecord(
   params: URLSearchParams

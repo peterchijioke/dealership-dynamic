@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { VehicleHit } from "@/types/vehicle";
 import {
+  normalizeRefinementForAlgolia,
   refinementToFacetFilters,
   searchWithMultipleQueries,
 } from "@/lib/algolia";
@@ -52,14 +53,15 @@ export function useInfiniteAlgoliaHits({
     (async () => {
       setLoading(true);
       try {
+        const normalizedRefinement = normalizeRefinementForAlgolia(refinements);
         const response = await searchWithMultipleQueries({
           page: 0,
           hitsPerPage,
-          facetFilters: refinementToFacetFilters(refinements),
+          facetFilters: refinementToFacetFilters(normalizedRefinement),
           sortIndex,
           facets: CATEGORICAL_FACETS,
         });
-        
+
         // console.log("useEffect:", response);
 
         if (!active) return;
@@ -87,10 +89,11 @@ export function useInfiniteAlgoliaHits({
     const nextPage = page + 1;
 
     try {
+      const normalizedRefinement = normalizeRefinementForAlgolia(refinements);
       const response = await searchWithMultipleQueries({
         page: nextPage,
         hitsPerPage,
-        facetFilters: refinementToFacetFilters(refinements),
+        facetFilters: refinementToFacetFilters(normalizedRefinement),
         sortIndex,
         facets: CATEGORICAL_FACETS,
       });

@@ -14,7 +14,7 @@ type Props = {
     attribute2: string; // e.g. "trim"
     values: HierarchyNode[]; // from buildModelTrimHierarchy()
     selectedFacets: Record<string, string[]>;
-    updateFacet: (attribute: string, value: string) => void;
+    updateFacet: (attribute: string, value: string, parentModel?: string) => void;
     className?: string;
 };
 
@@ -67,25 +67,22 @@ export default function CustomHierarchicalMenu({
                             {node.children && isExpanded && (
                                 <ul className="ml-6 mt-1 space-y-1">
                                     {node.children.map((child) => {
-                                        const isChildChecked = selectedTrims.includes(child.name);
+                                        const childKey = node.name + "+" + child.name;
+                                        const isChildChecked = selectedTrims.includes(childKey);
 
                                         return (
-                                            <li key={child.name}>
+                                            <li key={childKey}>
                                                 <label className="flex items-center justify-between gap-2 cursor-pointer">
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"
                                                             checked={isChildChecked}
-                                                            onChange={() =>
-                                                                updateFacet(attribute2, child.name)
-                                                            }
+                                                            onChange={() => updateFacet(attribute2, childKey)}
                                                             className="h-4 w-4 cursor-pointer"
                                                         />
                                                         <span className="text-sm">{child.name}</span>
                                                     </div>
-                                                    <span className="text-xs text-gray-500">
-                                                        {child.count}
-                                                    </span>
+                                                    <span className="text-xs text-gray-500">{child.count}</span>
                                                 </label>
                                             </li>
                                         );
