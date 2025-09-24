@@ -368,11 +368,12 @@ export default function CarouselComponents() {
                 >
                   <picture className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
                     <img
+                      fetchPriority={"high"}
+                      loading={"eager"}
+                      decoding="async"
                       src={image?.url || generateImagePreviewData(previewurl)}
                       alt={`Car image ${index + 1}`}
-                      fetchPriority="high"
                       className="w-full h-full object-contain max-w-full max-h-[80vh] md:max-h-[90vh]"
-                      loading="eager"
                       style={{
                         maxWidth: "100vw",
                         maxHeight: "80vh",
