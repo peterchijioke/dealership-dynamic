@@ -26,9 +26,6 @@ export function useSpecials(filters: Record<string, any>) {
           filters,
         };
         const specialsGroup = await getSpecials(site, payload);
-        // console.log("=============getSpecials=======================");
-        // console.log(JSON.stringify(specialsGroup, null, 2));
-        // console.log("==============getSpecials======================");
         const final = {
           topBannerSpecials: specialsGroup
             .flat()

@@ -257,25 +257,22 @@ export default function CarouselComponents() {
                       onClick={() => openModal(index)}
                       style={{ width: "100%", minWidth: "100%" }}
                     >
-                      <div className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none">
-                        {/* <img
-                      loading="eager"
-                      alt={`Car preview ${index + 1}`}
-                      src={item}
-                      className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300"
-                    /> */}
+                      <picture className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none max-w-full h-auto">
                         <img
                           className={cn(
-                            "absolute top-0 left-0 w-full h-full  scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain",
+                            "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain",
                             !isMount && "blur-[10px]"
                           )}
                           src={
-                            item?.url || generateImagePreviewData(previewurl)
+                            item?.url ||
+                            generateImagePreviewData(previewurl) ||
+                            "https://placehold.co/600x400?text=No+Image"
                           }
                           alt="car preview"
                           loading="eager"
+                          style={{ display: "block" }}
                         />
-                      </div>
+                      </picture>
                     </div>
                   );
                 })
@@ -369,7 +366,7 @@ export default function CarouselComponents() {
                     width: "100vw",
                   }}
                 >
-                  <div className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
+                  <picture className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
                     <img
                       src={image?.url || generateImagePreviewData(previewurl)}
                       alt={`Car image ${index + 1}`}
@@ -381,7 +378,7 @@ export default function CarouselComponents() {
                         maxHeight: "80vh",
                       }}
                     />
-                  </div>
+                  </picture>
                 </div>
               );
             })}
