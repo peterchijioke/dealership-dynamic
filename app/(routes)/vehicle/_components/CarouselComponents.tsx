@@ -27,46 +27,40 @@ export default function CarouselComponents() {
   const images = [
     { type: "video", url: vdpData.video },
     ...(vdpData?.photos || []).map((url) => {
+      const cacheKey = JSON.stringify({
+        url,
+        width: 400,
+        quality: 100,
+        cache: 1,
+      });
+
+      // if (urlCache.has(cacheKey)) {
       return {
         type: "image",
         url: url,
 
         // urlCache.get(cacheKey)!
       };
-      // const cacheKey = JSON.stringify({
-      //   url,
-      //   width: 400,
-      //   quality: 100,
-      //   cache: 1,
-      // });
-
-      // if (urlCache.has(cacheKey)) {
-      // return {
-      //   type: "image",
-      //   url: url,
-
-      // urlCache.get(cacheKey)!
-      // };
-      // // }
-      // const isCancelled = false;
-      // encryptObject(
-      //   {
-      //     url,
-      //     width: 400,
-      //     quality: 100,
-      //     cache: 1,
-      //   },
-      //   key!
-      // )
-      //   .then((str) => {
-      //     const finalUrl = `https://dealertower.app/image/${str}.avif`;
-      //     urlCache.set(cacheKey, finalUrl);
-      //     if (!isCancelled) return { type: "image", url: finalUrl };
-      //   })
-      //   .catch(() => {
-      //     if (!isCancelled) return undefined;
-      //   });
-      // return { type: "image", url: undefined };
+      // }
+      const isCancelled = false;
+      encryptObject(
+        {
+          url,
+          width: 400,
+          quality: 100,
+          cache: 1,
+        },
+        key!
+      )
+        .then((str) => {
+          const finalUrl = `https://dealertower.app/image/${str}.avif`;
+          urlCache.set(cacheKey, finalUrl);
+          if (!isCancelled) return { type: "image", url: finalUrl };
+        })
+        .catch(() => {
+          if (!isCancelled) return undefined;
+        });
+      return { type: "image", url: undefined };
     }),
   ];
 
@@ -266,9 +260,7 @@ export default function CarouselComponents() {
                           className={cn(
                             "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain"
                           )}
-                          src={
-                            item?.url || generateImagePreviewData(previewurl)
-                          }
+                          src={item?.url as string}
                           alt="car preview"
                           loading="eager"
                           style={{
