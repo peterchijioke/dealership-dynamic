@@ -34,27 +34,32 @@ export default function CarouselComponents() {
         cache: 1,
       });
 
-      if (urlCache.has(cacheKey)) {
-        return { type: "image", url: urlCache.get(cacheKey)! };
-      }
+      // if (urlCache.has(cacheKey)) {
+      return {
+        type: "image",
+        url: url,
+
+        // urlCache.get(cacheKey)!
+      };
+      // }
       const isCancelled = false;
-      encryptObject(
-        {
-          url,
-          width: 400,
-          quality: 65,
-          cache: 1,
-        },
-        key!
-      )
-        .then((str) => {
-          const finalUrl = `https://dealertower.app/image/${str}.avif`;
-          urlCache.set(cacheKey, finalUrl);
-          if (!isCancelled) return { type: "image", url: finalUrl };
-        })
-        .catch(() => {
-          if (!isCancelled) return undefined;
-        });
+      // encryptObject(
+      //   {
+      //     url,
+      //     width: 400,
+      //     quality: 65,
+      //     cache: 1,
+      //   },
+      //   key!
+      // )
+      //   .then((str) => {
+      //     const finalUrl = `https://dealertower.app/image/${str}.avif`;
+      //     urlCache.set(cacheKey, finalUrl);
+      //     if (!isCancelled) return { type: "image", url: finalUrl };
+      //   })
+      //   .catch(() => {
+      //     if (!isCancelled) return undefined;
+      //   });
       return { type: "image", url: undefined };
     }),
   ];
@@ -135,13 +140,6 @@ export default function CarouselComponents() {
     };
   }, [isModalOpen, images.length]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
-  const handlePlayVideo = () => {
-    setIsVideoPlaying(true);
-  };
-  const handlePauseVideo = () => {
-    setIsVideoPlaying(false);
-  };
 
   const [isMount, setIsMount] = useState(false);
   useEffect(() => {
@@ -260,17 +258,15 @@ export default function CarouselComponents() {
                       <picture className="w-full relative overflow-hidden aspect-[16/10] md:aspect-[1.5] max-h-[250px] md:max-h-none max-w-full h-auto">
                         <img
                           className={cn(
-                            "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain",
-                            !isMount && "blur-[10px]"
+                            "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain"
                           )}
-                          src={
-                            item?.url ||
-                            generateImagePreviewData(previewurl) ||
-                            "https://placehold.co/600x400?text=No+Image"
-                          }
+                          src={item?.url!}
                           alt="car preview"
                           loading="eager"
-                          style={{ display: "block" }}
+                          style={{
+                            display: "block",
+                            filter: "brightness(1.15)",
+                          }}
                         />
                       </picture>
                     </div>
@@ -360,7 +356,16 @@ export default function CarouselComponents() {
               return (
                 <div
                   key={index}
-                  className="snap-start flex items-center justify-center"
+                  className="snap-start flex items-center justify-center 
+                  
+                  box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    width: auto;
+    height: 100%;
+    aspect-ratio: 1.5 / 1;
+    position: relative;
+                  "
                   style={{
                     minHeight: "100vh",
                     width: "100vw",
