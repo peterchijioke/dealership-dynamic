@@ -79,12 +79,7 @@ async function getSpecials(site: string, payload: any) {
   }
 
   try {
-    if (requestBody.filters?.condition) {
-      requestBody.filters.condition = requestBody.filters.condition.map((val) =>
-        val.toLowerCase()
-      );
-    }
-
+    // console.log("requestBody:", requestBody);
     const res = await apiClient.post<{
       data: SpecialGroup[];
     }>(`/${site}${specialBanner}`, requestBody);
