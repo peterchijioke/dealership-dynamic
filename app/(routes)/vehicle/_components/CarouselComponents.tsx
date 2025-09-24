@@ -260,7 +260,7 @@ export default function CarouselComponents() {
                           className={cn(
                             "w-full h-full scale-110 transition-all duration-300 ease-in-out rounded-3xl bg-[#e6e7e8] overflow-hidden object-contain"
                           )}
-                          src={item?.url!}
+                          src={item?.url as string}
                           alt="car preview"
                           loading="eager"
                           style={{
