@@ -5,7 +5,6 @@
 
 import { apiClient, baseUrl, getDynamicPath, getWebsiteInformationPath, specialBanner } from "@/configs/config";
 import { SpecialGroup } from "@/types";
-import axios from "axios";
 
 export async function getSpecials(site: string, payload: any) {
  	const channels = payload?.channels ?? [];
