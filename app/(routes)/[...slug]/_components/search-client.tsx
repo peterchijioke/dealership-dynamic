@@ -2,8 +2,8 @@
 import "./search-client-scroll-lock.css";
 
 import { useState } from "react";
-import SidebarFilters from "./sidebar-filters";
-import InfiniteHits from "@/components/algolia/infinite-hits-2";
+// import SidebarFilters from "./sidebar-filters";
+// import InfiniteHits from "@/components/algolia/infinite-hits-2";
 import { generateFacetFilters, normalizeRefinementForAlgolia, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
@@ -30,8 +30,8 @@ import {
 
 import dynamic from "next/dynamic";
 
-// const SidebarFilters = dynamic(() => import("./sidebar-filters"), { ssr: false });
-// const InfiniteHits = dynamic(() => import("@/components/algolia/infinite-hits-2"), { ssr: false });
+const SidebarFilters = dynamic(() => import("./sidebar-filters"), { ssr: false });
+const InfiniteHits = dynamic(() => import("@/components/algolia/infinite-hits-2"), { ssr: false });
 const CarouselBanner = dynamic(() => import("@/components/inventory/CarouselBanner"), {
   ssr: false,
   loading: () => null,
