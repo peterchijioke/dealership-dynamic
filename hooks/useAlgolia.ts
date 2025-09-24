@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 export function useAlgolia() {
-  // const router = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
   // const pathname = usePathname();
 
@@ -42,6 +42,7 @@ export function useAlgolia() {
     // window.history.pushState({}, "title", url);
     setTimeout(() => {
       window.history.pushState({}, "title", url);
+      // router.push(url, { scroll: false });
     }, 0);
   }
 
