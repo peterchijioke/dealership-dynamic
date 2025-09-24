@@ -7,8 +7,8 @@ import {
 import { notFound } from "next/navigation";
 import SearchClient from "./_components/search-client";
 import { urlParser2 } from "@/lib/url-formatter";
-import { buildSrpJsonLd, generateSrpSeoMeta } from "@/lib/seo";
-import Script from "next/script";
+import { generateSrpSeoMeta } from "@/lib/seo";
+// import Script from "next/script";
 import { getDealerInfo } from "@/lib/website";
 import { CATEGORICAL_FACETS } from "@/configs/config";
 
@@ -74,19 +74,21 @@ export default async function CatchAllPage({
   // console.log("Initial search results:", initialResults.params);
 
   // Build JSON-LD structured data
-  const jsonLd = buildSrpJsonLd(slug, initialResults.hits);
+  // const jsonLd = buildSrpJsonLd(slug, initialResults.hits);
 
   return (
     <div className="h-screen flex flex-col relative">
-      <Script
+      {/* <Script
         id="structured-data"
         type="application/ld+json"
         strategy="lazyOnload"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      /> */}
 
       <SearchClient
-        initialResults={initialResults}
+        resultHits={initialResults.hits}
+        nbHits={initialResults.nbHits || 0}
+        facets={initialResults.facets}
         refinements={refinementList}
       />
     </div>

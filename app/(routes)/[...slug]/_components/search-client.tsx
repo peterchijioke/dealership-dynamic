@@ -18,7 +18,7 @@ import SortDropdown from "./sort-opptions";
 import { useInfiniteAlgoliaHits } from "@/hooks/useInfiniteAlgoliaHits";
 import SearchDropdown, { CustomSearchBox } from "./search-modal";
 import { InstantSearch } from "react-instantsearch";
-import CarouselBanner from "@/components/inventory/CarouselBanner";
+// import CarouselBanner from "@/components/inventory/CarouselBanner";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,15 +28,28 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
+import dynamic from "next/dynamic";
+
+// const SidebarFilters = dynamic(() => import("./sidebar-filters"), { ssr: false });
+// const InfiniteHits = dynamic(() => import("@/components/algolia/infinite-hits-2"), { ssr: false });
+const CarouselBanner = dynamic(() => import("@/components/inventory/CarouselBanner"), {
+  ssr: false,
+  loading: () => null,
+});
+
 interface Props {
-  initialResults: any;
+  resultHits: any;
+  nbHits: number;
+  facets: any;
   refinements?: Record<string, string[]>; // ex: { condition: ["New"], make: ["Audi"] }
 }
 
 const HITS_PER_PAGE = 12;
 
 export default function SearchClient({
-  initialResults,
+  resultHits,
+  nbHits,
+  facets,
   refinements = {},
 }: Props) {
   const [selectedFacets, setSelectedFacets] =
@@ -57,9 +70,9 @@ export default function SearchClient({
     isLastPage,
     loading,
   } = useInfiniteAlgoliaHits({
-    initialHits: initialResults.hits,
-    initialTotalHits: initialResults.nbHits,
-    initialFacets: initialResults.facets,
+    initialHits: resultHits,
+    initialTotalHits: nbHits,
+    initialFacets: facets,
     // initialPage: initialResults.page,
     refinements: selectedFacets,
     sortIndex,
