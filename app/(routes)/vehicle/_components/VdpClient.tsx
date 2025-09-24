@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AppFooter from "./AppFooter";
 import BottomSection from "./BottomSection";
 import VdpBodySection from "./VdpBodySection";
@@ -7,6 +7,10 @@ import VdpVehicleCard from "./VdpVehicleCard";
 import { useInView } from "@/hooks/useInView";
 import { useVehicleDetails } from "./VdpContextProvider";
 import CarouselBanner from "@/components/inventory/CarouselBanner";
+import { getSimilarVehicles } from "@/app/api/dynamic-forms";
+import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
+import { SimilarVehicle } from "@/types/similar-vehicles";
+import SimilarVehicleCard from "./SimilarVehicleCard";
 
 export default function VdpClient() {
   const footerRef = useRef<HTMLDivElement>(null);
@@ -17,18 +21,18 @@ export default function VdpClient() {
     condition: Array.isArray(vdpData?.condition)
       ? vdpData?.condition
       : vdpData?.condition
-        ? [vdpData.condition]
-        : [],
+      ? [vdpData.condition]
+      : [],
     make: Array.isArray(vdpData?.make)
       ? vdpData?.make
       : vdpData?.make
-        ? [vdpData.make]
-        : [],
+      ? [vdpData.make]
+      : [],
     model: Array.isArray(vdpData?.model)
       ? vdpData?.model
       : vdpData?.model
-        ? [vdpData.model]
-        : [],
+      ? [vdpData.model]
+      : [],
   };
 
   useInView(
@@ -77,7 +81,6 @@ export default function VdpClient() {
           <VdpBodySection />
           <VdpVehicleCard />
         </div>
-        <div className="w-full">{/* similar vehicles*/}</div>
       </main>
 
       <BottomSection footerRef={footerRef} />

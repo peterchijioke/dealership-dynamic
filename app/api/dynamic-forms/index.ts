@@ -1,4 +1,4 @@
-import { baseUrl, similarVehicleUrl } from "@/configs/config";
+import { apiClient, baseUrl } from "@/configs/config";
 import axios from "axios";
 
   export const submitForm = async (formValues: Record<string, any>, formId: string, dealerDomain: string) => {
@@ -34,14 +34,15 @@ import axios from "axios";
     }
 
   }
-  export const getSimilarVehicles = async (vehicleId: string) => {
+  export const getSimilarVehicles = async (vehicleId: string, site: string) => {
     try {
-      const response = await axios.get(
-       `${similarVehicleUrl}?vehicle_id=${vehicleId}`
+      const response = await apiClient.get(
+        `/${site}/v1/get-similar-vehicles?vdp_slug=${vehicleId}`
       );
+     
       return response.data;
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error fetching similar vehicles:", error);
       throw error;
     }
 
