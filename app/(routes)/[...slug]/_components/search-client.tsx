@@ -4,7 +4,7 @@ import "./search-client-scroll-lock.css";
 import { useState } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
+import { generateFacetFilters, normalizeRefinementForAlgolia, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia } from "@/hooks/useAlgolia";
@@ -67,13 +67,18 @@ export default function SearchClient({
   });
 
   // Toggle a facet
-  const updateFacet = async (facet: string, value: string) => {
+  const updateFacet = async (facet: string, value: string, parentModel?: string) => {
     let currentFacets = selectedFacets;
     setSelectedFacets((prev) => {
       const current = prev[facet] || [];
-      const updated = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value];
+
+      // Build unique key for trims: "Model::Trim"
+      const facetValue = facet === "trim" && parentModel ? `${parentModel}::${value}` : value;
+
+      const updated = current.includes(facetValue)
+        ? current.filter((v) => v !== facetValue)
+        : [...current, facetValue];
+
       const newState = { ...prev, [facet]: updated };
       if (newState[facet].length === 0) delete newState[facet];
 
@@ -92,6 +97,7 @@ export default function SearchClient({
     stateToRoute(currentFacets); // push URL change
   };
 
+
   const handleRemoveFilter = async (facet: string, value: string) => {
     let currentFacets = selectedFacets;
     setSelectedFacets((prev) => {
@@ -105,9 +111,10 @@ export default function SearchClient({
       return updated;
     });
 
+    const normalizedRefinement = normalizeRefinementForAlgolia(selectedFacets);
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: generateFacetFilters(selectedFacets),
+      facetFilters: generateFacetFilters(normalizedRefinement),
       sortIndex,
       facets: CATEGORICAL_FACETS,
     });
@@ -134,9 +141,10 @@ export default function SearchClient({
   const handleSortChange = async (newSort: string) => {
     setSortIndex(newSort);
 
+    const normalizedRefinement = normalizeRefinementForAlgolia(selectedFacets);
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: generateFacetFilters(selectedFacets),
+      facetFilters: generateFacetFilters(normalizedRefinement),
       sortIndex: newSort,
       facets: CATEGORICAL_FACETS,
     });

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  normalizeRefinementForAlgolia,
   refinementToFacetFilters,
   searchWithMultipleQueries,
 } from "@/lib/algolia";
@@ -52,10 +53,12 @@ export default async function CatchAllPage({
   const searchParamsObj = new URLSearchParams(rawSearchParams as any);
 
   // Parse the URL into refinementList using your urlParser
-  const { params: refinementList } = urlParser2(
+  let { params: refinementList } = urlParser2(
     "/" + slug.join("/"),
     searchParamsObj
   );
+  refinementList = normalizeRefinementForAlgolia(refinementList);
+
   // console.log("refinementList", refinementList);
 
   const facetFilters = refinementToFacetFilters(refinementList);
