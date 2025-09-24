@@ -174,7 +174,10 @@ export default function SearchClient({
           >
             <ScrollArea className="h-full pb-8  ">
               <div className=" w-full px-3 md:pt-0 pt-20">
-                <CarouselBanner filters={selectedFacets} className=" rounded-2xl" />
+                <CarouselBanner
+                  filters={selectedFacets}
+                  className=" rounded-2xl"
+                />
               </div>
               <div className="p-4 space-y-4">
                 <div className="w-full flex py-4  flex-col gap-2">
@@ -205,24 +208,26 @@ export default function SearchClient({
                       />
                     </div>
                   </div>
-                  <div className=" md:hidden flex items-center justify-between">
+                  <div className=" md:hidden flex gap-2 flex-col">
                     <div className=" flex-1">
-                      <span className=" text-sm font-semibold ">
+                      <span className=" text-sm shrink-0 font-semibold ">
                         {totalHits} vehicles
                       </span>
                     </div>
                     <div className="flex flex-1 items-center gap-2">
                       <Button
-                        className=" rounded-xs  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300"
+                        className=" rounded-xs flex-1  bg-rose-700 text-white border-rose-700 hover:bg-rose-800 hover:border-rose-800 focus:ring-rose-300"
                         onClick={() => setFilterSheetOpen(true)}
                       >
                         Filter
                         <Filter className="mr-2 h-4 w-4" />
                       </Button>
-                      <SortDropdown
-                        currentSort={sortIndex}
-                        onChange={handleSortChange}
-                      />
+                      <div className="flex-1">
+                        <SortDropdown
+                          currentSort={sortIndex}
+                          onChange={handleSortChange}
+                        />
+                      </div>
                     </div>
                   </div>
                   {/* Mobile Filter Sheet using shadcn/ui Sheet */}
