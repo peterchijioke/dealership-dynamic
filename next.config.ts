@@ -86,6 +86,9 @@ const nextConfig: NextConfig = {
       fullUrl: process.env.NODE_ENV !== "production",
     },
   },
+
+
+  scrollRestoration: true
 };
 
 export default nextConfig;

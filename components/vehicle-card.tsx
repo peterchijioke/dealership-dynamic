@@ -14,18 +14,27 @@ import Link from "next/link";
 import { useGetCurrentSite } from "@/hooks/useGetCurrentSite";
 import { ButtonDataWithFormHandler } from "@/app/(routes)/vehicle/_components/VdpVehicleCard";
 
-const VehicleFinancing = dynamic(() => import("@/app/(routes)/[...slug]/_components/vehicle-financing"), {
-  ssr: false,
-  loading: () => null,
-});
-const VehicleOemIncentives = dynamic(() => import("@/app/(routes)/[...slug]/_components/vehicle-oem-incentives"), {
-  ssr: false,
-  loading: () => null,
-});
-const ShardSheetForm = dynamic(() => import("@/components/ui/shard-sheet-form"), {
-  ssr: false,
-  loading: () => null,
-});
+const VehicleFinancing = dynamic(
+  () => import("@/app/(routes)/[...slug]/_components/vehicle-financing"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+const VehicleOemIncentives = dynamic(
+  () => import("@/app/(routes)/[...slug]/_components/vehicle-oem-incentives"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+const ShardSheetForm = dynamic(
+  () => import("@/components/ui/shard-sheet-form"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
 
 /** ---- Price types & normalization ---- */
 
@@ -219,7 +228,11 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
             )}
 
             {/* Vehicle Image */}
-            <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
+            <Link
+              className="cursor-pointer"
+              scroll={false}
+              href={`/vehicle/${hit?.objectID}`}
+            >
               <VehicleImage
                 hit={hit}
                 encryptedUrl={encryptedUrl}

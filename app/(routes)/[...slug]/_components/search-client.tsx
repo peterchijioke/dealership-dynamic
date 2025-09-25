@@ -4,7 +4,7 @@ import "./search-client-scroll-lock.css";
 import { useState } from "react";
 import SidebarFilters from "./sidebar-filters";
 import InfiniteHits from "@/components/algolia/infinite-hits-2";
-import { generateFacetFilters, normalizeRefinementForAlgolia, searchWithMultipleQueries } from "@/lib/algolia";
+import { generateFacetFilters, searchWithMultipleQueries } from "@/lib/algolia";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ActiveFiltersBar from "./active-filters";
 import { useAlgolia } from "@/hooks/useAlgolia";
@@ -66,39 +66,23 @@ export default function SearchClient({
     hitsPerPage: HITS_PER_PAGE,
   });
 
-  // Toggle a facet  
-  const updateFacet = async (
-    facet: string,
-    value: string,
-  ) => {
+  // Toggle a facet
+  const updateFacet = async (facet: string, value: string) => {
     let currentFacets = selectedFacets;
-
     setSelectedFacets((prev) => {
       const current = prev[facet] || [];
-
-      // Toggle facet value
       const updated = current.includes(value)
         ? current.filter((v) => v !== value)
         : [...current, value];
-
       const newState = { ...prev, [facet]: updated };
       if (newState[facet].length === 0) delete newState[facet];
 
-      // Auto-select make when model is toggled (unchanged)
+      // Auto-select make when model is toggled
       if (facet === "model" && !prev.make) {
         const firstMakeKey = Object.keys(latestFacets.make || {})[0];
         if (firstMakeKey) {
           newState.make = [firstMakeKey];
         }
-      }
-
-      // ---- Remove associated trims when a model is being UNCHECKED ----
-      if (facet === "model" && current.includes(value)) {
-        const trims = newState.trim || [];
-        // Remove any trim that starts with `Model+`, e.g. "Frontier+SV"
-        const prefix = `${value}+`;
-        newState.trim = trims.filter((t) => !t.startsWith(prefix));
-        if (newState.trim.length === 0) delete newState.trim;
       }
 
       currentFacets = newState;
@@ -107,9 +91,6 @@ export default function SearchClient({
 
     stateToRoute(currentFacets); // push URL change
   };
-
-
-
 
   const handleRemoveFilter = async (facet: string, value: string) => {
     let currentFacets = selectedFacets;
@@ -124,10 +105,9 @@ export default function SearchClient({
       return updated;
     });
 
-    const normalizedRefinement = normalizeRefinementForAlgolia(selectedFacets);
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: generateFacetFilters(normalizedRefinement),
+      facetFilters: generateFacetFilters(selectedFacets),
       sortIndex,
       facets: CATEGORICAL_FACETS,
     });
@@ -154,10 +134,9 @@ export default function SearchClient({
   const handleSortChange = async (newSort: string) => {
     setSortIndex(newSort);
 
-    const normalizedRefinement = normalizeRefinementForAlgolia(selectedFacets);
     const res = await searchWithMultipleQueries({
       hitsPerPage: HITS_PER_PAGE,
-      facetFilters: generateFacetFilters(normalizedRefinement),
+      facetFilters: generateFacetFilters(selectedFacets),
       sortIndex: newSort,
       facets: CATEGORICAL_FACETS,
     });
