@@ -3,9 +3,9 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import type { Vehicle } from "@/types/vehicle";
-import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
+// import useEncryptedImageUrl from "@/hooks/useEncryptedImageUrl";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { stripTrailingCents } from "@/utils/utils";
 import VehicleImage from "./vehicle-image";
 import InlineForm from "./vehicle-inline-form";
@@ -146,8 +146,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
   // console.log(JSON.stringify(hit.prices, null, 2));
   // console.log("==============hit.prices======================");
 
-  const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
-  const router = useRouter();
+  // const encryptedUrl = useEncryptedImageUrl(hit.photo || "");
+  // const router = useRouter();
   const { site } = useGetCurrentSite();
 
   React.useEffect(() => setIsHydrating(false), []);
@@ -222,7 +222,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ hit }) => {
             <Link className="cursor-pointer" href={`/vehicle/${hit?.objectID}`}>
               <VehicleImage
                 hit={hit}
-                encryptedUrl={encryptedUrl}
+                // encryptedUrl={encryptedUrl}
                 isHydrating={isHydrating}
               />
             </Link>

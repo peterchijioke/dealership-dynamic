@@ -7,13 +7,13 @@ import { PLACEHOLDER_IMAGE } from "@/configs/config";
 
 interface VehicleImageProps {
   hit: Vehicle;
-  encryptedUrl: string | undefined;
+  // encryptedUrl: string | undefined;
   isHydrating: boolean;
 }
 
 export default function VehicleImage({
   hit,
-  encryptedUrl,
+  // encryptedUrl,
   isHydrating,
 }: VehicleImageProps) {
   const [loaded, setLoaded] = useState(false);
@@ -39,7 +39,7 @@ export default function VehicleImage({
   return (
     <div className="relative w-full flex items-center justify-center aspect-[3/2] rounded-t-2xl overflow-hidden bg-gray-100">
       {/* Static fallback */}
-      {!hit.photo && !encryptedUrl && !isHydrating && (
+      {!hit.photo /*&& !encryptedUrl*/ && !isHydrating && (
         <img
           src={PLACEHOLDER_IMAGE}
           alt={altText}
@@ -74,9 +74,9 @@ export default function VehicleImage({
           </div>
 
           {/* Final optimized image */}
-          {encryptedUrl && (
+          {hit.photo && (
             <img
-              src={encryptedUrl}
+              src={hit.photo}
               alt={altText}
               fetchPriority={priority ? "high" : "auto"}
               loading={priority ? "eager" : "lazy"}
