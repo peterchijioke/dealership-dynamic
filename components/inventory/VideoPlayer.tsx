@@ -111,7 +111,7 @@ function VideoPlayer({ video, videoCc, poster }: Props) {
       <video
         ref={videoRef}
         poster={poster}
-        preload="metadata"
+        preload="none"
         muted
         playsInline
         disablePictureInPicture
